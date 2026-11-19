@@ -1,0 +1,80 @@
+/* =============================================================
+   presets.css
+   "Your city, your plan, your priorities": intro text, the six
+   preset tiles and the explanation box under them.
+   ============================================================= */
+
+/* Intro section: title + info button, description below. */
+.intro .section-head {
+  gap: 2px;
+}
+
+.intro .section-desc {
+  line-height: normal;
+  color: var(--grey-800);
+}
+
+/* Preset section has more space at the bottom (16px). */
+.presets {
+  padding-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Two equal columns of tiles, 8px apart. */
+.preset-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+/* One preset tile: icon box + label. */
+.preset {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border-radius: var(--radius-tile);
+  background: var(--grey-50);
+  font-weight: var(--weight-medium);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.preset:hover {
+  background: var(--grey-100);
+}
+
+/* Square box around the preset icon. */
+.preset__icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-row);
+  background: var(--grey-100);
+}
+
+/* Selected preset: light green tile, green icon box. */
+.preset[aria-pressed="true"] {
+  background: var(--green-25);
+}
+
+.preset[aria-pressed="true"] .preset__icon {
+  background: var(--green-100);
+}
+
+/* Box explaining the selected preset. */
+.preset-note {
+  padding: 8px;
+  border-radius: var(--radius-tile);
+  background: var(--green-25);
+  color: var(--grey-800);
+}
+
+.preset-note strong {
+  font-weight: var(--weight-medium);
+  color: var(--grey-900);
+}

@@ -1,0 +1,118 @@
+/* =============================================================
+   layout.css
+   Page layout from the Figma frame "Live Map" (1440 × 1024):
+   a 298px sidebar on the left, the map card filling the rest,
+   16px apart, on a light green page background.
+   ============================================================= */
+
+/* The app fills the window. Padding matches the design:
+   8px top / right / bottom and 14px on the left. */
+.app {
+  display: grid;
+  grid-template-columns: var(--sidebar-width) 1fr;
+  gap: var(--page-gap);
+  height: 100vh;
+  height: 100dvh; /* mobile: ignores the browser's address bar */
+  padding: 8px 8px 8px 14px;
+}
+
+/* Sidebar: a column of cards, 14px apart. It scrolls on its own
+   if the window is shorter than the content, so the map never
+   moves. */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sidebar-gap);
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: none; /* hide the scrollbar like the design */
+}
+
+.sidebar::-webkit-scrollbar {
+  display: none;
+}
+
+/* ---------- Cards ---------- */
+
+/* A white rounded card (used for the header and ranking). */
+.card {
+  background: var(--surface-base);
+  border-radius: var(--radius-card);
+  padding: var(--card-padding);
+}
+
+/* A card made of several sections stacked together, split by thin
+   lines (priorities + presets + weights). overflow: hidden keeps
+   the rounded corners on the first and last section. */
+.card-group {
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.card-group__section {
+  background: var(--surface-base);
+  padding: var(--card-padding);
+  border-bottom: 1px solid var(--grey-50);
+}
+
+.card-group__section:last-child {
+  border-bottom: 0;
+}
+
+/* Shared section heading: title on the left, action on the right,
+   short description underneath. */
+.section-head {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.section-head__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.section-title {
+  font-size: var(--caption-2-size);
+  line-height: var(--caption-2-line);
+  font-weight: var(--weight-semibold);
+  color: var(--grey-900);
+}
+
+.section-desc {
+  font-size: var(--body-sm-size);
+  line-height: var(--body-sm-line);
+  color: var(--grey-700);
+}
+
+/* ---------- Map column ---------- */
+
+/* The map card: rounded, with a 2px white border.
+   min-width: 0 stops the grid from growing wider than the screen. */
+.map-frame {
+  position: relative;
+  min-width: 0;
+  border: 2px solid var(--surface-base);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+}
+
+/* ---------- Small screens: map on top, sidebar below ---------- */
+@media (max-width: 768px) {
+  .app {
+    grid-template-columns: 1fr;
+    grid-template-rows: 60vh auto; /* map gets 60% of the screen */
+    height: auto;
+    padding: 8px;
+  }
+
+  .map-frame {
+    order: -1; /* show the map before the sidebar */
+  }
+
+  .sidebar {
+    overflow-y: visible; /* the whole page scrolls instead */
+  }
+}

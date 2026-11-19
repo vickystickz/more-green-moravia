@@ -1,0 +1,116 @@
+/* =============================================================
+   sliders.css
+   "Fine-tune what matters": one weight slider per factor.
+   The sliders are real <input type="range"> elements, styled to
+   match the design (thin grey track, green fill, small knob).
+   ============================================================= */
+
+.weights {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding-top: 8px;
+  padding-bottom: 16px;
+}
+
+.weights .section-title {
+  font-weight: var(--weight-medium);
+}
+
+/* Reset button: green text with a reload icon. */
+.reset-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: var(--weight-medium);
+  color: var(--green-500);
+}
+
+.reset-btn img {
+  transform: scaleX(-1); /* the design mirrors the reload icon */
+}
+
+/* List of sliders, 24px apart. */
+.weight-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.weight {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Top row: icon + label + info on the left, value on the right. */
+.weight__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: var(--weight-medium);
+}
+
+.weight__label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ---------- The range input ----------
+   --value (0–100) is set from JavaScript and paints the green
+   part of the track up to the knob. */
+.range {
+  --value: 50;
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  height: 10px;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+/* Track (Chrome, Safari, Edge) */
+.range::-webkit-slider-runnable-track {
+  height: 2px;
+  border-radius: 4px;
+  background: linear-gradient(
+    to right,
+    var(--green-500) calc(var(--value) * 1%),
+    var(--grey-100) calc(var(--value) * 1%)
+  );
+}
+
+/* Track (Firefox) */
+.range::-moz-range-track {
+  height: 2px;
+  border-radius: 4px;
+  background: var(--grey-100);
+}
+
+.range::-moz-range-progress {
+  height: 2px;
+  border-radius: 4px;
+  background: var(--green-500);
+}
+
+/* Knob: 10px white circle with a soft shadow. */
+.range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 10px;
+  height: 10px;
+  margin-top: -4px; /* centre the knob on the 2px track */
+  border-radius: 50%;
+  background: var(--surface-base);
+  box-shadow: 0 1px 3px rgba(40, 42, 46, 0.3);
+}
+
+.range::-moz-range-thumb {
+  width: 10px;
+  height: 10px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--surface-base);
+  box-shadow: 0 1px 3px rgba(40, 42, 46, 0.3);
+}

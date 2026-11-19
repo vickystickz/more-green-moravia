@@ -1,0 +1,73 @@
+/* =============================================================
+   base.css
+   Reset and page-wide defaults.
+   ============================================================= */
+
+/* Make width/height include padding and border (easier sizing). */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Full-height page with no default margin, so the app can fill
+   the whole browser window. */
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: var(--font-family);
+  font-size: var(--caption-2-size);
+  line-height: var(--caption-2-line);
+  color: var(--grey-900);
+  background: var(--surface-page);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Remove default spacing so the design's spacing is exact. */
+h1, h2, h3, p, ul, ol {
+  margin: 0;
+  padding: 0;
+}
+
+ul, ol {
+  list-style: none;
+}
+
+/* Buttons and inputs use the page font instead of the browser's. */
+button,
+input {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  border: 0;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+/* Icons keep their own width/height from the SVG file. */
+img {
+  display: block;
+}
+
+/* Visible focus ring for keyboard users. */
+:focus-visible {
+  outline: 2px solid var(--green-500);
+  outline-offset: 2px;
+}
+
+/* Hide text visually but keep it for screen readers. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

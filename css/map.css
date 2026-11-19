@@ -1,0 +1,298 @@
+/* =============================================================
+   map.css
+   The map and everything that floats on top of it: search bar,
+   map layers legend, zoom / location buttons and Ask AI.
+   ============================================================= */
+
+/* MapLibre draws inside #map, which fills the whole map card.
+   The light grey shows while basemap tiles are loading. */
+.map {
+  position: absolute;
+  inset: 0;
+  background: var(--grey-100);
+}
+
+/* Shared look for every panel that floats on the map. */
+.map-overlay {
+  position: absolute;
+  z-index: 2; /* above the map canvas */
+  background: var(--surface-base);
+}
+
+/* ---------- Search bar (top left) ---------- */
+.map-search {
+  top: 8px;
+  left: 9px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 279px;
+  height: 34px;
+  padding: 6px 8px;
+  border-radius: var(--radius-pill);
+}
+
+.map-search input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font-size: var(--caption-2-size);
+  line-height: 16px;
+}
+
+.map-search input::placeholder {
+  color: var(--grey-600);
+}
+
+.map-search:focus-within {
+  outline: 2px solid var(--green-500);
+}
+
+/* Suggestion list, just under the search bar. */
+.search-results {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 4px;
+  border-radius: var(--radius-tile);
+  background: var(--surface-base);
+  box-shadow: 0 4px 12px rgba(40, 42, 46, 0.12);
+}
+
+.search-results[hidden] {
+  display: none;
+}
+
+/* One suggestion: place name, then type + town in grey. */
+.search-result {
+  display: flex;
+  flex-direction: column;
+  padding: 6px 8px;
+  border-radius: var(--radius-row);
+  cursor: pointer;
+}
+
+.search-result:hover,
+.search-result[aria-selected="true"] {
+  background: var(--green-25);
+}
+
+.search-result__name {
+  font-weight: var(--weight-medium);
+  color: var(--grey-900);
+}
+
+.search-result__meta {
+  font-size: var(--caption-3-size);
+  line-height: var(--caption-3-line);
+  color: var(--grey-700);
+}
+
+/* "No places found" and error messages. */
+.search-message {
+  padding: 6px 8px;
+  color: var(--grey-700);
+}
+
+/* ---------- Map layers legend (bottom left) ---------- */
+.map-layers {
+  bottom: 16px;
+  left: 9px;
+  width: 233px;
+  border-radius: var(--radius-row);
+  overflow: hidden;
+}
+
+/* Header row: "Map layers" + arrow to collapse the panel. */
+.map-layers__toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 6px;
+  border-bottom: 1px solid var(--grey-50);
+  font-weight: var(--weight-medium);
+  line-height: 16px;
+}
+
+.map-layers__title {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+/* Arrow points up when the panel is collapsed. */
+.map-layers__toggle[aria-expanded="false"] .map-layers__arrow {
+  transform: rotate(180deg);
+}
+
+.map-layers__body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 6px 7.5px;
+}
+
+.map-layers__body[hidden] {
+  display: none;
+}
+
+/* One layer row: (icon) name … eye button. */
+.layer-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 0;
+  font-weight: var(--weight-medium);
+  color: var(--display-subtle-01);
+}
+
+.layer-row__name {
+  flex: 1;
+}
+
+/* Round grey icon in front of "Building". */
+.layer-row__icon {
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--grey-100);
+}
+
+/* Eye button that shows / hides a layer. Faded when hidden. */
+.eye-btn {
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 6px;
+}
+
+.eye-btn[aria-pressed="false"] {
+  opacity: 0.35;
+}
+
+/* Suitability score legend: label row, 4 colour bars, numbers. */
+.legend {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.legend .layer-row {
+  padding: 0;
+}
+
+.legend__scale {
+  display: flex;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.legend__scale span {
+  flex: 1;
+  height: 6px;
+  border-radius: 1px;
+}
+
+.legend__scale span:nth-child(1) { background: var(--score-1); }
+.legend__scale span:nth-child(2) { background: var(--score-2); }
+.legend__scale span:nth-child(3) { background: var(--score-3); }
+.legend__scale span:nth-child(4) { background: var(--score-4); }
+
+.legend__numbers {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--caption-3-size);
+  line-height: var(--caption-3-line);
+  font-weight: var(--weight-medium);
+  color: var(--display-subtle-02);
+}
+
+/* ---------- Right-hand tools (bottom right) ----------
+   Ask AI on top, then location, basemap and zoom buttons. */
+.map-tools {
+  position: absolute;
+  z-index: 2;
+  right: 13px;
+  bottom: 12.6px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.map-tools__buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 7.2px;
+}
+
+/* Ask AI pill. */
+.ask-ai {
+  position: static;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: var(--radius-tile);
+  font-weight: var(--weight-medium);
+}
+
+/* Small square white map button (24 × 24). */
+.map-btn {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-btn);
+  background: var(--surface-base);
+}
+
+.map-btn:hover,
+.ask-ai:hover {
+  background: var(--grey-50);
+}
+
+/* Zoom in / out joined into one block with a thin divider. */
+.zoom-group {
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--radius-btn);
+  overflow: hidden;
+}
+
+.zoom-group .map-btn {
+  border-radius: 0;
+}
+
+.zoom-group .map-btn + .map-btn {
+  border-top: 0.667px solid var(--highlight-grey-10);
+}
+
+/* ---------- MapLibre's own controls ----------
+   Only the scale bar and attribution are used. They sit at the
+   bottom right, moved left so they don't cover our buttons. */
+.maplibregl-ctrl-bottom-right {
+  right: 44px;
+}
+
+.maplibregl-ctrl-scale {
+  font-family: var(--font-family);
+  font-size: var(--caption-3-size);
+  color: var(--grey-800);
+  border-color: var(--grey-800);
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.maplibregl-ctrl-attrib {
+  font-family: var(--font-family);
+  font-size: var(--caption-3-size);
+}

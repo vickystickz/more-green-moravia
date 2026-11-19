@@ -1,0 +1,97 @@
+/* =============================================================
+   tokens.css
+   Design tokens copied from the Figma file "Hackathon UI".
+   Every colour, font size and radius in the app comes from here,
+   so the code always matches the design. Variable names follow
+   the Figma variable names (e.g. Foundation/Green/green-500
+   becomes --green-500).
+   ============================================================= */
+
+:root {
+  /* -----------------------------------------------------------
+     Foundation colours (Figma: Foundation/…)
+     ----------------------------------------------------------- */
+
+  /* Green */
+  --green-25: #F4FAF7;
+  --green-100: #B6DFC8;
+  --green-500: #15994E;
+  --green-600: #138B47;
+
+  /* Grey */
+  --grey-50: #F8F8F8;
+  --grey-100: #EBEBEB;
+  --grey-600: #ACACAC;
+  --grey-700: #868686;
+  --grey-800: #686868;
+  --grey-900: #3A3A3A;
+
+  /* Red / Yellow */
+  --red-400: #EF3F59;
+  --yellow-500: #F2B300;
+  --yellow-600: #DCA300;
+
+  /* -----------------------------------------------------------
+     Semantic colours (Figma: Surface/…, Display/…, Border/…)
+     Use these in components instead of the raw foundation colours
+     where a matching role exists.
+     ----------------------------------------------------------- */
+  --surface-base: #FFFFFF;    /* cards, panels, map buttons */
+  --surface-page: var(--green-25); /* page background behind the cards */
+
+  --display-02: #3B3B3B;      /* section headings */
+  --display-body: #4F4F4F;    /* body text in detail cards */
+  --display-subtle-01: #636363; /* legend labels */
+  --display-subtle-02: #818181; /* legend scale numbers */
+
+  --border-03: #CBCBCB;
+  --highlight-grey-10: #F0F0F1; /* divider between zoom buttons */
+
+  /* -----------------------------------------------------------
+     Suitability score scale (map legend + hexagon colours)
+     Low → high suitability.
+     ----------------------------------------------------------- */
+  --score-1: var(--red-400);
+  --score-2: var(--yellow-500);
+  --score-3: #80C46E;          /* not a Figma variable yet */
+  --score-4: var(--green-600);
+
+  /* -----------------------------------------------------------
+     Typography (Figma: Typeface/Caption/…)
+     Geist is loaded from Google Fonts in index.html.
+     ----------------------------------------------------------- */
+  --font-family: "Geist", system-ui, -apple-system, sans-serif;
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+
+  /* Caption 2: labels, titles, values (12 / 18) */
+  --caption-2-size: 12px;
+  --caption-2-line: 18px;
+
+  /* Body small: section descriptions (11 / 14) */
+  --body-sm-size: 11px;
+  --body-sm-line: 14px;
+
+  /* Caption 3: legend numbers, zone codes (10 / 14) */
+  --caption-3-size: 10px;
+  --caption-3-line: 14px;
+
+  /* -----------------------------------------------------------
+     Radius
+     ----------------------------------------------------------- */
+  --radius-card: 16px;    /* sidebar cards, map frame */
+  --radius-tile: 10px;    /* preset tiles, info boxes, Ask AI */
+  --radius-row: 8px;      /* ranking rows, icon boxes, legend */
+  --radius-btn: 5.333px;  /* small map buttons */
+  --radius-pill: 32px;    /* search bar */
+
+  /* -----------------------------------------------------------
+     Layout
+     ----------------------------------------------------------- */
+  --sidebar-width: 298px;
+  --page-gap: 16px;       /* space between sidebar and map */
+  --sidebar-gap: 14px;    /* space between sidebar cards */
+  --card-padding: 10px;
+}
