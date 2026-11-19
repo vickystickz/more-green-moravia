@@ -1,0 +1,61 @@
+# =============================================================
+# Deploy to GitHub Pages
+# Runs on every push to main. It creates js/env.js from the
+# repository secret MAPY_API_KEY (js/env.js is not in git), then
+# publishes the site.
+#
+# One-time setup on GitHub:
+#   1. Settings → Secrets and variables → Actions → New repository
+#      secret: name MAPY_API_KEY, value = your Mapy.com key
+#   2. Settings → Pages → Source: "GitHub Actions"
+# =============================================================
+
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: # allows a manual run from the Actions tab
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Only one deployment at a time; a newer push cancels an older one.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Get the code
+        uses: actions/checkout@v4
+
+      - name: Create js/env.js from the secret
+        env:
+          MAPY_API_KEY: ${{ secrets.MAPY_API_KEY }}
+        run: |
+          if [ -z "$MAPY_API_KEY" ]; then
+            echo "::warning::Secret MAPY_API_KEY is not set: search will be disabled on the site."
+          else
+            printf "export const MAPY_API_KEY = '%s';\n" "$MAPY_API_KEY" > js/env.js
+          fi
+
+      - name: Set up Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload the site
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      - name: Publish
+        id: deployment
+        uses: actions/deploy-pages@v4
