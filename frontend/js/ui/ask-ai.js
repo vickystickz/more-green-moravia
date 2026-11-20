@@ -18,8 +18,10 @@ import { showAiLayer, clearAiLayer } from '../map/ai-layer.js';
 
 /**
  * @param {() => maplibregl.Map | null} getMap - the map, once it exists
+ * @param {{ onMapLayer?: () => void }} [options]
+ *   onMapLayer: called after an AI layer is drawn on the map
  */
-export function initAskAi(getMap = () => null) {
+export function initAskAi(getMap = () => null, { onMapLayer = () => {} } = {}) {
   const app = document.querySelector('.app');
   const button = document.getElementById('ask-ai');
   if (!AGENT_CONFIG.enabled) {
@@ -28,6 +30,7 @@ export function initAskAi(getMap = () => null) {
   }
   const panel = document.getElementById('ask-ai-panel');
   const closeBtn = document.getElementById('ask-ai-close');
+  const newBtn = document.getElementById('ask-ai-new');
   const form = document.getElementById('ask-ai-form');
   const input = document.getElementById('ask-ai-input');
   const send = document.getElementById('ask-ai-send');
@@ -41,6 +44,10 @@ export function initAskAi(getMap = () => null) {
   // Nothing is stored on the server.
   const history = [];
   let busy = false;
+  // Bumped by "New chat": a question still streaming from the old
+  // conversation is aborted and its late results are ignored.
+  let chatRun = 0;
+  let controller = null;
 
   // The slide is a CSS transition (see css/components/ask-ai.css).
   // Opening: show the panel, then add the class on the next frame so
@@ -114,6 +121,26 @@ export function initAskAi(getMap = () => null) {
 
   chipClear.addEventListener('click', clearMap);
 
+  // ---------------------------------------------------------
+  // New chat: forget the thread and history, start over
+  // ---------------------------------------------------------
+  function resetChat() {
+    chatRun++;
+    controller?.abort();
+    controller = null;
+    busy = false;
+    history.length = 0;
+    thread.replaceChildren();
+    body.classList.remove('has-messages');
+    newBtn.hidden = true;
+    clearMap();
+    input.value = '';
+    updateSend();
+    input.focus({ preventScroll: true });
+  }
+
+  newBtn.addEventListener('click', resetChat);
+
   async function showOnMap(btn, item) {
     const map = getMap();
     if (!map) return;
@@ -129,6 +156,7 @@ export function initAskAi(getMap = () => null) {
       const layer = await fetchLayer(item.layer);
       if (request !== mapRequest) return;
       showAiLayer(map, layer);
+      onMapLayer();
       setActiveMapBtn(btn);
       chipTitle.textContent = layer.title || item.title;
       chip.hidden = false;
@@ -194,9 +222,12 @@ export function initAskAi(getMap = () => null) {
   // One question → one streamed answer
   // ---------------------------------------------------------
   async function ask(question) {
+    const run = ++chatRun;
+    controller = new AbortController();
     busy = true;
     updateSend();
     body.classList.add('has-messages');
+    newBtn.hidden = false;
 
     addBubble('user').textContent = question;
     const reply = addBubble('assistant');
@@ -209,7 +240,7 @@ export function initAskAi(getMap = () => null) {
     let answer = null;
     const layers = [];
     try {
-      await streamChat(question, history, {
+      await streamChat(question, history, controller.signal, {
         step(data) {
           const li = el('li', data.ok ? '' : 'is-failed', data.label || data.tool);
           steps.append(li);
@@ -225,6 +256,7 @@ export function initAskAi(getMap = () => null) {
           throw new AgentError(data.message || t('askai.error'));
         },
       });
+      if (run !== chatRun) return; // chat was reset meanwhile
       if (answer == null) throw new AgentError(t('askai.error'));
 
       reply.classList.remove('is-pending');
@@ -239,16 +271,20 @@ export function initAskAi(getMap = () => null) {
       history.push({ role: 'assistant', content: answer.slice(0, AGENT_CONFIG.maxTurnChars) });
       history.splice(0, Math.max(0, history.length - AGENT_CONFIG.maxHistory));
     } catch (err) {
+      if (run !== chatRun) return;
       console.warn('Ask AI:', err);
       reply.classList.remove('is-pending');
       reply.classList.add('is-error');
       status.textContent = err instanceof AgentError ? err.message : t('askai.errorNetwork');
       steps.remove();
     } finally {
-      busy = false;
-      updateSend();
-      scrollDown();
-      input.focus({ preventScroll: true });
+      if (run === chatRun) {
+        controller = null;
+        busy = false;
+        updateSend();
+        scrollDown();
+        input.focus({ preventScroll: true });
+      }
     }
   }
 
@@ -278,12 +314,13 @@ class AgentError extends Error {}
 
 // POST the question and call handlers[event](data) for each
 // server-sent event as it arrives.
-async function streamChat(message, history, handlers) {
+async function streamChat(message, history, signal, handlers) {
   if (!AGENT_CONFIG.baseUrl) throw new AgentError(t('askai.soon'));
   const res = await fetch(AGENT_CONFIG.baseUrl + AGENT_CONFIG.chatPath, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Accept: 'text/event-stream' },
     body: JSON.stringify({ message, history, stream: true }),
+    signal,
   });
 
   if (!res.ok) {

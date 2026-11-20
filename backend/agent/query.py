@@ -18,12 +18,14 @@ from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
+from agent import places as places_api
 from agent.catalog import AgentContext, Agg, Metric
 from app.database import Database
 
 FLOOR = 0.01
 MAX_ROWS = 50
 MAX_EXTRA = 5
+MAX_LOCATE = 20
 NEAREST_MAX_M = 400  # a point further than this from every hexagon is outside the index
 CLASS_BREAKS = (20, 40, 60, 80)  # the map's five score classes, 0-100
 
@@ -122,6 +124,11 @@ class Level(StrEnum):
     MICROZONE = "microzone"
 
 
+class Language(StrEnum):
+    CS = "cs"
+    EN = "en"
+
+
 class Order(StrEnum):
     DESC = "desc"
     ASC = "asc"
@@ -204,6 +211,20 @@ class DetailSpec(ScoreArgs):
     @classmethod
     def blank_is_none(cls, value: str | None) -> str | None:
         return value.strip() or None if isinstance(value, str) else value
+
+
+class LocateSpec(ScoreArgs):
+    h3_indexes: list[str] = Field(
+        min_length=1,
+        max_length=MAX_LOCATE,
+        description=f"Up to {MAX_LOCATE} hexagons (h3_index), e.g. from a ranking",
+    )
+    lang: Language = Field(Language.CS, description="Language of the place names")
+
+    @field_validator("h3_indexes")
+    @classmethod
+    def clean_ids(cls, values: list[str]) -> list[str]:
+        return list(dict.fromkeys(v.strip().lower() for v in values if v and v.strip()))
 
 
 class LayerSpec(ScoreArgs):
@@ -511,7 +532,8 @@ async def rank(db: Database, ctx: AgentContext, spec: RankSpec) -> QueryResult:
             metric.name,
             ids=[r[id_key] for r in rows],
             agg=agg,
-            title=f"{'Top' if spec.order is Order.DESC else 'Bottom'} {len(rows)} {unit_name}: {metric.label}",
+            title=f"{'Top' if spec.order is Order.DESC else 'Bottom'} {len(rows)} "
+            f"{'places' if spec.level is Level.HEX else 'microzones'}: {metric.label}",
         ),
     )
 
@@ -548,7 +570,7 @@ async def summarize(db: Database, ctx: AgentContext, spec: SummarizeSpec) -> Que
         return row
 
     first = metrics[0].name if metrics else "score"
-    layer = _layer(spec, Level.HEX, first, filters=spec.filters, title="Matching hexagons")
+    layer = _layer(spec, Level.HEX, first, filters=spec.filters, title="Matching places")
     labels = {
         m.name: f"{m.label} ({m.agg.value}, {m.shown_unit})".replace(", )", ")") for m in metrics
     }
@@ -708,7 +730,7 @@ async def detail(db: Database, ctx: AgentContext, spec: DetailSpec) -> QueryResu
         rows=rows_out,
         summary=summary,
         layer=_layer(
-            spec, Level.HEX, "score", ids=[r["h3_index"]], title=f"Hexagon in {r['mz_id']}"
+            spec, Level.HEX, "score", ids=[r["h3_index"]], title=str(r["mz_id"] or "Selected place")
         ),
     )
 
@@ -769,6 +791,81 @@ async def _microzone_detail(
             title=name,
         ),
     )
+
+
+async def locate(db: Database, ctx: AgentContext, spec: LocateSpec) -> QueryResult:
+    """Where hexagons are: microzone, centre and, when a geocoder key is set,
+    the street and district at the centre."""
+    ids = spec.h3_indexes
+    if not ids:
+        raise ToolError("give at least one h3_index")
+    scoring = spec.resolved()
+    score = ctx.metric("score")
+    q = Sql(ctx, scoring)
+    residents = "raw_residents" in ctx.metrics
+    found = {
+        r["h3_index"]: r
+        for r in (
+            await db.query(
+                f"""
+            SELECT h3_index, mz_id, lon, lat, {q.metric(score)} AS score
+                   {", raw_residents AS residents" if residents else ""}
+            FROM hexes WHERE h3_index IN ({", ".join(q.bind(i) for i in ids)})
+            """,
+                q.params,
+            )
+        ).rows
+    }
+    missing = [i for i in ids if i not in found]
+    if not found:
+        raise ToolError(
+            f"none of {', '.join(ids)} is in the index; h3_index values come from "
+            "rank_areas or area_detail (resolution 9 hexagons in Olomouc)"
+        )
+    hits = [found[i] for i in ids if i in found]
+    places = await places_api.reverse_many([(r["lon"], r["lat"]) for r in hits], spec.lang.value)
+
+    rows = []
+    for r, place in zip(hits, places, strict=True):
+        row: dict[str, Any] = {
+            "h3_index": r["h3_index"],
+            "microzone": r["mz_id"],
+            "street": (place or {}).get("street"),
+            "district": (place or {}).get("district"),
+            "near": (place or {}).get("name"),
+            "score": shown(score, r["score"]),
+        }
+        if residents:
+            row["residents"] = shown(ctx.metric("raw_residents"), r["residents"])
+        row |= {"lon": round(r["lon"], 5), "lat": round(r["lat"], 5)}
+        rows.append(row)
+
+    summary: dict[str, Any] = {"hexagons_found": len(rows), "scoring": scoring.describe()}
+    if missing:
+        summary["not_in_index"] = missing
+    if not places_api.enabled():
+        summary["place_names"] = "unavailable (no geocoder key); name places by microzone"
+    elif not any(places):
+        summary["place_names"] = "the geocoder did not answer; name places by microzone"
+    return QueryResult(
+        columns=list(rows[0]),
+        rows=rows,
+        summary=summary,
+        layer=_layer(
+            spec,
+            Level.HEX,
+            "score",
+            ids=[r["h3_index"] for r in rows],
+            title=_place_title(rows),
+        ),
+    )
+
+
+def _place_title(rows: list[dict[str, Any]]) -> str:
+    if len(rows) > 1:
+        return f"{len(rows)} places"
+    r = rows[0]
+    return ", ".join(p for p in (r.get("street"), r.get("microzone")) if p) or "Selected place"
 
 
 async def _nearest(db: Database, lon: float, lat: float) -> tuple[str, float]:

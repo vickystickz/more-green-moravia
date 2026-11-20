@@ -83,6 +83,33 @@
   background: var(--grey-50);
 }
 
+.ask-ai-panel__actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* "New chat": clears the thread and starts over */
+.ask-ai-panel__new {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 24px;
+  padding: 0 8px;
+  border-radius: 7.385px;
+  font-size: var(--caption-2-size);
+  font-weight: var(--weight-semibold);
+  color: var(--color-nav);
+}
+
+.ask-ai-panel__new[hidden] {
+  display: none;
+}
+
+.ask-ai-panel__new:hover {
+  background: var(--grey-50);
+}
+
 /* ---------- Body: greeting + suggestions, centred ---------- */
 .ask-ai-panel__body {
   flex: 1;
@@ -90,7 +117,7 @@
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: safe center; /* top-align if the suggestions overflow */
   gap: 32px;
   padding: 16px 10px;
 }

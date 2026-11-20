@@ -222,7 +222,7 @@
         </ol>
       </section>
 
-      <p class="sidebar-note" data-i18n="footer.note">Provisional results. Scores combine heatwave temperatures by day and night, population, vulnerable groups, green space and sealed ground (Copernicus Urban Atlas 2021, 10 m tree cover and imperviousness) and available land on a 200 m hexagon grid (H3). This version focuses on heat stress. Use as a guide, not a final decision.</p>
+      <p class="sidebar-note" data-i18n="footer.note">Provisional results. Scores combine heatwave temperatures by day and night, population, vulnerable groups, green space and sealed ground (Copernicus Urban Atlas 2021, 10 m tree cover and imperviousness) and available land in areas of about 200 m. This version focuses on heat stress. Use as a guide, not a final decision.</p>
     </aside>
 
     <!-- =======================================================
@@ -261,7 +261,7 @@
                Only one view can be shown at a time; clicking the eye of
                the visible view hides the hexagons. -->
           <div class="layer-group" role="group" aria-labelledby="layer-group-title">
-            <span class="layer-group__title" id="layer-group-title" data-i18n="layers.colourBy">Colour hexagons by</span>
+            <span class="layer-group__title" id="layer-group-title" data-i18n="layers.colourBy">Colour the map by</span>
             <div class="layer-choice" id="layer-choice"></div>
           </div>
 
@@ -403,10 +403,18 @@
           <img src="assets/icons/chat-ai.svg" width="24" height="24" alt="">
           <h2 id="ask-ai-title" data-i18n="askai.button">Ask AI</h2>
         </div>
+        <div class="ask-ai-panel__actions">
+          <!-- Shown once there are messages; ask-ai.js clears the thread -->
+          <button class="ask-ai-panel__new" id="ask-ai-new" type="button" hidden
+                  aria-label="New chat" data-i18n-attr="aria-label:askai.newChat,title:askai.newChat">
+            <img src="assets/icons/reload.svg" width="14" height="14" alt="">
+            <span data-i18n="askai.newChat">New chat</span>
+          </button>
         <button class="ask-ai-panel__close" id="ask-ai-close" type="button" aria-label="Close"
                 data-i18n-attr="aria-label:askai.close,title:askai.close">
           <img src="assets/icons/close.svg" width="14.7692" height="14.7692" alt="">
         </button>
+        </div>
       </header>
 
       <div class="ask-ai-panel__body">
@@ -423,9 +431,12 @@
 
         <ul class="ask-ai-panel__suggestions" aria-label="Suggested questions"
             data-i18n-attr="aria-label:askai.suggestions">
-          <li><button class="ask-ai-chip" type="button" data-i18n="askai.suggest1">We have budget to depave car parks</button></li>
-          <li><button class="ask-ai-chip" type="button" data-i18n="askai.suggest2">Cool route to the school</button></li>
-          <li><button class="ask-ai-chip" type="button" data-i18n="askai.suggest3">Find heat prone areas</button></li>
+          <li><button class="ask-ai-chip" type="button" data-i18n="askai.suggest1">Where is green infrastructure needed most?</button></li>
+          <li><button class="ask-ai-chip" type="button" data-i18n="askai.suggest2">Where are hot areas with many older residents?</button></li>
+          <li><button class="ask-ai-chip" type="button" data-i18n="askai.suggest3">Where are the warmest nights?</button></li>
+          <li><button class="ask-ai-chip" type="button" data-i18n="askai.suggest4">Where can we build green improvements quickly?</button></li>
+          <li><button class="ask-ai-chip" type="button" data-i18n="askai.suggest5">Which neighbourhoods are far from a park?</button></li>
+          <li><button class="ask-ai-chip" type="button" data-i18n="askai.suggest6">Why is this area ranked so high?</button></li>
         </ul>
 
         <!-- Questions and answers, filled by ask-ai.js -->

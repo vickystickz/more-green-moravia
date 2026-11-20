@@ -172,7 +172,9 @@ async function init() {
     if (map) highlightHex(map, null);
     refresh();
   });
-  initAskAi(() => map);
+  // Drawing an Ask AI layer switches the other map layers off.
+  let panel = null;
+  initAskAi(() => map, { onMapLayer: () => panel?.hideAll() });
 
   try {
     // Create the map (this returns straight away; the basemap
@@ -181,7 +183,7 @@ async function init() {
     initMapControls(map);
     initSearch(map, searchMicrozones);
 
-    const panel = initLayerPanel({
+    panel = initLayerPanel({
       // id = view to colour the hexagons by, or null = hide them
       onLayer: (id) => {
         state.activeLayer = id;

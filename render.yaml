@@ -24,6 +24,9 @@ services:
         sync: false
       - key: AI_MODEL
         sync: false
+      # Optional: street / district names for H3 hexagons (Mapy.com).
+      - key: MAPY_API_KEY
+        sync: false
       - key: AI_TIMEOUT_SECONDS
         value: "60"
       - key: AGENT_MAX_STEPS

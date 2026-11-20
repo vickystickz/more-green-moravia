@@ -26,6 +26,7 @@ from agent.llm import ToolCall
 from agent.query import (
     DescribeSpec,
     DetailSpec,
+    LocateSpec,
     OverviewSpec,
     QueryResult,
     RankSpec,
@@ -33,6 +34,7 @@ from agent.query import (
     ToolError,
     describe,
     detail,
+    locate,
     overview,
     rank,
     summarize,
@@ -66,7 +68,7 @@ class ToolResult:
 
 
 def _rank_label(spec: RankSpec) -> str:
-    what = "hexagons" if spec.level.value == "hex" else "microzones"
+    what = "places" if spec.level.value == "hex" else "microzones"
     label = f"Ranked {what} by {spec.metric}" + (
         " (lowest first)" if spec.order.value == "asc" else ""
     )
@@ -118,7 +120,7 @@ TOOLS: dict[str, Tool] = {
             args=SummarizeSpec,
             run=summarize,
             label=lambda spec: (
-                "Summarized matching hexagons" + (" by microzone" if spec.by_microzone else "")
+                "Summarized matching places" + (" by microzone" if spec.by_microzone else "")
             ),
         ),
         Tool(
@@ -144,6 +146,24 @@ TOOLS: dict[str, Tool] = {
             run=detail,
             label=lambda spec: (
                 "Looked up " + (spec.microzone or spec.h3_index or "the place at the point")
+            ),
+        ),
+        Tool(
+            name="locate_hexagons",
+            description=(
+                "Turns hexagons into places people know: for each h3_index, its microzone, "
+                "the street and city district at its centre, its score, residents and "
+                "centre (lon, lat). Call it after rank_areas or summarize on hexagons, "
+                "whenever the answer names specific places (which areas, which places, "
+                "where), so the answer can name streets instead of H3 ids. Pass every "
+                "h3_index from the ranking at once. "
+                "lang: 'en' for English answers, else 'cs'." + SCORING_HELP
+            ),
+            args=LocateSpec,
+            run=locate,
+            label=lambda spec: (
+                f"Found the street names of {len(spec.h3_indexes)} place"
+                + ("s" if len(spec.h3_indexes) != 1 else "")
             ),
         ),
     )

@@ -18,6 +18,10 @@ class Settings(BaseSettings):
     AI_MODEL: str | None = None
     AI_TIMEOUT_SECONDS: float = 60
 
+    # Optional: Mapy.com key for street / district names of hexagons (reverse geocoding).
+    # Without it the agent names places by microzone only.
+    MAPY_API_KEY: str | None = None
+
     AGENT_MAX_STEPS: int = 6
     AGENT_MAX_CONCURRENT: int = 4
 

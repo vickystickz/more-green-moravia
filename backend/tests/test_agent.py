@@ -11,6 +11,7 @@ from agent.query import (
     DescribeSpec,
     DetailSpec,
     Filter,
+    LocateSpec,
     Op,
     OverviewSpec,
     RankSpec,
@@ -18,6 +19,7 @@ from agent.query import (
     ToolError,
     describe,
     detail,
+    locate,
     overview,
     rank,
     summarize,
@@ -109,10 +111,68 @@ async def test_detail_by_point_and_describe(db, ctx):
     assert described.summary["unit"] == "°C"
 
 
+async def test_locate_hexagons(db, ctx, monkeypatch):
+    from agent import places
+
+    top = await rank(db, ctx, RankSpec(limit=3))
+    ids = [r["h3_index"] for r in top.rows]
+
+    monkeypatch.setattr(places, "enabled", lambda: False)
+    plain = await locate(db, ctx, LocateSpec(h3_indexes=[*ids, "89000000000ffff"]))
+    assert [r["h3_index"] for r in plain.rows] == ids
+    assert [r["microzone"] for r in plain.rows] == [r["microzone"] for r in top.rows]
+    assert plain.rows[0]["street"] is None
+    assert plain.summary["not_in_index"] == ["89000000000ffff"]
+    assert "place_names" in plain.summary
+    assert plain.layer.ids == ids
+
+    async def fake(points, lang="cs"):
+        return [{"street": "Třída Svobody", "district": "Olomouc", "name": "X"} for _ in points]
+
+    monkeypatch.setattr(places, "enabled", lambda: True)
+    monkeypatch.setattr(places, "reverse_many", fake)
+    named = await locate(db, ctx, LocateSpec(h3_indexes=[ids[0].upper()]))
+    assert named.rows[0]["h3_index"] == ids[0]
+    assert named.rows[0]["street"] == "Třída Svobody"
+    assert "place_names" not in named.summary
+
+    with pytest.raises(ToolError):
+        await locate(db, ctx, LocateSpec(h3_indexes=["nope"]))
+
+
+def test_place_from_mapy_response():
+    from agent.places import _place
+
+    data = {
+        "items": [
+            {
+                "name": "Třída Svobody 12",
+                "location": "Olomouc, Česko",
+                "regionalStructure": [
+                    {"name": "Třída Svobody 12", "type": "regional.address"},
+                    {"name": "Třída Svobody", "type": "regional.street"},
+                    {"name": "Olomouc", "type": "regional.municipality_part"},
+                ],
+            }
+        ]
+    }
+    assert _place(data) == {
+        "name": "Třída Svobody 12",
+        "street": "Třída Svobody",
+        "district": "Olomouc",
+        "location": "Olomouc, Česko",
+    }
+    assert _place({"items": []}) is None
+
+
 def test_tool_schemas_are_flat():
     text = json.dumps(tool_schemas())
     assert "$ref" not in text
-    assert {t["function"]["name"] for t in tool_schemas()} >= {"rank_areas", "area_detail"}
+    assert {t["function"]["name"] for t in tool_schemas()} >= {
+        "rank_areas",
+        "area_detail",
+        "locate_hexagons",
+    }
 
 
 def test_map_endpoint(client):

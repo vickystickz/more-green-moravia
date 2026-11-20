@@ -121,7 +121,7 @@ export function renderDetail(hex, { onlyBuildable, weightLabels }) {
 
   const { props: p, dims: d } = hex;
   document.getElementById('detail-title').textContent = hex.name;
-  document.getElementById('detail-hex').textContent = t('detail.hex', { id: hex.id });
+  document.getElementById('detail-hex').textContent = t('detail.hex');
   document.getElementById('detail-score').textContent = `${Math.round(hex.score * 100)} / 100`;
   document.getElementById('detail-label').textContent = priorityLabel(hex.score);
 

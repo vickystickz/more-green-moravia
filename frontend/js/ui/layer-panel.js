@@ -36,7 +36,7 @@ function eyeButton(pressed) {
  *   onVacant: (visible: boolean) => void,
  *   onOpacity: (opacity: number) => void,  // 0–1
  * }} handlers
- * @returns {{ showBoundaryOption: () => void }}
+ * @returns {{ showBoundaryOption: () => void, hideAll: () => void }}
  */
 export function initLayerPanel({ onLayer, onBoundaries, onBuildings, onVacant, onOpacity }) {
   const group = document.getElementById('layer-choice');
@@ -121,8 +121,10 @@ export function initLayerPanel({ onLayer, onBoundaries, onBuildings, onVacant, o
   onLangChange(translate);
 
   // Independent on/off layers.
+  const toggles = [];
   function wireToggle(selector, onChange) {
     const eye = document.querySelector(selector);
+    toggles.push({ eye, onChange });
     eye.addEventListener('click', () => {
       const visible = eye.getAttribute('aria-pressed') !== 'true';
       eye.setAttribute('aria-pressed', String(visible));
@@ -136,6 +138,19 @@ export function initLayerPanel({ onLayer, onBoundaries, onBuildings, onVacant, o
   return {
     showBoundaryOption() {
       document.getElementById('boundary-row').hidden = false;
+    },
+    // Turn every layer off (used when an Ask AI layer is drawn).
+    hideAll() {
+      if (active !== null) {
+        active = null;
+        draw();
+        onLayer(null);
+      }
+      toggles.forEach(({ eye, onChange }) => {
+        if (eye.getAttribute('aria-pressed') !== 'true') return;
+        eye.setAttribute('aria-pressed', 'false');
+        onChange(false);
+      });
     },
   };
 }
