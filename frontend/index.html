@@ -320,6 +320,18 @@
         </div>
       </div>
 
+      <!-- Ask AI layer chip (top left, under the search): shown while
+           an answer is drawn on the map ("Show on map", ask-ai.js) -->
+      <div class="map-overlay ai-layer-chip" id="ai-layer-chip" hidden>
+        <img src="assets/icons/sparkles.svg" width="14" height="14" alt="">
+        <span class="ai-layer-chip__title" id="ai-layer-title"></span>
+        <button class="ai-layer-chip__clear" id="ai-layer-clear" type="button"
+                aria-label="Remove from map" title="Remove from map"
+                data-i18n-attr="aria-label:askai.clearMap,title:askai.clearMap">
+          <img src="assets/icons/close.svg" width="12" height="12" alt="">
+        </button>
+      </div>
+
       <!-- Detail card (top right): shown when a hexagon is clicked -->
       <article class="map-overlay detail-card" id="detail-card" aria-labelledby="detail-title" hidden>
         <header class="detail-card__head">
@@ -381,9 +393,9 @@
 
     <!-- =======================================================
          ASK AI PANEL (right column, 306px). Opens from the
-         "Ask AI" button on the map. There is no backend yet, so
-         sending a question only says "Coming soon". Never put an
-         AI API key in this front-end code.
+         "Ask AI" button on the map. Questions go to our backend
+         (AGENT_API_URL in js/env.js); see js/ui/ask-ai.js. Never
+         put an AI API key in this front-end code.
          ======================================================= -->
     <aside class="ask-ai-panel" id="ask-ai-panel" aria-labelledby="ask-ai-title" hidden>
       <header class="ask-ai-panel__head">
@@ -415,6 +427,9 @@
           <li><button class="ask-ai-chip" type="button" data-i18n="askai.suggest2">Cool route to the school</button></li>
           <li><button class="ask-ai-chip" type="button" data-i18n="askai.suggest3">Find heat prone areas</button></li>
         </ul>
+
+        <!-- Questions and answers, filled by ask-ai.js -->
+        <div class="ask-ai-thread" id="ask-ai-thread" role="log" aria-live="polite"></div>
       </div>
 
       <form class="ask-ai-panel__form" id="ask-ai-form">
@@ -428,7 +443,6 @@
             <img src="assets/icons/paper-plane.svg" width="14" height="14" alt="">
           </button>
         </div>
-        <p class="ask-ai-panel__soon" id="ask-ai-soon" role="status" hidden data-i18n="askai.soon">Coming soon</p>
       </form>
     </aside>
   </div>

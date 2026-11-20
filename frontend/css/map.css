@@ -324,6 +324,10 @@
   font-weight: var(--weight-medium);
 }
 
+.ask-ai[hidden] {
+  display: none;
+}
+
 /* Small square white map button (24 × 24). */
 .map-btn {
   display: grid;

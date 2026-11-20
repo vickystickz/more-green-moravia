@@ -4,6 +4,15 @@
 // across files. Change things here, not inside the modules.
 // =============================================================
 
+// Keys from js/env.js (not committed). Imported dynamically so the
+// app still runs, minus search and Ask AI, when the file is missing.
+let env = {};
+try {
+  env = await import('./env.js');
+} catch {
+  /* geocode.js already warns about the missing file */
+}
+
 // -------------------------------------------------------------
 // Map settings
 // -------------------------------------------------------------
@@ -53,6 +62,21 @@ export const SEARCH_CONFIG = {
   // (same box as MAP_CONFIG.maxBounds). Results outside it are
   // also removed in geocode.js, because the map cannot go there.
   bbox: [17.13, 49.51, 17.41, 49.69],
+};
+
+// -------------------------------------------------------------
+// Ask AI: our own backend (backend/, FastAPI). The browser never
+// talks to the AI provider directly; the key stays on the server.
+// Its address is AGENT_API_URL in js/env.js. The backend must
+// list this site's origin in CORS_ORIGINS.
+// -------------------------------------------------------------
+export const AGENT_CONFIG = {
+  enabled: false,              // false = Ask AI button hidden (turned off for now)
+  baseUrl: String(env.AGENT_API_URL || '').replace(/\/+$/, ''), // '' = Ask AI off
+  chatPath: '/api/agent/chat', // POST, server-sent events
+  mapPath: '/api/agent/map',   // POST a step's layer → GeoJSON ("Show on map")
+  maxHistory: 24,              // turns sent back for follow-ups (backend limit)
+  maxTurnChars: 8000,          // per turn (backend limit)
 };
 
 // -------------------------------------------------------------

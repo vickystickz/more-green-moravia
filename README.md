@@ -19,5 +19,13 @@ The site is plain HTML/JS (no build step), but ES modules need a local server:
 
 ```sh
 cd frontend
-python3 -m http.server 8000   # then open http://localhost:8000
+python3 -m http.server 5500   # then open http://localhost:5500
 ```
+
+The backend API uses port 8000, so serve the site on another port. Ask AI calls the
+API at `AGENT_API_URL` in `frontend/js/env.js` (copy `env.example.js`). For the
+deployed site, set the repository variable `AGENT_API_URL` to the backend's public URL.
+
+## Backend
+
+The AI agent API lives in `backend/` (FastAPI + DuckDB). See [backend/README.md](backend/README.md).

@@ -220,10 +220,261 @@
   cursor: default;
 }
 
-.ask-ai-panel__soon {
-  font-size: var(--body-sm-size);
-  line-height: var(--body-sm-line);
-  color: var(--grey-700);
+/* ---------- Conversation ----------
+   Once the first question is sent, the greeting and suggestions
+   give way to the thread, which starts at the top. */
+.ask-ai-panel__body.has-messages {
+  justify-content: flex-start;
+}
+
+.ask-ai-panel__body.has-messages .ask-ai-panel__intro,
+.ask-ai-panel__body.has-messages .ask-ai-panel__suggestions {
+  display: none;
+}
+
+.ask-ai-thread {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ask-ai-thread:empty {
+  display: none;
+}
+
+.ask-ai-msg {
+  max-width: 100%;
+  font-size: var(--caption-1-size);
+  line-height: var(--caption-1-line);
+  color: var(--display-body);
+  overflow-wrap: anywhere;
+}
+
+.ask-ai-msg--user {
+  align-self: flex-end;
+  max-width: 85%;
+  padding: 8px 12px;
+  border-radius: var(--radius-tile) var(--radius-tile) 2px var(--radius-tile);
+  background: var(--green-25);
+  border: 1px solid var(--green-100);
+  color: var(--grey-900);
+  white-space: pre-wrap;
+}
+
+.ask-ai-msg--assistant {
+  align-self: stretch;
+  padding: 10px 12px;
+  border-radius: var(--radius-tile);
+  background: var(--surface-lvl-00);
+}
+
+.ask-ai-msg.is-error {
+  background: #FDF1EF;
+  color: #962320;
+}
+
+.ask-ai-msg__status {
+  color: var(--display-subtle-01);
+}
+
+/* Pulsing dots while the agent works. */
+.ask-ai-msg.is-pending .ask-ai-msg__status::after {
+  content: '';
+  display: inline-block;
+  width: 1.2em;
+  text-align: left;
+  animation: ask-ai-dots 1.2s steps(4, end) infinite;
+}
+
+@keyframes ask-ai-dots {
+  0%   { content: ''; }
+  25%  { content: '.'; }
+  50%  { content: '..'; }
+  75%  { content: '...'; }
+}
+
+/* Queries the agent ran: live while working, folded after. */
+.ask-ai-msg__steps {
+  margin: 6px 0 0;
+  padding-left: 16px;
+  list-style: disc;
+  font-size: var(--caption-2-size);
+  line-height: var(--caption-2-line);
+  color: var(--display-subtle-02);
+}
+
+.ask-ai-msg__steps:empty {
+  display: none;
+}
+
+.ask-ai-msg__steps .is-failed {
+  text-decoration: line-through;
+}
+
+.ask-ai-msg__details {
+  margin-top: 8px;
+  font-size: var(--caption-2-size);
+  color: var(--display-subtle-02);
+}
+
+.ask-ai-msg__details summary {
+  cursor: pointer;
+}
+
+/* Markdown answer */
+.ask-ai-msg__text > * + * {
+  margin-top: 8px;
+}
+
+.ask-ai-msg__text h4 {
+  font-size: var(--caption-1-size);
+  font-weight: var(--weight-semibold);
+  color: var(--display-02);
+}
+
+.ask-ai-msg__text strong {
+  font-weight: var(--weight-semibold);
+  color: var(--grey-900);
+}
+
+.ask-ai-msg__text ul,
+.ask-ai-msg__text ol {
+  padding-left: 18px;
+}
+
+.ask-ai-msg__text ul { list-style: disc; }
+.ask-ai-msg__text ol { list-style: decimal; }
+
+.ask-ai-msg__text code {
+  padding: 0 3px;
+  border-radius: 3px;
+  background: var(--grey-100);
+  font-size: 0.92em;
+}
+
+.ask-ai-table {
+  overflow-x: auto;
+}
+
+.ask-ai-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--caption-2-size);
+  line-height: var(--caption-2-line);
+}
+
+.ask-ai-table th,
+.ask-ai-table td {
+  padding: 2px 6px;
+  border-bottom: 1px solid var(--grey-100);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.ask-ai-table th {
+  font-weight: var(--weight-semibold);
+}
+
+/* ---------- Show on map ----------
+   Buttons under an answer, one per step that found places. */
+.ask-ai-msg__maps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.ask-ai-map-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+  padding: 4px 8px;
+  border: 1px solid var(--green-100);
+  border-radius: var(--radius-tile);
+  background: var(--surface-base);
+  font-size: var(--caption-2-size);
+  line-height: var(--caption-2-line);
+  font-weight: var(--weight-medium);
+  color: var(--grey-900);
+  text-align: left;
+}
+
+.ask-ai-map-btn span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ask-ai-map-btn:hover {
+  background: var(--green-25);
+}
+
+.ask-ai-map-btn.is-active {
+  border-color: var(--green-500);
+  background: var(--green-25);
+}
+
+.ask-ai-map-btn.is-loading {
+  cursor: progress;
+  opacity: 0.6;
+}
+
+.ask-ai-msg__map-error {
+  width: 100%;
+  font-size: var(--caption-2-size);
+  color: #962320;
+}
+
+/* Chip on the map while an answer is drawn (under the search bar). */
+.ai-layer-chip {
+  top: 50px;
+  left: 9px;
+  z-index: 1; /* under the search suggestions */
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 279px;
+  padding: 4px 4px 4px 8px;
+  border-radius: var(--radius-tile);
+  box-shadow: 0 0 8px rgba(24, 0, 44, 0.1);
+  font-size: var(--caption-2-size);
+  line-height: var(--caption-2-line);
+  font-weight: var(--weight-medium);
+  color: var(--grey-900);
+}
+
+.ai-layer-chip[hidden] {
+  display: none;
+}
+
+.ai-layer-chip__title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ai-layer-chip__clear {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+}
+
+.ai-layer-chip__clear:hover {
+  background: var(--grey-50);
+}
+
+/* Microzone popup */
+.ai-layer-popup {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: var(--caption-2-size);
+  line-height: var(--caption-2-line);
 }
 
 /* ---------- Small screens: panel covers the page ----------

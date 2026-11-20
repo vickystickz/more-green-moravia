@@ -1,0 +1,41 @@
+# Render Blueprint: the Ask AI backend (backend/Dockerfile).
+# The site itself stays on GitHub Pages (.github/workflows/deploy.yml).
+#
+# Render dashboard → New → Blueprint → pick this repo. Fill in the
+# values marked `sync: false` when asked (they are never committed).
+# Then set the repository variable AGENT_API_URL on GitHub to this
+# service's URL (https://<name>.onrender.com) and re-run the Pages deploy.
+services:
+  - type: web
+    name: more-green-moravia-api
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: .
+    plan: free
+    region: frankfurt
+    healthCheckPath: /health
+    autoDeploy: true
+    # Rebuild only when the backend or the index data changes.
+    buildFilter:
+      paths:
+        - backend/**
+        - frontend/data/olomouc_*.geojson
+        - frontend/data/olomouc_*_metadata.json
+        - .dockerignore
+        - render.yaml
+    envVars:
+      - key: AI_BASE_URL
+        value: https://openrouter.ai/api/v1
+      - key: AI_API_KEY
+        sync: false
+      - key: AI_MODEL
+        sync: false
+      - key: AI_TIMEOUT_SECONDS
+        value: "60"
+      - key: AGENT_MAX_STEPS
+        value: "6"
+      - key: AGENT_MAX_CONCURRENT
+        value: "4"
+      # The GitHub Pages origin (scheme + host, no path).
+      - key: CORS_ORIGINS
+        value: https://vickystickz.github.io

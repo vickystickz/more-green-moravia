@@ -172,7 +172,7 @@ async function init() {
     if (map) highlightHex(map, null);
     refresh();
   });
-  initAskAi();
+  initAskAi(() => map);
 
   try {
     // Create the map (this returns straight away; the basemap

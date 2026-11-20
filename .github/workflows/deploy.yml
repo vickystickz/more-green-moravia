@@ -42,12 +42,19 @@ jobs:
       - name: Create frontend/js/env.js from the secret
         env:
           MAPY_API_KEY: ${{ secrets.MAPY_API_KEY }}
+          # Repository variable (not a secret): public URL of the backend
+          AGENT_API_URL: ${{ vars.AGENT_API_URL }}
         run: |
           if [ -z "$MAPY_API_KEY" ]; then
             echo "::warning::Secret MAPY_API_KEY is not set: search will be disabled on the site."
-          else
-            printf "export const MAPY_API_KEY = '%s';\n" "$MAPY_API_KEY" > frontend/js/env.js
           fi
+          if [ -z "$AGENT_API_URL" ]; then
+            echo "::warning::Variable AGENT_API_URL is not set: Ask AI will be off on the site."
+          fi
+          {
+            printf "export const MAPY_API_KEY = '%s';\n" "$MAPY_API_KEY"
+            printf "export const AGENT_API_URL = '%s';\n" "$AGENT_API_URL"
+          } > frontend/js/env.js
 
       # /en/ and /cz/ are copies of index.html. <base href="../">
       # makes their css/, js/, data/ and assets/ links point to the
