@@ -38,12 +38,44 @@
   border-radius: var(--radius-tile);
   background: var(--grey-50);
   font-weight: var(--weight-medium);
+  line-height: 14px;
   text-align: left;
-  white-space: nowrap;
 }
 
 .preset:hover {
   background: var(--grey-100);
+}
+
+.preset__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+/* Disabled presets (not enough data yet): faded, with a badge. */
+.preset[aria-disabled="true"] {
+  cursor: not-allowed;
+  color: var(--grey-700);
+}
+
+.preset[aria-disabled="true"]:hover {
+  background: var(--grey-50);
+}
+
+.preset[aria-disabled="true"] .preset__icon img {
+  opacity: 0.45;
+}
+
+.preset__badge {
+  align-self: flex-start;
+  padding: 0 4px;
+  border-radius: 4px;
+  background: var(--grey-100);
+  font-size: var(--caption-3-size);
+  line-height: var(--caption-3-line);
+  font-weight: var(--weight-regular);
+  color: var(--grey-800);
 }
 
 /* Square box around the preset icon. */
@@ -77,4 +109,79 @@
 .preset-note strong {
   font-weight: var(--weight-medium);
   color: var(--grey-900);
+}
+
+/* ---------- Preset tooltip (hover / focus on a tile) ----------
+   Fixed to the window so it can float over the map; placed by
+   preset-tooltip.js. */
+.preset-tooltip {
+  position: fixed;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 248px;
+  padding: 10px 12px;
+  border-radius: var(--radius-tile);
+  background: var(--grey-900);
+  color: #FFFFFF;
+  box-shadow: 0 6px 16px rgba(40, 42, 46, 0.25);
+  pointer-events: none; /* never blocks the tile under the mouse */
+}
+
+.preset-tooltip[hidden] {
+  display: none;
+}
+
+.preset-tooltip__title {
+  font-weight: var(--weight-semibold);
+}
+
+.preset-tooltip__text {
+  font-size: var(--body-sm-size);
+  line-height: var(--body-sm-line);
+  color: var(--grey-100);
+}
+
+/* Weight rows: name · bar · percentage */
+.preset-tooltip__weights {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.preset-tooltip__weights li {
+  display: grid;
+  grid-template-columns: 1fr 61px 30px;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--body-sm-size);
+  line-height: var(--body-sm-line);
+}
+
+.preset-tooltip__weights .score-bar {
+  background: linear-gradient(
+    to right,
+    var(--green-100) calc(var(--value) * 1%),
+    rgba(255, 255, 255, 0.2) calc(var(--value) * 1%)
+  );
+}
+
+.preset-tooltip__pct {
+  text-align: right;
+  font-weight: var(--weight-medium);
+}
+
+.preset-tooltip__toggle {
+  font-size: var(--body-sm-size);
+  line-height: var(--body-sm-line);
+  color: var(--grey-100);
+}
+
+.preset-tooltip__hint {
+  font-size: var(--caption-3-size);
+  line-height: var(--caption-3-line);
+  color: var(--grey-600);
 }

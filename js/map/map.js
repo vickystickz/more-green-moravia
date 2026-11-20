@@ -6,6 +6,7 @@
 // =============================================================
 
 import { MAP_CONFIG } from '../config.js';
+import { t } from '../ui/i18n.js';
 
 // `maplibregl` is a global variable created by the MapLibre
 // <script> tag in index.html. It is loaded before our modules,
@@ -49,7 +50,8 @@ export function initMap(containerId) {
     new maplibregl.AttributionControl({
       compact: true,
       // Credit for the search results (Mapy.com terms of use).
-      customAttribution: 'Search © <a href="https://mapy.com" target="_blank" rel="noopener">Mapy.com</a>',
+      // (set once, in the language the page opened in)
+      customAttribution: `${t('attribution.search')} © <a href="https://mapy.com" target="_blank" rel="noopener">Mapy.com</a>`,
     }),
     'bottom-right'
   );

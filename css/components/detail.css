@@ -1,0 +1,143 @@
+/* =============================================================
+   detail.css
+   Detail card for one hexagon, floating at the top right of the
+   map. Opened by clicking a hex or a row in "Where to act first".
+   ============================================================= */
+
+.detail-card {
+  top: 8px;
+  right: 9px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 280px;
+  max-height: calc(100% - 200px); /* leave room for the tools below */
+  overflow-y: auto;
+  padding: var(--card-padding) 12px 12px;
+  border-radius: var(--radius-tile);
+  box-shadow: 0 4px 12px rgba(40, 42, 46, 0.12);
+}
+
+.detail-card[hidden] {
+  display: none;
+}
+
+.detail-card__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.detail-card__title {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: var(--weight-semibold);
+  color: var(--display-02);
+}
+
+.detail-card__hex {
+  font-size: var(--caption-3-size);
+  line-height: var(--caption-3-line);
+  color: var(--grey-700);
+  word-break: break-all;
+}
+
+.detail-card__close {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--grey-50);
+  font-size: 16px;
+  line-height: 1;
+  color: var(--grey-800);
+}
+
+.detail-card__close:hover {
+  background: var(--grey-100);
+}
+
+/* Big score + priority label. */
+.detail-card__score {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px;
+  border-radius: var(--radius-row);
+  background: var(--grey-50);
+}
+
+.detail-card__number {
+  font-size: 24px;
+  line-height: 30px;
+  font-weight: var(--weight-semibold);
+  color: var(--grey-900);
+}
+
+.detail-card__label {
+  font-weight: var(--weight-medium);
+  color: var(--grey-900);
+}
+
+.detail-card__note {
+  font-size: var(--body-sm-size);
+  line-height: var(--body-sm-line);
+  color: var(--grey-700);
+}
+
+/* "What made up the score" */
+.detail-card__factors {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.factor-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.factor {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.factor__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  font-weight: var(--weight-medium);
+  color: var(--display-body);
+}
+
+.factor__weight {
+  font-size: var(--caption-3-size);
+  font-weight: var(--weight-regular);
+  color: var(--grey-600);
+}
+
+.factor__bar {
+  width: 100%;
+}
+
+.factor__raw {
+  font-size: var(--caption-3-size);
+  line-height: var(--caption-3-line);
+  color: var(--grey-700);
+}
+
+/* Small screens: card spans the map width. */
+@media (max-width: 768px) {
+  .detail-card {
+    left: 9px;
+    width: auto;
+    top: 50px; /* below the search bar */
+  }
+}

@@ -1,8 +1,8 @@
 # =============================================================
 # Deploy to GitHub Pages
 # Runs on every push to main. It creates js/env.js from the
-# repository secret MAPY_API_KEY (js/env.js is not in git), then
-# publishes the site.
+# repository secret MAPY_API_KEY (js/env.js is not in git), makes
+# the /en/ and /cz/ language pages, then publishes the site.
 #
 # One-time setup on GitHub:
 #   1. Settings → Secrets and variables → Actions → New repository
@@ -47,6 +47,22 @@ jobs:
           else
             printf "export const MAPY_API_KEY = '%s';\n" "$MAPY_API_KEY" > js/env.js
           fi
+
+      # /en/ and /cz/ are copies of index.html. <base href="../">
+      # makes their css/, js/, data/ and assets/ links point to the
+      # main folder, so nothing is duplicated. The page reads its
+      # language from the folder name (js/ui/i18n.js).
+      - name: Make the /en/ and /cz/ language pages
+        run: |
+          for code in en cz; do
+            html_lang=$([ "$code" = cz ] && echo cs || echo en)
+            mkdir -p "$code"
+            sed -e 's|<head>|<head><base href="../">|' \
+                -e "s|<html lang=\"en\">|<html lang=\"$html_lang\">|" \
+                index.html > "$code/index.html"
+          done
+          grep -q '<base href="../">' cz/index.html
+          grep -q '<html lang="cs">' cz/index.html
 
       - name: Set up Pages
         uses: actions/configure-pages@v5

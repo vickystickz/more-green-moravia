@@ -114,3 +114,85 @@
   background: var(--surface-base);
   box-shadow: 0 1px 3px rgba(40, 42, 46, 0.3);
 }
+
+/* Info icon: its tooltip explains the factor. */
+.weight__info {
+  cursor: help;
+}
+
+/* "Weights always add up to 100%." */
+.weights-note {
+  margin-top: -16px; /* sits close under the sliders */
+  font-size: var(--caption-3-size);
+  line-height: var(--caption-3-line);
+  color: var(--grey-700);
+}
+
+/* ---------- Toggle switch ("Only show places we can build") ---------- */
+.switch {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  cursor: pointer;
+}
+
+/* The real checkbox is hidden; the track below draws the switch. */
+.switch input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+
+.switch__track {
+  position: relative;
+  flex-shrink: 0;
+  width: 28px;
+  height: 16px;
+  margin-top: 1px;
+  border-radius: 8px;
+  background: var(--grey-100);
+  transition: background 0.15s ease;
+}
+
+.switch__track::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--surface-base);
+  box-shadow: 0 1px 2px rgba(40, 42, 46, 0.3);
+  transition: transform 0.15s ease;
+}
+
+.switch input:checked + .switch__track {
+  background: var(--green-500);
+}
+
+.switch input:checked + .switch__track::after {
+  transform: translateX(12px);
+}
+
+.switch input:focus-visible + .switch__track {
+  outline: 2px solid var(--green-500);
+  outline-offset: 2px;
+}
+
+.switch__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.switch__label {
+  font-weight: var(--weight-medium);
+}
+
+.switch__help {
+  font-size: var(--body-sm-size);
+  line-height: var(--body-sm-line);
+  color: var(--grey-700);
+}

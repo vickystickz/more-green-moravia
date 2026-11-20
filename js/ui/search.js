@@ -2,27 +2,29 @@
 // ui/search.js
 // The search bar on the map: shows suggestions while typing and
 // moves the map to the place the user picks.
+// Matching microzones from our own data come first (no API key
+// needed), then streets and places from the Mapy.com API.
 // Keyboard: ↑ / ↓ to move, Enter to pick, Esc to close.
 // =============================================================
 
 import { SEARCH_CONFIG } from '../config.js';
 import { searchPlaces, isSearchEnabled } from '../data/geocode.js';
+import { t, getLang } from './i18n.js';
 
 /**
  * Wire up the search bar.
  *
  * @param {maplibregl.Map} map
+ * @param {(query: string) => Array} [localSearch] - microzones whose
+ *   name matches, in the same shape as searchPlaces() results
  */
-export function initSearch(map) {
+export function initSearch(map, localSearch = () => []) {
   const form = document.getElementById('map-search');
   const input = document.getElementById('search-input');
   const list = document.getElementById('search-results');
 
-  if (!isSearchEnabled()) {
-    input.disabled = true;
-    input.placeholder = 'Search unavailable (no API key)';
-    return;
-  }
+  // Without an API key, only our own microzone names are searched.
+  const useApi = isSearchEnabled();
 
   let results = [];  // suggestions currently in the list
   let active = -1;   // highlighted suggestion (-1 = none)
@@ -48,16 +50,16 @@ export function initSearch(map) {
       return;
     }
 
-    // 1. Instant suggestions
+    // 1. Instant suggestions (microzones + earlier API answers)
     const instant = suggestFromCache(query);
-    if (instant) {
-      show(instant);
+    if (instant || !useApi || localSearch(query).length > 0) {
+      show(instant ?? []);
     } else if (results.length === 0) {
-      showMessage('Searching…');
+      showMessage(t('search.searching'));
     }
 
     // 2. Fresh results (skip if we already asked for this exact text)
-    if (!cache.has(normalize(query))) {
+    if (useApi && !cache.has(cacheKey(query))) {
       timer = setTimeout(() => runSearch(query), SEARCH_CONFIG.debounceMs);
     }
   });
@@ -67,15 +69,15 @@ export function initSearch(map) {
   async function runSearch(query) {
     try {
       const found = await searchPlaces(query);
-      cache.set(normalize(query), found);
+      cache.set(cacheKey(query), found);
 
       // Refresh the list if it still fits what is typed now.
       const instant = suggestFromCache(input.value.trim());
       if (instant) show(instant);
-      else if (normalize(input.value.trim()) === normalize(query)) show([]);
+      else if (cacheKey(input.value.trim()) === cacheKey(query)) show([]);
     } catch (err) {
       console.warn(err);
-      showMessage('Search is not available right now.');
+      showMessage(t('search.error'));
     }
   }
 
@@ -88,7 +90,7 @@ export function initSearch(map) {
    * @returns {Array|null} null when nothing useful is cached
    */
   function suggestFromCache(query) {
-    const q = normalize(query);
+    const q = cacheKey(query);
     if (cache.has(q)) return cache.get(q); // exact answer
 
     // Longest cached prefix of what is typed now.
@@ -98,19 +100,24 @@ export function initSearch(map) {
     }
     if (!best) return null;
 
+    const typed = normalize(query);
     const matches = cache.get(best).filter((place) =>
-      normalize(place.name).includes(q));
+      normalize(place.name).includes(typed));
     return matches.length > 0 ? matches : null;
   }
 
   // Lower case, no accents: "Křenovice" and "krenovice" match.
+  // Cache keys also carry the language, because the API answers
+  // with place types in that language ("Street" / "Ulice").
   function normalize(text) {
     return text.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
   }
+  const cacheKey = (text) => `${getLang()}:${normalize(text)}`;
 
   // Replace the current suggestions and redraw the list.
+  // Matching microzones always come first.
   function show(found) {
-    results = found;
+    results = [...localSearch(input.value.trim()), ...found];
     active = -1;
     render();
   }
@@ -126,7 +133,7 @@ export function initSearch(map) {
     list.innerHTML = '';
 
     if (results.length === 0) {
-      showMessage('No places found in Olomouc.');
+      showMessage(t('search.none'));
       return;
     }
 
@@ -187,6 +194,9 @@ export function initSearch(map) {
     } else {
       map.flyTo({ center: place.center, zoom: 17 });
     }
+
+    // Microzones also open the detail card of their top hex.
+    place.onPick?.();
   }
 
   // ---------- Keyboard ----------

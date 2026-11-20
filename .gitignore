@@ -5,3 +5,7 @@
 # Private API keys (never commit these)
 .env
 js/env.js
+
+# Language pages, made by the deploy workflow (never commit)
+/en/
+/cz/

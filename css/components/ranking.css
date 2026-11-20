@@ -21,9 +21,10 @@
   gap: 8px;
 }
 
-/* One row: name + code on the left, score + bar on the right. */
+/* One row: microzone name on the left, score + bar on the right. */
 .zone-row {
   display: flex;
+  gap: 8px;
   justify-content: space-between;
   align-items: center;
   width: 100%;
@@ -38,17 +39,20 @@
 }
 
 .zone-row__name {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  min-width: 0;
   font-weight: var(--weight-medium);
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.zone-row__code {
-  font-size: var(--caption-3-size);
-  font-weight: var(--weight-regular);
-  color: var(--grey-600);
+.zone-row__score {
+  flex-shrink: 0;
+}
+
+.ranking-empty {
+  padding: 4px 8px;
+  color: var(--grey-700);
 }
 
 .zone-row__score {
@@ -70,4 +74,13 @@
     var(--green-500) calc(var(--value) * 1%),
     var(--grey-100) calc(var(--value) * 1%)
   );
+}
+
+/* Footer note at the bottom of the sidebar. */
+.sidebar-note {
+  flex-shrink: 0;
+  padding: 0 4px 4px;
+  font-size: var(--caption-3-size);
+  line-height: var(--caption-3-line);
+  color: var(--grey-700);
 }

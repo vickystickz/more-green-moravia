@@ -6,6 +6,7 @@
 // =============================================================
 
 import { SEARCH_CONFIG } from '../config.js';
+import { getLang } from '../ui/i18n.js';
 
 // The key is loaded from js/env.js. We import it dynamically, so
 // if that file is missing the app still works, just without search.
@@ -45,7 +46,7 @@ export async function searchPlaces(query, signal) {
   const params = new URLSearchParams({
     apikey: apiKey,
     query,
-    lang: SEARCH_CONFIG.lang,
+    lang: getLang(), // place types in the page language ("Street" / "Ulice")
     // Ask for extra results, because some are filtered out below.
     limit: String(SEARCH_CONFIG.limit * 2),
     preferBBox: SEARCH_CONFIG.bbox.join(','),

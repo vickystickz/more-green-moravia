@@ -4,7 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>More Green, Moravia</title>
-  <meta name="description" content="Interactive map showing where nature-based solutions will do the most good in Olomouc.">
+  <!-- Same page in each language (en/ and cz/ are made by the
+       deploy workflow). Tells search engines about both versions. -->
+  <link rel="alternate" hreflang="en" href="en/">
+  <link rel="alternate" hreflang="cs" href="cz/">
+  <link rel="alternate" hreflang="x-default" href="./">
+
+  <meta name="description" content="Interactive map showing where green improvements in Olomouc would best reduce heat stress." data-i18n-attr="content:meta.description">
 
   <!-- Geist font (used throughout the design) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -28,6 +34,7 @@
   <link rel="stylesheet" href="css/components/presets.css">
   <link rel="stylesheet" href="css/components/sliders.css">
   <link rel="stylesheet" href="css/components/ranking.css">
+  <link rel="stylesheet" href="css/components/detail.css">
 </head>
 <body>
   <!-- =========================================================
@@ -35,21 +42,22 @@
        ========================================================= -->
   <div class="loader" id="loader" role="status" aria-live="polite">
     <img class="loader__logo" src="assets/img/logo.png" alt="More Green, Moravia">
-    <p class="loader__message">Loading map…</p>
+    <p class="loader__message" data-i18n="loader.loading">Loading map…</p>
   </div>
 
   <div class="app">
     <!-- =======================================================
          SIDEBAR (left column, 298px)
          ======================================================= -->
-    <aside class="sidebar" aria-label="Controls">
+    <aside class="sidebar" aria-label="Controls" data-i18n-attr="aria-label:sidebar.label">
 
       <!-- Header card: logo + language switch -->
       <header class="card app-header">
         <img class="app-header__logo" src="assets/img/logo.png" alt="More Green, Moravia">
-        <button class="lang-switch" id="lang-switch" type="button" aria-label="Change language">
+        <button class="lang-switch" id="lang-switch" type="button" aria-label="Switch to Czech"
+                data-i18n-attr="aria-label:lang.switch,title:lang.switch">
           <img src="assets/icons/language.svg" width="16" height="16" alt="">
-          <span>EN</span>
+          <span data-i18n="lang.code">EN</span>
         </button>
       </header>
 
@@ -60,47 +68,64 @@
         <section class="card-group__section intro" aria-labelledby="intro-title">
           <div class="section-head">
             <div class="section-head__row">
-              <h2 class="section-title" id="intro-title">Your city, your plan, your priorities</h2>
-              <button class="icon-btn" type="button" aria-label="About this tool">
+              <h2 class="section-title" id="intro-title" data-i18n="intro.title">Your city, your plan, your priorities</h2>
+              <button class="icon-btn" type="button" aria-label="About this tool" data-i18n-attr="aria-label:intro.about">
                 <img src="assets/icons/info-circle.svg" width="14" height="14" alt="">
               </button>
             </div>
-            <p class="section-desc">Choose what matters most to your city. We'll help you find the areas where green improvements can make the biggest difference.</p>
+            <p class="section-desc" data-i18n="intro.text">Choose what matters most. We'll show where green improvements in Olomouc would best reduce heat stress for the people most affected.</p>
           </div>
         </section>
 
-        <!-- Presets: 6 tiles, one selected at a time -->
-        <section class="card-group__section presets" aria-label="Presets">
+        <!-- Presets: one selected at a time. Green roofs needs
+             building energy data, so it is disabled for now. -->
+        <section class="card-group__section presets" aria-label="Presets" data-i18n-attr="aria-label:presets.label">
           <div class="preset-grid" id="preset-grid">
             <button class="preset" type="button" data-preset="balance" aria-pressed="true">
               <span class="preset__icon"><img src="assets/icons/preset-balance.svg" width="16" height="16" alt=""></span>
-              Balance
+              <span class="preset__text">
+                <span data-i18n="preset.balance.title">Balance</span>
+              </span>
             </button>
             <button class="preset" type="button" data-preset="cool-street" aria-pressed="false">
               <span class="preset__icon"><img src="assets/icons/preset-cool-street.svg" width="16" height="16" alt=""></span>
-              Cool street
+              <span class="preset__text">
+                <span data-i18n="preset.cool-street.title">Cool streets</span>
+              </span>
             </button>
-            <button class="preset" type="button" data-preset="sponge-city" aria-pressed="false">
-              <span class="preset__icon"><img src="assets/icons/preset-sponge-city.svg" width="16" height="16" alt=""></span>
-              Sponge city
-            </button>
-            <button class="preset" type="button" data-preset="green-roofs" aria-pressed="false">
-              <span class="preset__icon"><img src="assets/icons/preset-green-roofs.svg" width="16" height="16" alt=""></span>
-              Green roofs
+            <button class="preset" type="button" data-preset="protect-vulnerable" aria-pressed="false">
+              <span class="preset__icon"><img src="assets/icons/factor-vulnerable.svg" width="16" height="16" alt=""></span>
+              <span class="preset__text">
+                <span data-i18n="preset.protect-vulnerable.title">Protect vulnerable</span>
+              </span>
             </button>
             <button class="preset" type="button" data-preset="pocket-parks" aria-pressed="false">
               <span class="preset__icon"><img src="assets/icons/preset-pocket-parks.svg" width="16" height="16" alt=""></span>
-              Pocket parks
+              <span class="preset__text">
+                <span data-i18n="preset.pocket-parks.title">Pocket parks</span>
+              </span>
             </button>
             <button class="preset" type="button" data-preset="quick-wins" aria-pressed="false">
               <span class="preset__icon"><img src="assets/icons/preset-quick-wins.svg" width="16" height="16" alt=""></span>
-              Quick wins
+              <span class="preset__text">
+                <span data-i18n="preset.quick-wins.title">Quick wins</span>
+              </span>
+            </button>
+            <button class="preset" type="button" data-preset="green-roofs" aria-pressed="false" aria-disabled="true">
+              <span class="preset__icon"><img src="assets/icons/preset-green-roofs.svg" width="16" height="16" alt=""></span>
+              <span class="preset__text">
+                <span data-i18n="preset.green-roofs.title">Green roofs</span>
+                <span class="preset__badge" data-i18n="preset.badge">Limited data</span>
+              </span>
             </button>
           </div>
 
+          <!-- Hover / focus tooltip for the tiles (filled by preset-tooltip.js) -->
+          <div class="preset-tooltip" id="preset-tooltip" role="tooltip" hidden></div>
+
           <!-- Explains the selected preset (text updated by presets.js) -->
           <p class="preset-note" id="preset-note" aria-live="polite">
-            <strong>Balance:</strong> Not sure yet? Each factors weighted equally.
+            <strong>Balance:</strong> Not sure yet? Every factor counts equally.
           </p>
         </section>
 
@@ -108,98 +133,82 @@
         <section class="card-group__section weights" aria-labelledby="weights-title">
           <div class="section-head">
             <div class="section-head__row">
-              <h2 class="section-title" id="weights-title">Fine-tune what matters</h2>
+              <h2 class="section-title" id="weights-title" data-i18n="weights.title">Fine-tune what matters</h2>
               <button class="reset-btn" id="reset-weights" type="button">
                 <img src="assets/icons/reload.svg" width="14" height="14" alt="">
-                Reset
+                <span data-i18n="weights.reset">Reset</span>
               </button>
             </div>
-            <p class="section-desc">Set how important each factor is. Higher weights give that factor more influence on the final score.</p>
+            <p class="section-desc" data-i18n="weights.desc">Set how important each factor is. Higher weights give that factor more influence on the final score.</p>
           </div>
 
           <div class="weight-list">
             <div class="weight">
               <div class="weight__row">
-                <label class="weight__label" for="w-heat">
+                <label class="weight__label" for="w-he">
                   <img src="assets/icons/factor-heat.svg" width="18" height="18" alt="">
-                  Heat
-                  <img src="assets/icons/info-circle.svg" width="14" height="14" alt="">
+                  <span data-i18n="factor.he">Heat &amp; people exposed</span>
+                  <img class="weight__info" data-i18n-attr="title:factor.he.info" src="assets/icons/info-circle.svg" width="14" height="14"
+                       alt="" title="Hot areas where many people live or spend the day.">
                 </label>
-                <output for="w-heat" data-value-for="heat">26%</output>
+                <output for="w-he" data-value-for="he">33%</output>
               </div>
-              <input class="range" id="w-heat" type="range" min="0" max="100" value="50" data-factor="heat">
+              <input class="range" id="w-he" type="range" min="10" max="80" step="1" value="33" data-factor="he">
             </div>
 
             <div class="weight">
               <div class="weight__row">
-                <label class="weight__label" for="w-flood">
-                  <img src="assets/icons/factor-flood.svg" width="18" height="18" alt="">
-                  Flood risk
-                  <img src="assets/icons/info-circle.svg" width="14" height="14" alt="">
-                </label>
-                <output for="w-flood" data-value-for="flood">26%</output>
-              </div>
-              <input class="range" id="w-flood" type="range" min="0" max="100" value="50" data-factor="flood">
-            </div>
-
-            <div class="weight">
-              <div class="weight__row">
-                <label class="weight__label" for="w-vulnerable">
+                <label class="weight__label" for="w-v">
                   <img src="assets/icons/factor-vulnerable.svg" width="18" height="18" alt="">
-                  Vulnerable groups
-                  <img src="assets/icons/info-circle.svg" width="14" height="14" alt="">
+                  <span data-i18n="factor.v">Vulnerable groups</span>
+                  <img class="weight__info" data-i18n-attr="title:factor.v.info" src="assets/icons/info-circle.svg" width="14" height="14"
+                       alt="" title="Older residents (65+, especially 75+), young children, schools, kindergartens and doctors.">
                 </label>
-                <output for="w-vulnerable" data-value-for="vulnerable">26%</output>
+                <output for="w-v" data-value-for="v">33%</output>
               </div>
-              <input class="range" id="w-vulnerable" type="range" min="0" max="100" value="50" data-factor="vulnerable">
+              <input class="range" id="w-v" type="range" min="10" max="80" step="1" value="33" data-factor="v">
             </div>
 
             <div class="weight">
               <div class="weight__row">
-                <label class="weight__label" for="w-green">
+                <label class="weight__label" for="w-gd">
                   <img src="assets/icons/factor-green-deficit.svg" width="18" height="18" alt="">
-                  Green deficit
-                  <img src="assets/icons/info-circle.svg" width="14" height="14" alt="">
+                  <span data-i18n="factor.gd">Lack of green</span>
+                  <img class="weight__info" data-i18n-attr="title:factor.gd.info" src="assets/icons/info-circle.svg" width="14" height="14"
+                       alt="" title="Little tree cover or green space, or a long walk to the nearest park.">
                 </label>
-                <output for="w-green" data-value-for="greenDeficit">26%</output>
+                <output for="w-gd" data-value-for="gd">33%</output>
               </div>
-              <input class="range" id="w-green" type="range" min="0" max="100" value="50" data-factor="greenDeficit">
+              <input class="range" id="w-gd" type="range" min="10" max="80" step="1" value="33" data-factor="gd">
             </div>
           </div>
+          <p class="weights-note" data-i18n="weights.note">Weights always add up to 100%.</p>
+
+          <!-- Feasibility: need → priority (need × space to build) -->
+          <label class="switch">
+            <input type="checkbox" role="switch" id="only-buildable">
+            <span class="switch__track" aria-hidden="true"></span>
+            <span class="switch__text">
+              <span class="switch__label" data-i18n="toggle.label">Only show places we can build</span>
+              <span class="switch__help" data-i18n="toggle.help">Limits results to areas with brownfields, under-used car parks, cycle routes or suitable streets.</span>
+            </span>
+          </label>
         </section>
       </div>
 
-      <!-- Ranking card: placeholder rows from the design.
-           ranking.js will replace them with real microzone data. -->
+      <!-- Ranking card: filled by ranking.js from the GI index data -->
       <section class="card ranking" aria-labelledby="ranking-title">
         <div class="section-head">
-          <h2 class="section-title" id="ranking-title">Where to act first</h2>
-          <p class="section-desc">Explore the areas with the highest potential for green improvements.</p>
+          <h2 class="section-title" id="ranking-title" data-i18n="ranking.title">Where to act first</h2>
+          <p class="section-desc" data-i18n="ranking.desc">Areas with the highest need for green improvements, based on your priorities.</p>
         </div>
 
         <ol class="ranking-list" id="ranking-list">
-          <li><button class="zone-row" type="button">
-            <span class="zone-row__name">Hodolany <span class="zone-row__code">MGM-012</span></span>
-            <span class="zone-row__score">26% <span class="score-bar" style="--value: 26"></span></span>
-          </button></li>
-          <li><button class="zone-row" type="button">
-            <span class="zone-row__name">Lazanky <span class="zone-row__code">MGM-034</span></span>
-            <span class="zone-row__score">33% <span class="score-bar" style="--value: 33"></span></span>
-          </button></li>
-          <li><button class="zone-row" type="button" aria-current="true">
-            <span class="zone-row__name">Křenovice <span class="zone-row__code">MGM-045</span></span>
-            <span class="zone-row__score">18% <span class="score-bar" style="--value: 18"></span></span>
-          </button></li>
-          <li><button class="zone-row" type="button">
-            <span class="zone-row__name">Černovice <span class="zone-row__code">MGM-023</span></span>
-            <span class="zone-row__score">42% <span class="score-bar" style="--value: 42"></span></span>
-          </button></li>
-          <li><button class="zone-row" type="button">
-            <span class="zone-row__name">Slavonín <span class="zone-row__code">MGM-056</span></span>
-            <span class="zone-row__score">29% <span class="score-bar" style="--value: 29"></span></span>
-          </button></li>
+          <li class="ranking-empty" data-i18n="ranking.loading">Loading data…</li>
         </ol>
       </section>
+
+      <p class="sidebar-note" data-i18n="footer.note">Provisional results. Scores combine heatwave temperature, population, vulnerable groups and green space on a 200 m hexagon grid (H3). This version focuses on heat stress. Use as a guide, not a final decision.</p>
     </aside>
 
     <!-- =======================================================
@@ -207,13 +216,14 @@
          ======================================================= -->
     <main class="map-frame">
       <!-- Map container: MapLibre draws the map inside this element. -->
-      <div class="map" id="map" aria-label="Map of Olomouc microzones"></div>
+      <div class="map" id="map" aria-label="Map of green infrastructure need in Olomouc" data-i18n-attr="aria-label:map.label"></div>
 
       <!-- Search bar (top left) -->
       <form class="map-overlay map-search" id="map-search" role="search">
         <img src="assets/icons/search.svg" width="16" height="16" alt="">
-        <label class="visually-hidden" for="search-input">Search for an area or neighbourhood</label>
-        <input id="search-input" type="search" placeholder="Search for an area or neighbourhood"
+        <label class="visually-hidden" for="search-input" data-i18n="search.placeholder">Search a neighbourhood or street in Olomouc</label>
+        <input id="search-input" type="search" placeholder="Search a neighbourhood or street in Olomouc"
+               data-i18n-attr="placeholder:search.placeholder"
                autocomplete="off" role="combobox" aria-autocomplete="list"
                aria-expanded="false" aria-controls="search-results">
 
@@ -227,65 +237,124 @@
                 aria-expanded="true" aria-controls="layers-body">
           <span class="map-layers__title">
             <img src="assets/icons/layers.svg" width="16" height="16" alt="">
-            Map layers
+            <span data-i18n="layers.title">Map layers</span>
           </span>
           <img class="map-layers__arrow" src="assets/icons/arrow-drop-down.svg" width="16" height="16" alt="">
         </button>
 
         <div class="map-layers__body" id="layers-body">
+          <!-- Hexagon views: one eye button each (added by layer-panel.js).
+               Only one view can be shown at a time; clicking the eye of
+               the visible view hides the hexagons. -->
+          <div class="layer-group" role="group" aria-labelledby="layer-group-title">
+            <span class="layer-group__title" id="layer-group-title" data-i18n="layers.colourBy">Colour hexagons by</span>
+            <div class="layer-choice" id="layer-choice"></div>
+          </div>
+
+          <!-- Legend for the visible view -->
+          <div class="legend" id="legend">
+            <span class="legend__title" id="legend-title">Green infrastructure need</span>
+            <div class="legend__scale" id="legend-scale" aria-hidden="true"></div>
+            <div class="legend__numbers" aria-hidden="true">
+              <span data-i18n="legend.low">Low</span><span data-i18n="legend.medium">Medium</span><span data-i18n="legend.high">High</span>
+            </div>
+          </div>
+
+          <!-- Opacity of the hexagon colours -->
+          <div class="opacity-control">
+            <div class="opacity-control__row">
+              <label for="hex-opacity" data-i18n="layers.opacity">Opacity</label>
+              <output for="hex-opacity" id="hex-opacity-value">70%</output>
+            </div>
+            <input class="range" id="hex-opacity" type="range" min="0" max="100" step="5" value="70">
+          </div>
+
+          <!-- Microzone outlines: shown only if the boundary file exists -->
+          <div class="layer-row" id="boundary-row" hidden>
+            <span class="layer-row__icon layer-row__icon--dashed" aria-hidden="true"></span>
+            <span class="layer-row__name" data-i18n="layers.boundaries">Microzone boundaries</span>
+            <button class="eye-btn" type="button" data-layer="boundaries"
+                    aria-pressed="true" aria-label="Show or hide microzone boundaries"
+                    data-i18n-attr="aria-label:layers.boundaries">
+              <img src="assets/icons/eye.svg" width="12.6" height="12.6" alt="">
+            </button>
+          </div>
+
           <!-- Buildings layer -->
           <div class="layer-row">
             <span class="layer-row__icon">
               <img src="assets/icons/rectangle.svg" width="10" height="10" alt="">
             </span>
-            <span class="layer-row__name">Building</span>
+            <span class="layer-row__name" data-i18n="layers.buildings">Building</span>
             <button class="eye-btn" type="button" data-layer="buildings"
-                    aria-pressed="true" aria-label="Show or hide buildings">
+                    aria-pressed="true" aria-label="Show or hide buildings"
+                    data-i18n-attr="aria-label:layers.buildings">
               <img src="assets/icons/eye.svg" width="12.6" height="12.6" alt="">
             </button>
-          </div>
-
-          <!-- Suitability score layer + colour legend -->
-          <div class="legend">
-            <div class="layer-row">
-              <span class="layer-row__name">Suitability score</span>
-              <button class="eye-btn" type="button" data-layer="suitability"
-                      aria-pressed="true" aria-label="Show or hide suitability score">
-                <img src="assets/icons/eye.svg" width="12.6" height="12.6" alt="">
-              </button>
-            </div>
-            <div class="legend__scale" aria-hidden="true">
-              <span></span><span></span><span></span><span></span>
-            </div>
-            <div class="legend__numbers" aria-hidden="true">
-              <span>0</span><span>50</span><span>100</span>
-            </div>
           </div>
         </div>
       </div>
 
+      <!-- Detail card (top right): shown when a hexagon is clicked -->
+      <article class="map-overlay detail-card" id="detail-card" aria-labelledby="detail-title" hidden>
+        <header class="detail-card__head">
+          <div>
+            <h2 class="detail-card__title" id="detail-title"></h2>
+            <p class="detail-card__hex" id="detail-hex"></p>
+          </div>
+          <button class="detail-card__close" id="detail-close" type="button" aria-label="Close" data-i18n-attr="aria-label:detail.close">×</button>
+        </header>
+
+        <div class="detail-card__score">
+          <span class="detail-card__number" id="detail-score"></span>
+          <span class="detail-card__label" id="detail-label"></span>
+          <span class="detail-card__note" data-i18n="detail.note">Based on your selected priorities.</span>
+        </div>
+
+        <section class="detail-card__factors">
+          <h3 class="section-title" data-i18n="detail.factorsTitle">What made up the score</h3>
+          <p class="section-desc" data-i18n="detail.factorsDesc">How this area scores on each factor (0 = low need, 100 = high need)</p>
+          <ul class="factor-list" id="detail-factors"></ul>
+        </section>
+      </article>
+
       <!-- Ask AI + map buttons (bottom right) -->
       <div class="map-tools">
-        <button class="map-overlay ask-ai" id="ask-ai" type="button">
+        <!-- Ask AI panel: no backend yet, so it says "Coming soon".
+             Never put an AI API key in this front-end code. -->
+        <form class="ask-ai-panel" id="ask-ai-panel" hidden>
+          <label class="visually-hidden" for="ask-ai-input" data-i18n="askai.label">Ask about the map</label>
+          <input id="ask-ai-input" type="text" disabled
+                 placeholder="Ask about the map, e.g. 'Where are hot areas with many older residents?'"
+                 data-i18n-attr="placeholder:askai.placeholder">
+          <p class="ask-ai-panel__soon" data-i18n="askai.soon">Coming soon</p>
+        </form>
+
+        <button class="map-overlay ask-ai" id="ask-ai" type="button" aria-expanded="false" aria-controls="ask-ai-panel">
           <img src="assets/icons/sparkles.svg" width="18" height="18" alt="">
-          Ask AI
+          <span data-i18n="askai.button">Ask AI</span>
         </button>
 
         <div class="map-tools__buttons">
-          <button class="map-btn" id="btn-home" type="button" aria-label="Back to the whole city" title="Back to the whole city">
+          <button class="map-btn" id="btn-home" type="button" aria-label="Back to the whole city" title="Back to the whole city"
+                  data-i18n-attr="aria-label:btn.home,title:btn.home">
             <img src="assets/icons/home.svg" width="16" height="16" alt="">
           </button>
-          <button class="map-btn" id="btn-locate" type="button" aria-label="Show my location">
+          <button class="map-btn" id="btn-locate" type="button" aria-label="Show my location"
+                  data-i18n-attr="aria-label:btn.locate,title:btn.locate">
             <img src="assets/icons/my-location.svg" width="16" height="16" alt="">
           </button>
-          <button class="map-btn" id="btn-basemap" type="button" aria-label="Change basemap">
+          <button class="map-btn" id="btn-basemap" type="button" aria-label="Change basemap"
+                  data-i18n-attr="aria-label:btn.basemap,title:btn.basemap">
             <img src="assets/icons/map.svg" width="16" height="16" alt="">
           </button>
           <div class="zoom-group">
-            <button class="map-btn" id="btn-zoom-in" type="button" aria-label="Zoom in">
+            <button class="map-btn" id="btn-zoom-in" type="button" aria-label="Zoom in"
+                    data-i18n-attr="aria-label:btn.zoomIn,title:btn.zoomIn">
               <img src="assets/icons/zoom-in.svg" width="16" height="16" alt="">
             </button>
-            <button class="map-btn" id="btn-zoom-out" type="button" aria-label="Zoom out">
+            <button class="map-btn" id="btn-zoom-out" type="button" aria-label="Zoom out"
+                    data-i18n-attr="aria-label:btn.zoomOut,title:btn.zoomOut">
               <img src="assets/icons/zoom-out.svg" width="16" height="16" alt="">
             </button>
           </div>

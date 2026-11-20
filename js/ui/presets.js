@@ -1,70 +1,79 @@
 // =============================================================
 // ui/presets.js
-// Preset tiles: Balance, Cool street, Sponge city, Green roofs,
-// Pocket parks, Quick wins. Picking a preset moves the weight
-// sliders to that preset's values.
+// Preset tiles. A preset sets the three weights and the
+// "Only show places we can build" toggle in one click.
+// Green roofs needs building energy data, so it is shown but
+// disabled for now.
+//
+// The words (title, short text, tooltip explanation) are in
+// data/lang/*.json under preset.<id>.title / .text / .explain.
 // =============================================================
 
-// Slider values (0–100) and the explanation for each preset.
-// TODO: agree the real values with the team; these are a start.
-const PRESETS = {
-  'balance': {
-    title: 'Balance',
-    text: 'Not sure yet? Each factors weighted equally.',
-    values: { heat: 50, flood: 50, vulnerable: 50, greenDeficit: 50 },
-  },
-  'cool-street': {
-    title: 'Cool street',
-    text: 'Focus on the hottest streets first.',
-    values: { heat: 90, flood: 20, vulnerable: 60, greenDeficit: 40 },
-  },
-  'sponge-city': {
-    title: 'Sponge city',
-    text: 'Focus on areas where rain water causes problems.',
-    values: { heat: 20, flood: 90, vulnerable: 40, greenDeficit: 40 },
-  },
-  'green-roofs': {
-    title: 'Green roofs',
-    text: 'Dense built-up areas with little ground space for greenery.',
-    values: { heat: 60, flood: 50, vulnerable: 30, greenDeficit: 80 },
-  },
-  'pocket-parks': {
-    title: 'Pocket parks',
-    text: 'Small green spaces where people lack nearby parks.',
-    values: { heat: 40, flood: 20, vulnerable: 70, greenDeficit: 90 },
-  },
-  'quick-wins': {
-    title: 'Quick wins',
-    text: 'High impact areas that are easy to start with.',
-    values: { heat: 60, flood: 60, vulnerable: 60, greenDeficit: 60 },
-  },
+import { t, onLangChange } from './i18n.js';
+
+const third = 1 / 3;
+const BALANCE = { he: third, v: third, gd: third };
+
+export const PRESETS = {
+  'balance': { weights: BALANCE, onlyBuildable: false },
+  'cool-street': { weights: { he: 0.5, v: 0.2, gd: 0.3 }, onlyBuildable: false },
+  'protect-vulnerable': { weights: { he: 0.3, v: 0.5, gd: 0.2 }, onlyBuildable: false },
+  'pocket-parks': { weights: { he: 0.2, v: 0.4, gd: 0.4 }, onlyBuildable: false },
+  'quick-wins': { weights: BALANCE, onlyBuildable: true },
 };
 
+// Shown but not clickable yet (tooltip text only).
+export const COMING_SOON = ['green-roofs'];
+
 /**
- * Wire up the preset tiles.
+ * Wire up the preset tiles and the Reset button.
  *
- * @param {{ setValues: Function }} sliders - returned by initSliders()
+ * @param {(preset: { weights: Object, onlyBuildable: boolean }) => void} apply
+ *   sets the weights and the toggle, then redraws
+ * @returns {{ markCustom: () => void }} call when the user moves a
+ *   slider by hand, so no preset looks selected
  */
-export function initPresets(sliders) {
+export function initPresets(apply) {
   const tiles = [...document.querySelectorAll('.preset[data-preset]')];
   const note = document.getElementById('preset-note');
+  let current = 'balance'; // preset id, or 'custom'
+
+  function drawNote() {
+    note.innerHTML = '';
+    const strong = document.createElement('strong');
+    strong.textContent = `${t(`preset.${current}.title`)}:`;
+    note.append(strong, ` ${t(`preset.${current}.text`)}`);
+  }
+
+  function select(id) {
+    const preset = PRESETS[id];
+    if (!preset) return;
+    current = id;
+    tiles.forEach((tile) => tile.setAttribute('aria-pressed', String(tile.dataset.preset === id)));
+    drawNote();
+    apply(preset);
+  }
 
   tiles.forEach((tile) => {
     tile.addEventListener('click', () => {
-      const preset = PRESETS[tile.dataset.preset];
-      if (!preset) return;
-
-      // Only the clicked tile is selected.
-      tiles.forEach((t) => t.setAttribute('aria-pressed', String(t === tile)));
-
-      // Update the explanation box (title in bold, then the text).
-      note.innerHTML = '';
-      const strong = document.createElement('strong');
-      strong.textContent = `${preset.title}:`;
-      note.append(strong, ` ${preset.text}`);
-
-      // Move the sliders to this preset's values.
-      sliders.setValues(preset.values);
+      // "Limited data" presets are visible but do nothing yet.
+      if (tile.getAttribute('aria-disabled') === 'true') return;
+      select(tile.dataset.preset);
     });
   });
+
+  // Reset = Balance weights, toggle off.
+  document.getElementById('reset-weights')
+    .addEventListener('click', () => select('balance'));
+
+  drawNote();
+  onLangChange(drawNote);
+
+  return {
+    markCustom() {
+      current = 'custom';
+      tiles.forEach((tile) => tile.setAttribute('aria-pressed', 'false'));
+      drawNote();
+    },
+  };
 }

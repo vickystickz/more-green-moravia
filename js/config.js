@@ -34,7 +34,6 @@ export const MAP_CONFIG = {
 // -------------------------------------------------------------
 export const SEARCH_CONFIG = {
   url: 'https://api.mapy.com/v1/suggest',
-  lang: 'cs',     // Czech names (Křenovice, not Krenovice)
   limit: 6,       // max results in the dropdown
   minChars: 1,    // start searching from the first letter
   // Debounce: wait this long after the last key press before
@@ -57,13 +56,58 @@ export const SEARCH_CONFIG = {
 };
 
 // -------------------------------------------------------------
-// Data files
+// Data files (relative paths, so they work on GitHub Pages)
+// Both files are exported by the GI index notebook. Put them in
+// the data/ folder with exactly these names.
 // -------------------------------------------------------------
 export const DATA_PATHS = {
-  microzones: 'data/processed/microzones.geojson',
+  hexes: 'data/olomouc_gi_h3_r9.geojson',
+  metadata: 'data/olomouc_gi_h3_r9_metadata.json',
+  // Optional microzone outlines. If this file does not exist, the
+  // "Microzone boundaries" checkbox is not shown.
+  boundaries: 'data/olomouc_microzones.geojson',
 };
 
 // -------------------------------------------------------------
-// Scoring factors (one weight slider each)
+// Scoring (INFORM-style, must match the notebook)
 // -------------------------------------------------------------
-export const FACTORS = ['heat', 'vulnerable', 'greenDeficit'];
+
+// The three dimensions that have a weight slider.
+//   he = Heat & people exposed, v = Vulnerable groups,
+//   gd = Lack of green (green deficit)
+export const FACTORS = ['he', 'v', 'gd'];
+
+// Used when metadata.json is missing or lacks these values.
+export const SCORE_DEFAULTS = {
+  a: 0.5,         // heat_hazard_share_a: share of heat hazard vs exposure
+  dayWeight: 0.7, // day_weight: day vs night exposure
+};
+
+export const MIN_WEIGHT = 0.1; // 10%: a 0 weight would drop out of the product
+
+// Classified colours for every map layer: 5 equal classes of
+// 20 points (0–20, 20–40, 40–60, 60–80, 80–100). Light = low need,
+// dark red = high need. The map legend is built from this list,
+// so the legend and the map always match.
+export const SCORE_CLASSES = [
+  { from: 0.0, color: '#f7efd9' },
+  { from: 0.2, color: '#f6cf7f' },
+  { from: 0.4, color: '#eb9550' },
+  { from: 0.6, color: '#cf5734' },
+  { from: 0.8, color: '#962320' },
+];
+
+// Starting opacity of the hexagon colours (the user can change it
+// with the slider in the Map layers panel).
+export const HEX_OPACITY = 0.7;
+
+// Layers the user can colour the map by (one at a time).
+// `key` is the value computed for every hex in scoring/score.js;
+// `label` is the text key in data/lang/*.json.
+export const MAP_LAYERS = [
+  { id: 'score', key: 'score', label: 'layers.score' },
+  { id: 'he', key: 'he', label: 'factor.he' },
+  { id: 'v', key: 'v', label: 'factor.v' },
+  { id: 'gd', key: 'gd', label: 'factor.gd' },
+  { id: 'feas', key: 'feas', label: 'factor.feas' },
+];

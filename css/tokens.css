@@ -48,15 +48,6 @@
   --highlight-grey-10: #F0F0F1; /* divider between zoom buttons */
 
   /* -----------------------------------------------------------
-     Suitability score scale (map legend + hexagon colours)
-     Low → high suitability.
-     ----------------------------------------------------------- */
-  --score-1: var(--red-400);
-  --score-2: var(--yellow-500);
-  --score-3: #80C46E;          /* not a Figma variable yet */
-  --score-4: var(--green-600);
-
-  /* -----------------------------------------------------------
      Typography (Figma: Typeface/Caption/…)
      Geist is loaded from Google Fonts in index.html.
      ----------------------------------------------------------- */

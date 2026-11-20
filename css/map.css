@@ -179,7 +179,45 @@
   opacity: 0.35;
 }
 
-/* Suitability score legend: label row, 4 colour bars, numbers. */
+/* Hexagon views: what the hexagons are coloured by. */
+.layer-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.layer-group__title {
+  font-size: var(--caption-3-size);
+  line-height: var(--caption-3-line);
+  color: var(--grey-700);
+}
+
+.layer-choice {
+  display: flex;
+  flex-direction: column;
+}
+
+/* The visible view is darker than the others. */
+.layer-choice .layer-row:has(.eye-btn[aria-pressed="true"]) {
+  color: var(--grey-900);
+}
+
+.layer-row[hidden],
+.legend[hidden] {
+  display: none;
+}
+
+/* Dashed square in front of "Microzone boundaries". */
+.layer-row__icon--dashed {
+  background: none;
+  border: 1.5px dashed var(--grey-900);
+  border-radius: 3px;
+  width: 12px;
+  height: 12px;
+  margin: 0 2px;
+}
+
+/* Legend: title, colour ramp, Low / High. */
 .legend {
   display: flex;
   flex-direction: column;
@@ -190,30 +228,60 @@
   padding: 0;
 }
 
+.legend__title {
+  font-weight: var(--weight-medium);
+  color: var(--grey-900);
+}
+
+/* Classified legend: one box per class (added by layer-panel.js).
+   Drawn like the hexagons on the map: white outlines between the
+   classes and the same 0.7 opacity as the hexagon fill. */
 .legend__scale {
   display: flex;
-  gap: 4px;
+  gap: 2px; /* white gap = the white hexagon outline */
   margin-top: 2px;
+  background: var(--surface-base);
 }
 
 .legend__scale span {
   flex: 1;
-  height: 6px;
-  border-radius: 1px;
+  height: 12px;
+  /* Same as the hexagon fill; updated by the Opacity slider. */
+  opacity: var(--hex-opacity, 0.7);
 }
 
-.legend__scale span:nth-child(1) { background: var(--score-1); }
-.legend__scale span:nth-child(2) { background: var(--score-2); }
-.legend__scale span:nth-child(3) { background: var(--score-3); }
-.legend__scale span:nth-child(4) { background: var(--score-4); }
+/* Opacity slider for the hexagon colours. */
+.opacity-control {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
 
-.legend__numbers {
+.opacity-control[hidden] {
+  display: none;
+}
+
+.opacity-control__row {
   display: flex;
   justify-content: space-between;
   font-size: var(--caption-3-size);
   line-height: var(--caption-3-line);
   font-weight: var(--weight-medium);
+  color: var(--display-subtle-01);
+}
+
+.legend__numbers {
+  /* Low (left) · Medium (centred under the middle box) · High (right) */
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  font-size: var(--caption-3-size);
+  line-height: var(--caption-3-line);
+  font-weight: var(--weight-medium);
   color: var(--display-subtle-02);
+}
+
+.legend__numbers span:last-child {
+  text-align: right;
 }
 
 /* ---------- Right-hand tools (bottom right) ----------
@@ -244,6 +312,37 @@
   padding: 4px 8px;
   border-radius: var(--radius-tile);
   font-weight: var(--weight-medium);
+}
+
+/* Ask AI panel (opens above the button). */
+.ask-ai-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 280px;
+  padding: 8px;
+  border-radius: var(--radius-tile);
+  background: var(--surface-base);
+  box-shadow: 0 4px 12px rgba(40, 42, 46, 0.12);
+}
+
+.ask-ai-panel[hidden] {
+  display: none;
+}
+
+.ask-ai-panel input {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid var(--border-03);
+  border-radius: var(--radius-row);
+  background: var(--grey-50);
+  font-size: var(--body-sm-size);
+}
+
+.ask-ai-panel__soon {
+  font-size: var(--body-sm-size);
+  line-height: var(--body-sm-line);
+  color: var(--grey-700);
 }
 
 /* Small square white map button (24 × 24). */
