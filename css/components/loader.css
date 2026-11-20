@@ -18,6 +18,35 @@
   animation: loader-pulse 1.6s ease-in-out infinite;
 }
 
+/* "Loading map…" with a horizontal loading bar underneath. */
+.loader__status {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Horizontal bar: light green track, a dark green segment slides
+   across it from left to right, again and again. */
+.loader__bar {
+  position: relative;
+  width: min(200px, 60vw);
+  height: 4px;
+  overflow: hidden;
+  border-radius: 4px;
+  background: var(--green-100);
+}
+
+.loader__bar::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 40%;
+  border-radius: inherit;
+  background: var(--green-500);
+  animation: loader-slide 1.2s ease-in-out infinite;
+}
+
 .loader__message {
   margin: 0;
   font-family: var(--font-family);
@@ -35,11 +64,32 @@
   animation: none;
 }
 
+/* Loading failed: no bar, only the error message. */
+.loader.is-error .loader__bar {
+  display: none;
+}
+
 @keyframes loader-pulse {
   0%, 100% { opacity: 1; transform: scale(1); }
   50%      { opacity: 0.7; transform: scale(0.97); }
 }
 
+@keyframes loader-slide {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(250%); } /* 40% wide → fully past the end */
+}
+
+@keyframes loader-fade {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.4; }
+}
+
+/* Less motion: no logo pulse; the bar fades slowly instead of
+   sliding, so there is still a sign that something is happening. */
 @media (prefers-reduced-motion: reduce) {
   .loader__logo { animation: none; }
+  .loader__bar::before {
+    width: 100%;
+    animation: loader-fade 1.6s ease-in-out infinite;
+  }
 }
