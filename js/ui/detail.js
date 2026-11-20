@@ -41,15 +41,15 @@ function rawVulnerable(p) {
   ]);
 }
 
-// Lack of green: tree cover, accessible green (Urban Atlas 2021),
-// distance to the nearest park or forest, and sealed ground when
-// the file has it (raw_sealing is optional).
+// Lack of green: tree cover, sealed ground (Copernicus
+// Imperviousness), accessible green (Urban Atlas 2021) and distance
+// to the nearest park or forest. Missing parts are left out.
 function rawGreen(p) {
   return rawLine([
     isNum(p.raw_tree_cover) && t('raw.tree', { v: percent(Math.round(p.raw_tree_cover)) }),
+    isNum(p.raw_sealing) && t('raw.sealing', { v: pct(p.raw_sealing) }),
     isNum(p.raw_green_share) && t('raw.greenShare', { v: pct(p.raw_green_share) }),
     isNum(p.raw_dist_green) && t('raw.distGreen', { v: num(p.raw_dist_green) }),
-    isNum(p.raw_sealing) && t('raw.sealing', { v: pct(p.raw_sealing) }),
   ]);
 }
 

@@ -62,8 +62,8 @@ export const SEARCH_CONFIG = {
 // -------------------------------------------------------------
 export const DATA_PATHS = {
   // ?v=… busts the browser/CDN cache: bump it after every new export.
-  hexes: 'data/olomouc_gi_h3_r9.geojson?v=3',
-  metadata: 'data/olomouc_gi_h3_r9_metadata.json?v=3',
+  hexes: 'data/olomouc_gi_h3_r9.geojson?v=4',
+  metadata: 'data/olomouc_gi_h3_r9_metadata.json?v=4',
   // Optional microzone outlines. If this file does not exist, the
   // "Microzone boundaries" checkbox is not shown.
   boundaries: 'data/olomouc_microzones.geojson',
@@ -104,12 +104,15 @@ export const HEX_OPACITY = 0.7;
 
 // Layers the user can colour the map by (one at a time).
 // `key` is the feature-state value set in map/layers.js;
-// `label` is the text key in data/lang/*.json.
+// `label` is the text key in data/lang/*.json;
+// `legend` (optional) = text keys for the left / middle / right
+// legend labels (default: Low / Medium / High).
 export const MAP_LAYERS = [
   { id: 'score', key: 'score', label: 'layers.score' },
   { id: 'he', key: 'he', label: 'factor.he' },
   { id: 'night', key: 'night', label: 'layers.night' }, // mu_heatwave_tmin
   { id: 'v', key: 'v', label: 'factor.v' },
   { id: 'gd', key: 'gd', label: 'factor.gd' },
+  { id: 'sealing', key: 'sealing', label: 'layers.sealing', legend: ['legend.zero', null, 'legend.full'] }, // raw_sealing 0–1
   { id: 'feas', key: 'feas', label: 'factor.feas' },
 ];

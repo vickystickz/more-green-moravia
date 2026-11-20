@@ -1,5 +1,5 @@
 {
-  "created": "2026-11-20T09:47:58",
+  "created": "2026-11-20T12:12:56",
   "h3_resolution": 9,
   "hex_count": 500,
   "indicators": {
@@ -169,6 +169,20 @@
       "params_resolved": {
         "low": 9.0,
         "high": 50.0
+      }
+    },
+    "sealing": {
+      "component": "green_supply",
+      "function": "linear_increasing",
+      "log": false,
+      "weight": 0.2,
+      "params_spec": {
+        "low": 0.3,
+        "high": 0.8
+      },
+      "params_resolved": {
+        "low": 0.3,
+        "high": 0.8
       }
     },
     "dist_green": {
@@ -472,7 +486,7 @@
       "band": 1
     },
     "imperviousness_raster": {
-      "path": null,
+      "path": "/content/drive/MyDrive/hackathon-upol/data/olumouc2024_imperviousness_nodata.tif",
       "band": 1
     },
     "roads": {

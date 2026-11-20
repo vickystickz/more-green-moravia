@@ -24,6 +24,7 @@ import { paramsFromMetadata, dimensions, shownScore, selfTest } from './scoring/
 import { initSliders, toPercents } from './ui/sliders.js';
 import { initPresets } from './ui/presets.js';
 import { initPresetTooltip } from './ui/preset-tooltip.js';
+import { initInfoTooltip } from './ui/info-tooltip.js';
 import { renderRanking } from './ui/ranking.js';
 import { initDetail, renderDetail } from './ui/detail.js';
 import { initLayerPanel } from './ui/layer-panel.js';
@@ -146,6 +147,7 @@ async function init() {
   });
 
   initPresetTooltip();
+  initInfoTooltip();
 
   const sliders = initSliders(state.weights, (weights) => {
     state.weights = weights;

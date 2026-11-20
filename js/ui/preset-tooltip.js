@@ -53,7 +53,8 @@ function fill(tip, id) {
 
 // Place the tooltip to the right of the tile (or below it when
 // there is no room, e.g. on phones), kept inside the window.
-function place(tip, tile) {
+// Also used by info-tooltip.js.
+export function place(tip, tile) {
   const r = tile.getBoundingClientRect();
   const t = tip.getBoundingClientRect();
   const vw = window.innerWidth;

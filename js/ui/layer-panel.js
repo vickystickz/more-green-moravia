@@ -74,11 +74,20 @@ export function initLayerPanel({ onLayer, onBoundaries, onBuildings, onVacant, o
   const eyes = new Map();
   const names = new Map();
 
+  // Legend labels under the colour boxes: Low / Medium / High, or
+  // the layer's own (e.g. 0% … 100% for Sealed ground).
+  const legendLabels = ['legend-low', 'legend-mid', 'legend-high'].map((id) => document.getElementById(id));
+  const DEFAULT_LEGEND = ['legend.low', 'legend.medium', 'legend.high'];
+
   function draw() {
     eyes.forEach((btn, id) => btn.setAttribute('aria-pressed', String(id === active)));
     legend.hidden = active === null;
     opacityControl.hidden = active === null; // nothing to fade when hidden
-    if (active) legendTitle.textContent = t(MAP_LAYERS.find((l) => l.id === active).label);
+    if (!active) return;
+    const layer = MAP_LAYERS.find((l) => l.id === active);
+    legendTitle.textContent = t(layer.label);
+    const keys = layer.legend ?? DEFAULT_LEGEND;
+    legendLabels.forEach((span, i) => { span.textContent = keys[i] ? t(keys[i]) : ''; });
   }
 
   // Text that JS wrote: redo it in the new language.

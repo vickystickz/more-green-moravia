@@ -115,8 +115,12 @@
   box-shadow: 0 1px 3px rgba(40, 42, 46, 0.3);
 }
 
-/* Info icon: its tooltip explains the factor. */
+/* Info icon: hover or focus opens a popup explaining the factor
+   (info-tooltip.js). */
 .weight__info {
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
   cursor: help;
 }
 

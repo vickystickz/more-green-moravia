@@ -120,12 +120,13 @@ export function updateHexValues(map, hexes) {
       {
         score: h.score, he: h.dims.he, v: h.dims.v, gd: h.dims.gd, feas: h.dims.feas,
         night: h.props.mu_heatwave_tmin, // Night-time heat (raw 0–1 membership)
+        sealing: h.props.raw_sealing,    // Sealed ground, share 0–1
       },
     );
   }
 }
 
-/** Colour the map by another value (score, he, night, v, gd or feas). */
+/** Colour the map by another value (score, he, night, v, gd, sealing or feas). */
 export function setColourKey(map, key) {
   if (map.getLayer(FILL)) map.setPaintProperty(FILL, 'fill-color', colourBy(key));
 }

@@ -43,7 +43,7 @@
   "factor.v": "Zranitelné skupiny",
   "factor.v.info": "Senioři (65+, zejména 75+), malé děti, školy, mateřské školy a lékaři.",
   "factor.gd": "Nedostatek zeleně",
-  "factor.gd.info": "Málo stromů nebo přístupné zeleně (parky, lesy, louky), případně daleko k nejbližší. Pole a soukromé zahrady se nepočítají.",
+  "factor.gd.info": "Málo stromů nebo přístupné zeleně (parky, lesy, louky), hodně zpevněného povrchu (střechy, asfalt, beton), případně daleko k nejbližší zeleni. Pole a soukromé zahrady se nepočítají.",
   "factor.feas": "Prostor pro realizaci",
   "toggle.label": "Zobrazit jen místa, kde lze stavět",
   "toggle.help": "Omezí výsledky na oblasti s brownfieldy, volnými plochami, málo využitými parkovišti, cyklotrasami nebo vhodnými ulicemi. Železnice, hlavní silnice a vodní plochy jsou vynechány.",
@@ -51,7 +51,7 @@
   "ranking.desc": "Oblasti s největší potřebou zeleně podle vašich priorit.",
   "ranking.loading": "Načítání dat…",
   "ranking.empty": "Data zatím nejsou načtena.",
-  "footer.note": "Předběžné výsledky. Skóre kombinuje teploty během vln veder ve dne i v noci, počet obyvatel, zranitelné skupiny, zeleň (Copernicus Urban Atlas 2021 a pokryvnost stromů 10 m) a dostupné plochy v šestiúhelníkové síti 200 m (H3). Tato verze se zaměřuje na tepelný stres. Berte je jako vodítko, ne jako konečné rozhodnutí.",
+  "footer.note": "Předběžné výsledky. Skóre kombinuje teploty během vln veder ve dne i v noci, počet obyvatel, zranitelné skupiny, zeleň a zpevněný povrch (Copernicus Urban Atlas 2021, pokryvnost stromů 10 m a nepropustnost povrchu) a dostupné plochy v šestiúhelníkové síti 200 m (H3). Tato verze se zaměřuje na tepelný stres. Berte je jako vodítko, ne jako konečné rozhodnutí.",
   "area.unnamed": "Nepojmenovaná oblast",
   "map.label": "Mapa potřeby zelené infrastruktury v Olomouci",
   "search.placeholder": "Hledejte čtvrť nebo ulici v Olomouci",
@@ -79,7 +79,7 @@
   "detail.factorsTitle": "Z čeho se skóre skládá",
   "detail.factorsDesc": "Jak tato oblast vychází v jednotlivých faktorech (0 = nízká potřeba, 100 = vysoká potřeba)",
   "detail.weight": "váha {pct}",
-  "detail.treeSource": "Využití území: Copernicus Urban Atlas 2021 · Pokryvnost stromů: Copernicus 10 m. Vzdálenosti jsou vzdušnou čarou.",
+  "detail.treeSource": "Využití území: Copernicus Urban Atlas 2021 · Pokryvnost stromů: Copernicus 10 m · Zpevněný povrch: Copernicus Imperviousness 10 m (2024). Vzdálenosti jsou vzdušnou čarou.",
   "raw.heatwave": "Max. teplota ve vlně veder {v} °C ve dne",
   "raw.heatwaveNight": "min. {v} °C v noci",
   "raw.tropicalNights": "tropické noci",
@@ -114,5 +114,9 @@
   "raw.vacant": "{v} volné plochy nebo staveniště",
   "raw.noSpace": "Žádné volné plochy ani brownfieldy",
   "raw.constraint": "{v} železnice, hlavní silnice nebo vody (tam zeleň nelze)",
-  "layers.vacant": "Brownfieldy a volné plochy"
+  "layers.vacant": "Brownfieldy a volné plochy",
+  "layers.sealing": "Zpevněný povrch",
+  "legend.zero": "0 %",
+  "legend.full": "100 %",
+  "info.about": "O faktoru {name}"
 }

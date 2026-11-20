@@ -43,7 +43,7 @@
   "factor.v": "Vulnerable groups",
   "factor.v.info": "Older residents (65+, especially 75+), young children, schools, kindergartens and doctors.",
   "factor.gd": "Lack of green",
-  "factor.gd.info": "Little tree cover or accessible green space (parks, forests, meadows), or a long way to the nearest one. Fields and private gardens do not count.",
+  "factor.gd.info": "Little tree cover or accessible green space (parks, forests, meadows), a lot of sealed ground (roofs, asphalt, concrete), or a long way to the nearest green area. Fields and private gardens do not count.",
   "factor.feas": "Space to build",
   "toggle.label": "Only show places we can build",
   "toggle.help": "Limits results to areas with brownfields, vacant land, under-used car parks, cycle routes or suitable streets. Railways, main roads and water are left out.",
@@ -51,7 +51,7 @@
   "ranking.desc": "Areas with the highest need for green improvements, based on your priorities.",
   "ranking.loading": "Loading data…",
   "ranking.empty": "No data loaded yet.",
-  "footer.note": "Provisional results. Scores combine heatwave temperatures by day and night, population, vulnerable groups, green space (Copernicus Urban Atlas 2021 and 10 m tree cover) and available land on a 200 m hexagon grid (H3). This version focuses on heat stress. Use as a guide, not a final decision.",
+  "footer.note": "Provisional results. Scores combine heatwave temperatures by day and night, population, vulnerable groups, green space and sealed ground (Copernicus Urban Atlas 2021, 10 m tree cover and imperviousness) and available land on a 200 m hexagon grid (H3). This version focuses on heat stress. Use as a guide, not a final decision.",
   "area.unnamed": "Unnamed area",
   "map.label": "Map of green infrastructure need in Olomouc",
   "search.placeholder": "Search a neighbourhood or street in Olomouc",
@@ -79,7 +79,7 @@
   "detail.factorsTitle": "What made up the score",
   "detail.factorsDesc": "How this area scores on each factor (0 = low need, 100 = high need)",
   "detail.weight": "weight {pct}",
-  "detail.treeSource": "Land use: Copernicus Urban Atlas 2021 · Tree cover: Copernicus 10 m. Distances are straight-line.",
+  "detail.treeSource": "Land use: Copernicus Urban Atlas 2021 · Tree cover: Copernicus 10 m · Sealed ground: Copernicus Imperviousness 10 m (2024). Distances are straight-line.",
   "raw.heatwave": "Heatwave max. {v} °C by day",
   "raw.heatwaveNight": "min. {v} °C at night",
   "raw.tropicalNights": "tropical nights",
@@ -114,5 +114,9 @@
   "raw.vacant": "{v} vacant land or construction site",
   "raw.noSpace": "No vacant land or brownfields here",
   "raw.constraint": "{v} railway, main road or water (no space for greenery there)",
-  "layers.vacant": "Brownfields and vacant land"
+  "layers.vacant": "Brownfields and vacant land",
+  "layers.sealing": "Sealed ground",
+  "legend.zero": "0%",
+  "legend.full": "100%",
+  "info.about": "About {name}"
 }

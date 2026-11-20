@@ -129,6 +129,13 @@
   pointer-events: none; /* never blocks the tile under the mouse */
 }
 
+/* Same dark popup, for the slider info icons: text only. */
+.info-tooltip {
+  width: 220px;
+  font-size: var(--body-sm-size);
+  line-height: var(--body-sm-line);
+}
+
 .preset-tooltip[hidden] {
   display: none;
 }
