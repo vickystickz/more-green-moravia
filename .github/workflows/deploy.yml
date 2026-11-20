@@ -31,6 +31,9 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # Needed so this job can read secrets/variables stored on the
+    # github-pages environment (MAPY_API_KEY, AGENT_API_URL).
+    environment: github-pages
     steps:
       - name: Get the code
         uses: actions/checkout@v4
