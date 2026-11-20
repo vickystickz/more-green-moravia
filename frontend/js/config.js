@@ -71,7 +71,7 @@ export const SEARCH_CONFIG = {
 // list this site's origin in CORS_ORIGINS.
 // -------------------------------------------------------------
 export const AGENT_CONFIG = {
-  enabled: false,              // false = Ask AI button hidden (turned off for now)
+  enabled: true,              // false = Ask AI button hidden (turned off for now)
   baseUrl: String(env.AGENT_API_URL || '').replace(/\/+$/, ''), // '' = Ask AI off
   chatPath: '/api/agent/chat', // POST, server-sent events
   mapPath: '/api/agent/map',   // POST a step's layer → GeoJSON ("Show on map")
