@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>More Green, Moravia</title>
+  <link rel="icon" type="image/png" sizes="64x64" href="assets/favicon_64px.png">
+  <link rel="apple-touch-icon" href="assets/favicon_64px.png">
   <!-- Same page in each language (en/ and cz/ are made by the
        deploy workflow). Tells search engines about both versions. -->
   <link rel="alternate" hreflang="en" href="en/">
@@ -35,6 +37,7 @@
   <link rel="stylesheet" href="css/components/sliders.css">
   <link rel="stylesheet" href="css/components/ranking.css">
   <link rel="stylesheet" href="css/components/detail.css">
+  <link rel="stylesheet" href="css/components/ask-ai.css">
 </head>
 <body>
   <!-- =========================================================
@@ -190,7 +193,7 @@
             <span class="switch__track" aria-hidden="true"></span>
             <span class="switch__text">
               <span class="switch__label" data-i18n="toggle.label">Only show places we can build</span>
-              <span class="switch__help" data-i18n="toggle.help">Limits results to areas with brownfields, under-used car parks, cycle routes or suitable streets.</span>
+              <span class="switch__help" data-i18n="toggle.help">Limits results to areas with brownfields, vacant land, under-used car parks, cycle routes or suitable streets. Railways, main roads and water are left out.</span>
             </span>
           </label>
         </section>
@@ -208,7 +211,7 @@
         </ol>
       </section>
 
-      <p class="sidebar-note" data-i18n="footer.note">Provisional results. Scores combine heatwave temperatures by day and night, population, vulnerable groups and green space (Copernicus 10 m tree cover) on a 200 m hexagon grid (H3). This version focuses on heat stress. Use as a guide, not a final decision.</p>
+      <p class="sidebar-note" data-i18n="footer.note">Provisional results. Scores combine heatwave temperatures by day and night, population, vulnerable groups, green space (Copernicus Urban Atlas 2021 and 10 m tree cover) and available land on a 200 m hexagon grid (H3). This version focuses on heat stress. Use as a guide, not a final decision.</p>
     </aside>
 
     <!-- =======================================================
@@ -269,6 +272,17 @@
             <input class="range" id="hex-opacity" type="range" min="0" max="100" step="5" value="70">
           </div>
 
+          <!-- Brownfields and vacant land: outline overlay, off by default -->
+          <div class="layer-row">
+            <span class="layer-row__icon layer-row__icon--outline" aria-hidden="true"></span>
+            <span class="layer-row__name" data-i18n="layers.vacant">Brownfields and vacant land</span>
+            <button class="eye-btn" type="button" data-layer="vacant"
+                    aria-pressed="false" aria-label="Show or hide brownfields and vacant land"
+                    data-i18n-attr="aria-label:layers.vacant">
+              <img src="assets/icons/eye.svg" width="12.6" height="12.6" alt="">
+            </button>
+          </div>
+
           <!-- Microzone outlines: shown only if the boundary file exists -->
           <div class="layer-row" id="boundary-row" hidden>
             <span class="layer-row__icon layer-row__icon--dashed" aria-hidden="true"></span>
@@ -317,21 +331,11 @@
           <ul class="factor-list" id="detail-factors"></ul>
         </section>
 
-        <p class="detail-card__source" data-i18n="detail.treeSource">Tree cover: Copernicus 10 m.</p>
+        <p class="detail-card__source" data-i18n="detail.treeSource">Land use: Copernicus Urban Atlas 2021 · Tree cover: Copernicus 10 m. Distances are straight-line.</p>
       </article>
 
       <!-- Ask AI + map buttons (bottom right) -->
       <div class="map-tools">
-        <!-- Ask AI panel: no backend yet, so it says "Coming soon".
-             Never put an AI API key in this front-end code. -->
-        <form class="ask-ai-panel" id="ask-ai-panel" hidden>
-          <label class="visually-hidden" for="ask-ai-input" data-i18n="askai.label">Ask about the map</label>
-          <input id="ask-ai-input" type="text" disabled
-                 placeholder="Ask about the map, e.g. 'Where are hot areas with many older residents?'"
-                 data-i18n-attr="placeholder:askai.placeholder">
-          <p class="ask-ai-panel__soon" data-i18n="askai.soon">Coming soon</p>
-        </form>
-
         <button class="map-overlay ask-ai" id="ask-ai" type="button" aria-expanded="false" aria-controls="ask-ai-panel">
           <img src="assets/icons/sparkles.svg" width="18" height="18" alt="">
           <span data-i18n="askai.button">Ask AI</span>
@@ -363,6 +367,59 @@
         </div>
       </div>
     </main>
+
+    <!-- =======================================================
+         ASK AI PANEL (right column, 306px). Opens from the
+         "Ask AI" button on the map. There is no backend yet, so
+         sending a question only says "Coming soon". Never put an
+         AI API key in this front-end code.
+         ======================================================= -->
+    <aside class="ask-ai-panel" id="ask-ai-panel" aria-labelledby="ask-ai-title" hidden>
+      <header class="ask-ai-panel__head">
+        <div class="ask-ai-panel__title">
+          <img src="assets/icons/chat-ai.svg" width="24" height="24" alt="">
+          <h2 id="ask-ai-title" data-i18n="askai.button">Ask AI</h2>
+        </div>
+        <button class="ask-ai-panel__close" id="ask-ai-close" type="button" aria-label="Close"
+                data-i18n-attr="aria-label:askai.close,title:askai.close">
+          <img src="assets/icons/close.svg" width="14.7692" height="14.7692" alt="">
+        </button>
+      </header>
+
+      <div class="ask-ai-panel__body">
+        <div class="ask-ai-panel__intro">
+          <img src="assets/icons/chat-ai-large.svg" width="56" height="56" alt="">
+          <div class="ask-ai-panel__text">
+            <p class="ask-ai-panel__greeting">
+              <span data-i18n="askai.greeting">Hi there,</span>
+              <strong data-i18n="askai.question">How can I help?</strong>
+            </p>
+            <p class="ask-ai-panel__desc" data-i18n="askai.intro">I can help you understand your map, compare neighbourhoods, and find where green improvements matter most.</p>
+          </div>
+        </div>
+
+        <ul class="ask-ai-panel__suggestions" aria-label="Suggested questions"
+            data-i18n-attr="aria-label:askai.suggestions">
+          <li><button class="ask-ai-chip" type="button" data-i18n="askai.suggest1">We have budget to depave car parks</button></li>
+          <li><button class="ask-ai-chip" type="button" data-i18n="askai.suggest2">Cool route to the school</button></li>
+          <li><button class="ask-ai-chip" type="button" data-i18n="askai.suggest3">Find heat prone areas</button></li>
+        </ul>
+      </div>
+
+      <form class="ask-ai-panel__form" id="ask-ai-form">
+        <div class="ask-ai-input">
+          <label class="visually-hidden" for="ask-ai-input" data-i18n="askai.label">Ask about the map</label>
+          <textarea id="ask-ai-input" rows="2"
+                    placeholder="Ask anything about green space..."
+                    data-i18n-attr="placeholder:askai.placeholder"></textarea>
+          <button class="ask-ai-input__send" id="ask-ai-send" type="submit" disabled
+                  aria-label="Send" data-i18n-attr="aria-label:askai.send,title:askai.send">
+            <img src="assets/icons/paper-plane.svg" width="14" height="14" alt="">
+          </button>
+        </div>
+        <p class="ask-ai-panel__soon" id="ask-ai-soon" role="status" hidden data-i18n="askai.soon">Coming soon</p>
+      </form>
+    </aside>
   </div>
 
   <!-- MapLibre GL JS: a normal script that creates the global

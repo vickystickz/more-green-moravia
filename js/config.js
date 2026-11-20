@@ -62,8 +62,8 @@ export const SEARCH_CONFIG = {
 // -------------------------------------------------------------
 export const DATA_PATHS = {
   // ?v=… busts the browser/CDN cache: bump it after every new export.
-  hexes: 'data/olomouc_gi_h3_r9.geojson?v=2',
-  metadata: 'data/olomouc_gi_h3_r9_metadata.json?v=2',
+  hexes: 'data/olomouc_gi_h3_r9.geojson?v=3',
+  metadata: 'data/olomouc_gi_h3_r9_metadata.json?v=3',
   // Optional microzone outlines. If this file does not exist, the
   // "Microzone boundaries" checkbox is not shown.
   boundaries: 'data/olomouc_microzones.geojson',

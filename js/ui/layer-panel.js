@@ -7,7 +7,8 @@
 // can be visible at a time:
 //   - eye of a hidden view  → show that view (the others turn off)
 //   - eye of the shown view → hide the hexagons completely
-// Microzone boundaries and Building switch on and off on their own.
+// Brownfields and vacant land, Microzone boundaries and Building
+// switch on and off on their own.
 // =============================================================
 
 import { MAP_LAYERS, SCORE_CLASSES, HEX_OPACITY } from '../config.js';
@@ -32,11 +33,12 @@ function eyeButton(pressed) {
  *   onLayer: (id: string|null) => void,  // null = hexagons hidden
  *   onBoundaries: (visible: boolean) => void,
  *   onBuildings: (visible: boolean) => void,
+ *   onVacant: (visible: boolean) => void,
  *   onOpacity: (opacity: number) => void,  // 0–1
  * }} handlers
  * @returns {{ showBoundaryOption: () => void }}
  */
-export function initLayerPanel({ onLayer, onBoundaries, onBuildings, onOpacity }) {
+export function initLayerPanel({ onLayer, onBoundaries, onBuildings, onVacant, onOpacity }) {
   const group = document.getElementById('layer-choice');
   const legend = document.getElementById('legend');
   const legendTitle = document.getElementById('legend-title');
@@ -120,6 +122,7 @@ export function initLayerPanel({ onLayer, onBoundaries, onBuildings, onOpacity }
   }
   wireToggle('.eye-btn[data-layer="boundaries"]', onBoundaries);
   wireToggle('.eye-btn[data-layer="buildings"]', onBuildings);
+  wireToggle('.eye-btn[data-layer="vacant"]', onVacant);
 
   return {
     showBoundaryOption() {

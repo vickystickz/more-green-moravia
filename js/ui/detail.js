@@ -41,17 +41,37 @@ function rawVulnerable(p) {
   ]);
 }
 
+// Lack of green: tree cover, accessible green (Urban Atlas 2021),
+// distance to the nearest park or forest, and sealed ground when
+// the file has it (raw_sealing is optional).
 function rawGreen(p) {
   return rawLine([
     isNum(p.raw_tree_cover) && t('raw.tree', { v: percent(Math.round(p.raw_tree_cover)) }),
+    isNum(p.raw_green_share) && t('raw.greenShare', { v: pct(p.raw_green_share) }),
     isNum(p.raw_dist_green) && t('raw.distGreen', { v: num(p.raw_dist_green) }),
+    isNum(p.raw_sealing) && t('raw.sealing', { v: pct(p.raw_sealing) }),
   ]);
 }
 
+// Space to build: brownfield + vacant land, or a short message
+// when both are 0.
 function rawFeasibility(p) {
+  const shares = [p.raw_brownfield_share, p.raw_vacant_share].filter(isNum);
+  if (shares.length && shares.every((v) => v === 0)) return t('raw.noSpace');
   return rawLine([
     isNum(p.raw_brownfield_share) && t('raw.brownfield', { v: pct(p.raw_brownfield_share) }),
+    isNum(p.raw_vacant_share) && t('raw.vacant', { v: pct(p.raw_vacant_share) }),
   ]);
+}
+
+// Land where no green infrastructure is possible (already taken out
+// of d_feasibility in the data). Shown from 5 %.
+const CONSTRAINT_NOTE_FROM = 0.05;
+
+function constraintNote(p) {
+  return isNum(p.raw_constraint_share) && p.raw_constraint_share >= CONSTRAINT_NOTE_FROM
+    ? t('raw.constraint', { v: pct(p.raw_constraint_share) })
+    : '';
 }
 
 function el(tag, className, text) {
@@ -61,7 +81,7 @@ function el(tag, className, text) {
   return node;
 }
 
-function factorRow(name, value, weight, raw) {
+function factorRow(name, value, weight, raw, note = '') {
   const li = el('li', 'factor');
   const top = el('div', 'factor__row');
   const label = el('span', 'factor__name', name);
@@ -73,6 +93,7 @@ function factorRow(name, value, weight, raw) {
   bar.style.setProperty('--value', v ?? 0);
   li.append(top, bar);
   if (raw) li.append(el('p', 'factor__raw', raw));
+  if (note) li.append(el('p', 'factor__raw factor__raw--note', note));
   return li;
 }
 
@@ -112,7 +133,7 @@ export function renderDetail(hex, { onlyBuildable, weightLabels }) {
     factorRow(t('factor.gd'), d.gd, weightLabels.gd, rawGreen(p)),
   );
   if (onlyBuildable) {
-    list.append(factorRow(t('factor.feas'), d.feas, null, rawFeasibility(p)));
+    list.append(factorRow(t('factor.feas'), d.feas, null, rawFeasibility(p), constraintNote(p)));
   }
 
   card.hidden = false;

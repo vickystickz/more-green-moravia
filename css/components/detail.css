@@ -133,6 +133,11 @@
   color: var(--grey-700);
 }
 
+/* Extra grey line, e.g. railway / main road / water share. */
+.factor__raw--note {
+  color: var(--grey-600);
+}
+
 /* Small screens: card spans the map width. */
 @media (max-width: 768px) {
   .detail-card {

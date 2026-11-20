@@ -44,7 +44,11 @@
   --display-subtle-01: #636363; /* legend labels */
   --display-subtle-02: #818181; /* legend scale numbers */
 
+  --border-00: #F7F7F7;
   --border-03: #CBCBCB;
+  --surface-lvl-00: #F7F7F7;  /* Ask AI suggestions and message box */
+  --color-nav: #282828;       /* panel titles (Figma: Icon color/color-nav) */
+  --btn-primary-disable: #E8E8E8;
   --highlight-grey-10: #F0F0F1; /* divider between zoom buttons */
 
   /* -----------------------------------------------------------
@@ -56,6 +60,17 @@
   --weight-regular: 400;
   --weight-medium: 500;
   --weight-semibold: 600;
+
+  /* Paragraph P1: Ask AI greeting (18 / 26) */
+  --p1-size: 18px;
+  --p1-line: 26px;
+
+  /* Paragraph P3: panel titles (14 / normal) */
+  --p3-size: 14px;
+
+  /* Caption 1: Ask AI intro text (13 / 18) */
+  --caption-1-size: 13px;
+  --caption-1-line: 18px;
 
   /* Caption 2: labels, titles, values (12 / 18) */
   --caption-2-size: 12px;
@@ -82,6 +97,8 @@
      Layout
      ----------------------------------------------------------- */
   --sidebar-width: 298px;
+  --ask-ai-width: 25.125rem; /* Ask AI panel (right column): 402px at 16px root */
+  --ask-ai-duration: 300ms; /* Ask AI slide in / out */
   --page-gap: 16px;       /* space between sidebar and map */
   --sidebar-gap: 14px;    /* space between sidebar cards */
   --card-padding: 10px;

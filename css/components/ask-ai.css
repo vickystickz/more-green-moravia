@@ -1,0 +1,264 @@
+/* =============================================================
+   components/ask-ai.css
+   "Ask AI" panel (Figma: Live Map → right column, 306px wide).
+   Hidden until the Ask AI button on the map is clicked; then it
+   slides in as a third page column (see .app.is-ask-ai-open).
+   ============================================================= */
+
+/* The panel lives in a third grid column that is 0 wide while
+   closed. Opening animates that column to the panel's width, so the
+   map shrinks and the panel slides in from the right; closing runs
+   it in reverse. ask-ai.js keeps the panel visible until the
+   closing animation ends. MapLibre watches its container size, so
+   the map resizes by itself.
+
+   The sidebar → map space is a margin on the map, and the map →
+   panel space is a margin on the panel, so a closed (0 wide)
+   column adds no extra gap. */
+.app {
+  grid-template-columns: var(--sidebar-width) 1fr 0px;
+  column-gap: 0;
+  overflow-x: clip; /* hide the panel while it slides */
+  transition: grid-template-columns var(--ask-ai-duration) ease;
+}
+
+.app.is-ask-ai-open {
+  grid-template-columns: var(--sidebar-width) 1fr calc(var(--ask-ai-width) + var(--page-gap));
+}
+
+.map-frame {
+  margin-left: var(--page-gap);
+}
+
+.ask-ai-panel {
+  grid-column: 3;
+  grid-row: 1;
+  justify-self: start;
+  width: var(--ask-ai-width); /* set in tokens.css */
+  margin-left: var(--page-gap);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  border-radius: var(--radius-card);
+  background: var(--surface-base);
+  box-shadow: 0 0 16px rgba(24, 0, 44, 0.1);
+}
+
+.ask-ai-panel[hidden] {
+  display: none;
+}
+
+/* ---------- Header: icon + title, close button ---------- */
+.ask-ai-panel__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--border-00);
+}
+
+.ask-ai-panel__title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ask-ai-panel__title h2 {
+  font-size: var(--p3-size);
+  line-height: normal;
+  font-weight: var(--weight-semibold);
+  color: var(--color-nav);
+}
+
+.ask-ai-panel__close {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 7.385px;
+}
+
+.ask-ai-panel__close:hover {
+  background: var(--grey-50);
+}
+
+/* ---------- Body: greeting + suggestions, centred ---------- */
+.ask-ai-panel__body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 32px;
+  padding: 16px 10px;
+}
+
+.ask-ai-panel__intro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.ask-ai-panel__text {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: center;
+}
+
+.ask-ai-panel__greeting {
+  display: flex;
+  flex-direction: column;
+  font-size: var(--p1-size);
+  line-height: var(--p1-line);
+}
+
+.ask-ai-panel__greeting span {
+  font-weight: var(--weight-medium);
+  color: var(--display-subtle-02);
+}
+
+.ask-ai-panel__greeting strong {
+  font-weight: var(--weight-semibold);
+  color: var(--display-02);
+}
+
+.ask-ai-panel__desc {
+  font-size: var(--caption-1-size);
+  line-height: var(--caption-1-line);
+  color: var(--display-subtle-01);
+}
+
+/* Suggested questions: full-width grey tiles. */
+.ask-ai-panel__suggestions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ask-ai-chip {
+  width: 100%;
+  padding: 8px;
+  border-radius: var(--radius-tile);
+  background: var(--surface-lvl-00);
+  font-size: var(--caption-2-size);
+  line-height: var(--caption-2-line);
+  color: var(--display-subtle-01);
+  text-align: center;
+}
+
+.ask-ai-chip:hover {
+  background: var(--grey-100);
+}
+
+/* ---------- Footer: message box with send button ---------- */
+.ask-ai-panel__form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 10px 16px;
+}
+
+.ask-ai-input {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+  min-height: 77px;
+  padding: 4px;
+  border-radius: var(--radius-tile);
+  background: var(--surface-lvl-00);
+}
+
+.ask-ai-input textarea {
+  width: 100%;
+  padding: 4px;
+  border: 0;
+  background: none;
+  resize: none;
+  font: inherit;
+  font-size: var(--caption-2-size);
+  line-height: var(--caption-2-line);
+  color: var(--grey-900);
+}
+
+.ask-ai-input textarea::placeholder {
+  color: var(--display-subtle-02);
+}
+
+.ask-ai-input textarea:focus {
+  outline: none;
+}
+
+.ask-ai-input:focus-within {
+  outline: 2px solid var(--green-500);
+  outline-offset: -2px;
+}
+
+/* Round send button: grey when empty, green when there is text. */
+.ask-ai-input__send {
+  display: grid;
+  place-items: center;
+  margin: 4px;
+  padding: 4px;
+  border-radius: 14px;
+  background: var(--btn-primary-disable);
+}
+
+.ask-ai-input__send:not(:disabled) {
+  background: var(--green-500);
+}
+
+.ask-ai-input__send:not(:disabled) img {
+  filter: brightness(0) invert(1); /* white plane on green */
+}
+
+.ask-ai-input__send:disabled {
+  cursor: default;
+}
+
+.ask-ai-panel__soon {
+  font-size: var(--body-sm-size);
+  line-height: var(--body-sm-line);
+  color: var(--grey-700);
+}
+
+/* ---------- Small screens: panel covers the page ----------
+   It slides in from the right over everything instead. */
+@media (max-width: 768px) {
+  .app,
+  .app.is-ask-ai-open {
+    grid-template-columns: 1fr;
+    column-gap: normal;
+    transition: none;
+  }
+
+  .map-frame {
+    margin-left: 0;
+  }
+
+  .ask-ai-panel {
+    width: auto;
+    margin-left: 0;
+    position: fixed;
+    inset: 8px;
+    z-index: 10;
+    transform: translateX(calc(100% + 8px));
+    transition: transform var(--ask-ai-duration) ease;
+  }
+
+  .app.is-ask-ai-open .ask-ai-panel {
+    transform: none;
+  }
+}
+
+/* No sliding for people who ask for less motion. */
+@media (prefers-reduced-motion: reduce) {
+  .app,
+  .ask-ai-panel {
+    transition: none;
+  }
+}

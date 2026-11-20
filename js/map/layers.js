@@ -14,6 +14,7 @@ const SOURCE = 'gi-hexes';
 const FILL = 'gi-hexes-fill';
 const OUTLINE = 'gi-hexes-outline';
 const SELECTED = 'gi-hexes-selected';
+const VACANT = 'gi-hexes-vacant';
 const BOUNDARY_SOURCE = 'microzones';
 const BOUNDARY_LAYER = 'microzones-line';
 
@@ -29,6 +30,14 @@ function colourBy(key) {
     '#e6e6e6',
   ];
 }
+
+// "Brownfields and vacant land" overlay: hexes where at least 5 %
+// is brownfield or vacant land / construction site.
+const VACANT_FROM = 0.05;
+const vacantShare = ['+',
+  ['coalesce', ['get', 'raw_brownfield_share'], 0],
+  ['coalesce', ['get', 'raw_vacant_share'], 0]];
+let vacantVisible = false; // off by default; kept if toggled before the data loads
 
 // Put our layers under the basemap's first label layer, so street
 // and place names stay readable on top of the colours.
@@ -67,6 +76,17 @@ export function addHexLayer(map, geojson, onClick) {
     type: 'line',
     source: SOURCE,
     paint: { 'line-color': '#ffffff', 'line-width': 0.5, 'line-opacity': 0.8 },
+  }, before);
+
+  // Brownfields and vacant land: thick dark outline on top of the
+  // colours, under the selection outline.
+  map.addLayer({
+    id: VACANT,
+    type: 'line',
+    source: SOURCE,
+    filter: ['>=', vacantShare, VACANT_FROM],
+    layout: { visibility: vacantVisible ? 'visible' : 'none' },
+    paint: { 'line-color': '#1F1F1F', 'line-width': 2.5 },
   }, before);
 
   // Thick dark outline around the selected hex.
@@ -127,6 +147,12 @@ export function setHexesVisible(map, visible) {
   [FILL, OUTLINE, SELECTED].forEach((id) => {
     if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', visible ? 'visible' : 'none');
   });
+}
+
+/** Show or hide the "Brownfields and vacant land" overlay. */
+export function setVacantVisible(map, visible) {
+  vacantVisible = visible;
+  if (map.getLayer(VACANT)) map.setLayoutProperty(VACANT, 'visibility', visible ? 'visible' : 'none');
 }
 
 /**
