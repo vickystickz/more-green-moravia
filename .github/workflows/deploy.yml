@@ -1,8 +1,9 @@
 # =============================================================
 # Deploy to GitHub Pages
-# Runs on every push to main. It creates js/env.js from the
-# repository secret MAPY_API_KEY (js/env.js is not in git), makes
-# the /en/ and /cz/ language pages, then publishes the site.
+# Runs on every push to main. It creates frontend/js/env.js from the
+# repository secret MAPY_API_KEY (env.js is not in git), makes
+# the /en/ and /cz/ language pages, then publishes the frontend/
+# folder (frontend/index.html is the site's home page).
 #
 # One-time setup on GitHub:
 #   1. Settings → Secrets and variables → Actions → New repository
@@ -38,14 +39,14 @@ jobs:
       - name: Get the code
         uses: actions/checkout@v4
 
-      - name: Create js/env.js from the secret
+      - name: Create frontend/js/env.js from the secret
         env:
           MAPY_API_KEY: ${{ secrets.MAPY_API_KEY }}
         run: |
           if [ -z "$MAPY_API_KEY" ]; then
             echo "::warning::Secret MAPY_API_KEY is not set: search will be disabled on the site."
           else
-            printf "export const MAPY_API_KEY = '%s';\n" "$MAPY_API_KEY" > js/env.js
+            printf "export const MAPY_API_KEY = '%s';\n" "$MAPY_API_KEY" > frontend/js/env.js
           fi
 
       # /en/ and /cz/ are copies of index.html. <base href="../">
@@ -53,6 +54,7 @@ jobs:
       # main folder, so nothing is duplicated. The page reads its
       # language from the folder name (js/ui/i18n.js).
       - name: Make the /en/ and /cz/ language pages
+        working-directory: frontend
         run: |
           for code in en cz; do
             html_lang=$([ "$code" = cz ] && echo cs || echo en)
@@ -70,7 +72,7 @@ jobs:
       - name: Upload the site
         uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: frontend
 
       - name: Publish
         id: deployment
