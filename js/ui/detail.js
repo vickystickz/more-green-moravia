@@ -15,6 +15,9 @@ function priorityLabel(score) {
   return t('detail.low');
 }
 
+// Czech definition of a tropical night: minimum of 20 °C or more.
+const TROPICAL_NIGHT_C = 20;
+
 // "Heatwave max. 31.2 °C · 85 residents/ha" — parts with missing
 // values are left out; returns '' when every part is missing.
 function rawLine(parts) {
@@ -24,7 +27,9 @@ function rawLine(parts) {
 function rawHeat(p) {
   return rawLine([
     isNum(p.raw_heatwave_tmax) && t('raw.heatwave', { v: num(p.raw_heatwave_tmax, 1) }),
+    isNum(p.raw_heatwave_tmin) && t('raw.heatwaveNight', { v: num(p.raw_heatwave_tmin, 1) }),
     isNum(p.raw_res_density) && t('raw.density', { v: num(p.raw_res_density) }),
+    isNum(p.raw_heatwave_tmin) && p.raw_heatwave_tmin >= TROPICAL_NIGHT_C && t('raw.tropicalNights'),
   ]);
 }
 

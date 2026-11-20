@@ -1,5 +1,5 @@
 {
-  "created": "2026-11-20T07:13:19",
+  "created": "2026-11-20T08:39:47",
   "h3_resolution": 9,
   "hex_count": 500,
   "indicators": {
@@ -7,21 +7,35 @@
       "component": "heat",
       "function": "linear_increasing",
       "log": false,
-      "weight": 0.4,
+      "weight": 0.3,
       "params_spec": {
-        "low": "p5",
+        "low": "p50",
         "high": "p95"
       },
       "params_resolved": {
-        "low": 34.14705359761308,
+        "low": 34.27461485862732,
         "high": 34.37087486022856
+      }
+    },
+    "heatwave_tmin": {
+      "component": "heat",
+      "function": "linear_increasing",
+      "log": false,
+      "weight": 0.3,
+      "params_spec": {
+        "low": "p50",
+        "high": "p95"
+      },
+      "params_resolved": {
+        "low": 20.103738535322794,
+        "high": 20.24634213844935
       }
     },
     "lst_microzone": {
       "component": "heat",
       "function": "linear_increasing",
       "log": false,
-      "weight": 0.2,
+      "weight": 0.1,
       "params_spec": {
         "low": "p50",
         "high": "p95"
@@ -230,11 +244,12 @@
   },
   "component_weights": {
     "heat": {
-      "mu_heatwave_tmax": 0.4,
-      "mu_lst_copernicus": 0.3,
-      "mu_lst_microzone": 0.2,
-      "mu_air_temp_sensors": 0.1,
-      "mu_heat_island": 0.1
+      "mu_heatwave_tmax": 0.3,
+      "mu_heatwave_tmin": 0.3,
+      "mu_lst_copernicus": 0.2,
+      "mu_lst_microzone": 0.1,
+      "mu_air_temp_sensors": 0.05,
+      "mu_heat_island": 0.05
     },
     "exposure_night": {
       "mu_res_density": 1.0
@@ -288,7 +303,7 @@
     }
   },
   "heat_hazard_share_a": 0.5,
-  "day_weight": 0.7,
+  "day_weight": 0.5,
   "config": {
     "h3_res": 9,
     "min_hex_coverage": 0.1,
@@ -326,7 +341,13 @@
       "min_residents_for_shares": 50
     },
     "heatwave_tmax": {
-      "path": "/content/drive/MyDrive/hackathon-upol/data/HW_T_C.tif",
+      "path": "/content/drive/MyDrive/hackathon-upol/data/HWmax_T_C.tif",
+      "band": 1,
+      "scale": 1.0,
+      "offset": 0.0
+    },
+    "heatwave_tmin": {
+      "path": "/content/drive/MyDrive/hackathon-upol/data/HWmin_T_C.tif",
       "band": 1,
       "scale": 1.0,
       "offset": 0.0
@@ -396,7 +417,7 @@
     "green_polygons": [],
     "green_min_area_ha": 0.5,
     "tree_cover_raster": {
-      "path": null,
+      "path": "/content/drive/MyDrive/hackathon-upol/data/copernicusTreeCoverDensity10m.tif",
       "band": 1
     },
     "roads": {
@@ -448,7 +469,7 @@
       "year": null
     },
     "heat_hazard_share_a": 0.5,
-    "day_weight": 0.7,
+    "day_weight": 0.5,
     "dimension_floor": 0.01,
     "smooth_rings": 1,
     "opportunity_agg": "max",

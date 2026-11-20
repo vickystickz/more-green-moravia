@@ -61,8 +61,9 @@ export const SEARCH_CONFIG = {
 // the data/ folder with exactly these names.
 // -------------------------------------------------------------
 export const DATA_PATHS = {
-  hexes: 'data/olomouc_gi_h3_r9.geojson',
-  metadata: 'data/olomouc_gi_h3_r9_metadata.json',
+  // ?v=… busts the browser/CDN cache: bump it after every new export.
+  hexes: 'data/olomouc_gi_h3_r9.geojson?v=2',
+  metadata: 'data/olomouc_gi_h3_r9_metadata.json?v=2',
   // Optional microzone outlines. If this file does not exist, the
   // "Microzone boundaries" checkbox is not shown.
   boundaries: 'data/olomouc_microzones.geojson',
@@ -80,7 +81,7 @@ export const FACTORS = ['he', 'v', 'gd'];
 // Used when metadata.json is missing or lacks these values.
 export const SCORE_DEFAULTS = {
   a: 0.5,         // heat_hazard_share_a: share of heat hazard vs exposure
-  dayWeight: 0.7, // day_weight: day vs night exposure
+  dayWeight: 0.5, // day_weight fallback only; the real value comes from metadata.json
 };
 
 export const MIN_WEIGHT = 0.1; // 10%: a 0 weight would drop out of the product
@@ -102,11 +103,12 @@ export const SCORE_CLASSES = [
 export const HEX_OPACITY = 0.7;
 
 // Layers the user can colour the map by (one at a time).
-// `key` is the value computed for every hex in scoring/score.js;
+// `key` is the feature-state value set in map/layers.js;
 // `label` is the text key in data/lang/*.json.
 export const MAP_LAYERS = [
   { id: 'score', key: 'score', label: 'layers.score' },
   { id: 'he', key: 'he', label: 'factor.he' },
+  { id: 'night', key: 'night', label: 'layers.night' }, // mu_heatwave_tmin
   { id: 'v', key: 'v', label: 'factor.v' },
   { id: 'gd', key: 'gd', label: 'factor.gd' },
   { id: 'feas', key: 'feas', label: 'factor.feas' },

@@ -141,3 +141,10 @@
     top: 50px; /* below the search bar */
   }
 }
+
+/* Data source note at the bottom of the card. */
+.detail-card__source {
+  font-size: var(--caption-3-size);
+  line-height: var(--caption-3-line);
+  color: var(--grey-700);
+}

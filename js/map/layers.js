@@ -97,12 +97,15 @@ export function updateHexValues(map, hexes) {
   for (const h of hexes) {
     map.setFeatureState(
       { source: SOURCE, id: h.id },
-      { score: h.score, he: h.dims.he, v: h.dims.v, gd: h.dims.gd, feas: h.dims.feas },
+      {
+        score: h.score, he: h.dims.he, v: h.dims.v, gd: h.dims.gd, feas: h.dims.feas,
+        night: h.props.mu_heatwave_tmin, // Night-time heat (raw 0–1 membership)
+      },
     );
   }
 }
 
-/** Colour the map by another value (score, he, v, gd or feas). */
+/** Colour the map by another value (score, he, night, v, gd or feas). */
 export function setColourKey(map, key) {
   if (map.getLayer(FILL)) map.setPaintProperty(FILL, 'fill-color', colourBy(key));
 }
