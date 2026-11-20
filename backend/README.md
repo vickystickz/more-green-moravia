@@ -14,7 +14,10 @@ uv run uvicorn app.main:app --reload     # http://localhost:8000/docs
 ```
 
 On start the server builds `data/moravia.duckdb` from the GeoJSON exports in
-`../frontend/data/` if the file is missing. After a new notebook export, rebuild it:
+`data/` if the file is missing. They are copies of the frontend's files in
+`../frontend/data/`: after a new notebook export, copy the three files
+(`olomouc_gi_h3_r9.geojson`, `olomouc_gi_h3_r9_metadata.json`,
+`olomouc_microzones.geojson`) to `backend/data/` too, then rebuild:
 
 ```sh
 uv run python -m app.ingest --force
@@ -27,12 +30,13 @@ Tests: `uv run pytest`. Lint: `uv run ruff check . && uv run ruff format .`
 
 ## Deploy (Docker, Render)
 
-The image is built from the **repo root**, because it builds the DuckDB file
-from `frontend/data/` at build time:
+The image is built from `backend/` (it builds the DuckDB file from `data/`
+at build time):
 
 ```sh
-docker build -f backend/Dockerfile -t moravia-api .
-docker run --rm -p 8000:8000 --env-file backend/.env moravia-api
+cd backend
+docker build -t moravia-api .
+docker run --rm -p 8000:8000 --env-file .env moravia-api
 ```
 
 On Render: **New → Blueprint**, pick this repo; `render.yaml` sets up the

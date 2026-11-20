@@ -9,20 +9,14 @@ services:
   - type: web
     name: more-green-moravia-api
     runtime: docker
-    dockerfilePath: ./backend/Dockerfile
+    rootDir: backend
+    dockerfilePath: ./Dockerfile
     dockerContext: .
     plan: free
     region: frankfurt
     healthCheckPath: /health
     autoDeploy: true
-    # Rebuild only when the backend or the index data changes.
-    buildFilter:
-      paths:
-        - backend/**
-        - frontend/data/olomouc_*.geojson
-        - frontend/data/olomouc_*_metadata.json
-        - .dockerignore
-        - render.yaml
+    # Rebuild only when the backend changes (rootDir already limits it).
     envVars:
       - key: AI_BASE_URL
         value: https://openrouter.ai/api/v1

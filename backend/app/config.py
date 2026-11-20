@@ -21,11 +21,13 @@ class Settings(BaseSettings):
     AGENT_MAX_STEPS: int = 6
     AGENT_MAX_CONCURRENT: int = 4
 
-    # Data: the GeoJSON exports are loaded into this DuckDB file
+    # Data: the GeoJSON exports are loaded into this DuckDB file. The exports
+    # are copies of the frontend's files in frontend/data/, kept in backend/data/
+    # so the backend (and its Docker image) needs nothing outside backend/.
     DUCKDB_PATH: Path = Path("data/moravia.duckdb")
-    INDEX_GEOJSON: Path = Path("../frontend/data/olomouc_gi_h3_r9.geojson")
-    INDEX_METADATA: Path = Path("../frontend/data/olomouc_gi_h3_r9_metadata.json")
-    MICROZONES_GEOJSON: Path = Path("../frontend/data/olomouc_microzones.geojson")
+    INDEX_GEOJSON: Path = Path("data/olomouc_gi_h3_r9.geojson")
+    INDEX_METADATA: Path = Path("data/olomouc_gi_h3_r9_metadata.json")
+    MICROZONES_GEOJSON: Path = Path("data/olomouc_microzones.geojson")
 
     CORS_ORIGINS: str = "http://localhost:8000,http://127.0.0.1:8000"
     # Also allowed: any localhost port, so the site can be served on its own

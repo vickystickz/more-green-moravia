@@ -1,11 +1,12 @@
 # =============================================================
 # Backend (FastAPI + DuckDB) for Render, or any Docker host.
 #
-# Build from the REPO ROOT, not backend/: the database is built
-# from the GeoJSON exports in frontend/data/.
+# Build from backend/ (everything it needs is in this folder,
+# including the GeoJSON exports in data/):
 #
-#   docker build -f backend/Dockerfile -t moravia-api .
-#   docker run --rm -p 8000:8000 --env-file backend/.env moravia-api
+#   cd backend
+#   docker build -t moravia-api .
+#   docker run --rm -p 8000:8000 --env-file .env moravia-api
 #
 # Render sets $PORT; locally it falls back to 8000.
 # =============================================================
@@ -19,17 +20,13 @@ ENV UV_COMPILE_BYTECODE=1 \
     UV_LINK_MODE=copy \
     UV_PYTHON_DOWNLOADS=never
 
-WORKDIR /app/backend
+WORKDIR /app
 
 # Dependencies first, so code changes don't reinstall them.
-COPY backend/pyproject.toml backend/uv.lock ./
+COPY pyproject.toml uv.lock ./
 RUN uv sync --frozen --no-dev --no-install-project
 
-COPY backend/ ./
-COPY frontend/data/olomouc_gi_h3_r9.geojson \
-     frontend/data/olomouc_gi_h3_r9_metadata.json \
-     frontend/data/olomouc_microzones.geojson \
-     /app/frontend/data/
+COPY . ./
 
 # Build the DuckDB file now, so the server starts fast and the
 # container needs no write access at run time.
@@ -39,15 +36,14 @@ RUN .venv/bin/python -m app.ingest --force
 FROM python:3.12-slim-bookworm
 
 ENV PYTHONUNBUFFERED=1 \
-    PATH="/app/backend/.venv/bin:$PATH" \
+    PATH="/app/.venv/bin:$PATH" \
     PORT=8000
 
 RUN useradd --create-home --uid 1000 app
-WORKDIR /app/backend
+WORKDIR /app
 
-# Code, venv and the built database. The GeoJSON is not needed at
-# run time: the server only rebuilds when the .duckdb file is missing.
-COPY --from=build --chown=app:app /app/backend /app/backend
+# Code, venv and the built database.
+COPY --from=build --chown=app:app /app /app
 
 USER app
 EXPOSE 8000

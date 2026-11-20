@@ -1,0 +1,11 @@
+# Docker build context is backend/ (see Dockerfile).
+.venv/
+.env
+**/__pycache__/
+.pytest_cache/
+.ruff_cache/
+tests/
+data/*.duckdb
+data/*.duckdb.wal
+Dockerfile
+.dockerignore
