@@ -33,6 +33,11 @@ services:
         value: "6"
       - key: AGENT_MAX_CONCURRENT
         value: "4"
+      # Data files, relative to backend/ (only backend/ is in the image).
+      - key: INDEX_GEOJSON
+        value: data/olomouc_gi_h3_r10.geojson
+      - key: INDEX_METADATA
+        value: data/olomouc_gi_h3_r10_metadata.json
       # The GitHub Pages origin (scheme + host, no path).
       - key: CORS_ORIGINS
         value: https://vickystickz.github.io

@@ -384,11 +384,20 @@ def ensure_database(force: bool = False) -> Path:
         settings.path(settings.MICROZONES_GEOJSON),
         settings.path(settings.BUILDINGS_GEOJSON),
     ]
+    index = settings.path(settings.INDEX_GEOJSON)
     if db_path.exists() and not force:
         if _built_from(db_path) == _sources_stamp(*sources):
             return db_path
+        if not index.exists():
+            # Keep serving the database we have (e.g. the one built into the
+            # Docker image) rather than failing to start.
+            logger.warning(
+                "%s not found (check INDEX_GEOJSON); using the existing %s",
+                index,
+                db_path.name,
+            )
+            return db_path
         logger.info("Data files changed since %s was built: rebuilding it", db_path.name)
-    index = settings.path(settings.INDEX_GEOJSON)
     if not index.exists():
         raise FileNotFoundError(f"index GeoJSON not found: {index} (set INDEX_GEOJSON)")
     count = ingest(
