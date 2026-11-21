@@ -204,7 +204,10 @@
             <span class="switch__track" aria-hidden="true"></span>
             <span class="switch__text">
               <span class="switch__label" data-i18n="toggle.label">Only show places we can build</span>
-              <span class="switch__help" data-i18n="toggle.help">Limits results to areas with brownfields, vacant land, under-used car parks, cycle routes or suitable streets. Railways, main roads and water are left out.</span>
+              <button class="weight__info" type="button" data-info="toggle.help"
+                      aria-label="Limits results to areas with brownfields, vacant land, under-used car parks, cycle routes or suitable streets. Railways, main roads and water are left out." data-i18n-attr="aria-label:toggle.help">
+                <img src="assets/icons/info-circle.svg" width="14" height="14" alt="">
+              </button>
             </span>
           </label>
         </section>
@@ -257,65 +260,70 @@
         </button>
 
         <div class="map-layers__body" id="layers-body">
-          <!-- Hexagon views: one eye button each (added by layer-panel.js).
+          <!-- Hexagon views: one eye button each (rows added by layer-panel.js).
                Only one view can be shown at a time; clicking the eye of
-               the visible view hides the hexagons. -->
-          <div class="layer-group" role="group" aria-labelledby="layer-group-title">
-            <span class="layer-group__title" id="layer-group-title" data-i18n="layers.colourBy">Colour the map by</span>
+               the visible view hides the hexagons. The chosen view sits
+               on top with its legend and opacity slider; the other
+               views are listed under it. -->
+          <div class="layer-group" role="group" aria-label="Colour the map by"
+               data-i18n-attr="aria-label:layers.colourBy">
+            <div class="layer-current">
+              <div id="layer-current-row"></div>
+
+              <!-- Legend for the visible view -->
+              <div class="legend" id="legend">
+                <div class="legend__scale" id="legend-scale" aria-hidden="true"></div>
+                <div class="legend__numbers" aria-hidden="true">
+                  <span id="legend-low">Low</span><span id="legend-mid"></span><span id="legend-high">High</span>
+                </div>
+              </div>
+
+              <!-- Opacity of the hexagon colours -->
+              <div class="opacity-control">
+                <label for="hex-opacity" data-i18n="layers.opacity">Opacity</label>
+                <input class="range" id="hex-opacity" type="range" min="0" max="100" step="5" value="70">
+                <output for="hex-opacity" id="hex-opacity-value">70%</output>
+              </div>
+            </div>
+
             <div class="layer-choice" id="layer-choice"></div>
           </div>
 
-          <!-- Legend for the visible view -->
-          <div class="legend" id="legend">
-            <span class="legend__title" id="legend-title">Green infrastructure need</span>
-            <div class="legend__scale" id="legend-scale" aria-hidden="true"></div>
-            <div class="legend__numbers" aria-hidden="true">
-              <span id="legend-low">Low</span><span id="legend-mid">Medium</span><span id="legend-high">High</span>
+          <div class="layer-overlays">
+            <!-- Brownfields and vacant land: outline overlay, off by default -->
+            <div class="layer-row">
+              <span class="layer-row__icon layer-row__icon--outline" aria-hidden="true"></span>
+              <span class="layer-row__name" data-i18n="layers.vacant">Brownfields and vacant land</span>
+              <button class="eye-btn" type="button" data-layer="vacant"
+                      aria-pressed="false" aria-label="Show or hide brownfields and vacant land"
+                      data-i18n-attr="aria-label:layers.vacant">
+                <img src="assets/icons/eye.svg" width="12.6" height="12.6" alt="">
+              </button>
             </div>
-          </div>
 
-          <!-- Opacity of the hexagon colours -->
-          <div class="opacity-control">
-            <div class="opacity-control__row">
-              <label for="hex-opacity" data-i18n="layers.opacity">Opacity</label>
-              <output for="hex-opacity" id="hex-opacity-value">70%</output>
+            <!-- Microzone outlines: shown only if the boundary file exists -->
+            <div class="layer-row" id="boundary-row" hidden>
+              <span class="layer-row__icon layer-row__icon--dashed" aria-hidden="true"></span>
+              <span class="layer-row__name" data-i18n="layers.boundaries">Microzone boundaries</span>
+              <button class="eye-btn" type="button" data-layer="boundaries"
+                      aria-pressed="true" aria-label="Show or hide microzone boundaries"
+                      data-i18n-attr="aria-label:layers.boundaries">
+                <img src="assets/icons/eye.svg" width="12.6" height="12.6" alt="">
+              </button>
             </div>
-            <input class="range" id="hex-opacity" type="range" min="0" max="100" step="5" value="70">
-          </div>
 
-          <!-- Brownfields and vacant land: outline overlay, off by default -->
-          <div class="layer-row">
-            <span class="layer-row__icon layer-row__icon--outline" aria-hidden="true"></span>
-            <span class="layer-row__name" data-i18n="layers.vacant">Brownfields and vacant land</span>
-            <button class="eye-btn" type="button" data-layer="vacant"
-                    aria-pressed="false" aria-label="Show or hide brownfields and vacant land"
-                    data-i18n-attr="aria-label:layers.vacant">
-              <img src="assets/icons/eye.svg" width="12.6" height="12.6" alt="">
-            </button>
-          </div>
-
-          <!-- Microzone outlines: shown only if the boundary file exists -->
-          <div class="layer-row" id="boundary-row" hidden>
-            <span class="layer-row__icon layer-row__icon--dashed" aria-hidden="true"></span>
-            <span class="layer-row__name" data-i18n="layers.boundaries">Microzone boundaries</span>
-            <button class="eye-btn" type="button" data-layer="boundaries"
-                    aria-pressed="true" aria-label="Show or hide microzone boundaries"
-                    data-i18n-attr="aria-label:layers.boundaries">
-              <img src="assets/icons/eye.svg" width="12.6" height="12.6" alt="">
-            </button>
-          </div>
-
-          <!-- Buildings layer -->
-          <div class="layer-row">
-            <span class="layer-row__icon">
-              <img src="assets/icons/rectangle.svg" width="10" height="10" alt="">
-            </span>
-            <span class="layer-row__name" data-i18n="layers.buildings">Building</span>
-            <button class="eye-btn" type="button" data-layer="buildings"
-                    aria-pressed="true" aria-label="Show or hide buildings"
-                    data-i18n-attr="aria-label:layers.buildings">
-              <img src="assets/icons/eye.svg" width="12.6" height="12.6" alt="">
-            </button>
+            <!-- Buildings layer -->
+            <div class="layer-row">
+              <span class="layer-row__icon">
+                <img src="assets/icons/rectangle.svg" width="10" height="10" alt="">
+              </span>
+              <span class="layer-row__name" data-i18n="layers.buildings">Building</span>
+              <button class="eye-btn" type="button" data-layer="buildings"
+                      aria-pressed="true" aria-label="Show or hide buildings"
+                      data-i18n-attr="aria-label:layers.buildings">
+                <img src="assets/icons/eye.svg" width="12.6" height="12.6" alt="">
+              </button>
+            </div>
           </div>
         </div>
       </div>

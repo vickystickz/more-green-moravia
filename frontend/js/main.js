@@ -172,9 +172,13 @@ async function init() {
     if (map) highlightHex(map, null);
     refresh();
   });
-  // Drawing an Ask AI layer switches the other map layers off.
+  // Drawing an Ask AI layer switches the other map layers off;
+  // removing it brings back Green infrastructure need.
   let panel = null;
-  initAskAi(() => map, { onMapLayer: () => panel?.hideAll() });
+  initAskAi(() => map, {
+    onMapLayer: () => panel?.hideAll(),
+    onMapLayerCleared: () => panel?.showDefault(),
+  });
 
   try {
     // Create the map (this returns straight away; the basemap

@@ -18,10 +18,12 @@ import { showAiLayer, clearAiLayer } from '../map/ai-layer.js';
 
 /**
  * @param {() => maplibregl.Map | null} getMap - the map, once it exists
- * @param {{ onMapLayer?: () => void }} [options]
+ * @param {{ onMapLayer?: () => void, onMapLayerCleared?: () => void }} [options]
  *   onMapLayer: called after an AI layer is drawn on the map
+ *   onMapLayerCleared: called after a drawn AI layer is removed
+ *     (chip ×, its "Show on map" button again, or New chat)
  */
-export function initAskAi(getMap = () => null, { onMapLayer = () => {} } = {}) {
+export function initAskAi(getMap = () => null, { onMapLayer = () => {}, onMapLayerCleared = () => {} } = {}) {
   const app = document.querySelector('.app');
   const button = document.getElementById('ask-ai');
   if (!AGENT_CONFIG.enabled) {
@@ -113,10 +115,12 @@ export function initAskAi(getMap = () => null, { onMapLayer = () => {} } = {}) {
   }
 
   function clearMap() {
+    const hadLayer = !chip.hidden;
     mapRequest++;
     clearAiLayer(getMap());
     setActiveMapBtn(null);
     chip.hidden = true;
+    if (hadLayer) onMapLayerCleared();
   }
 
   chipClear.addEventListener('click', clearMap);
@@ -304,9 +308,12 @@ export function initAskAi(getMap = () => null, { onMapLayer = () => {} } = {}) {
       steps.remove();
       return;
     }
+    // Remember the reply bubble first: moving `steps` into the
+    // <details> changes its parent.
+    const reply = steps.parentNode;
     const details = el('details', 'ask-ai-msg__details');
     details.append(el('summary', '', t('askai.steps', { n: steps.children.length })), steps);
-    steps.parentNode?.append(details);
+    reply?.append(details);
   }
 }
 

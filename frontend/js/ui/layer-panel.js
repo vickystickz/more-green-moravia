@@ -7,6 +7,8 @@
 // can be visible at a time:
 //   - eye of a hidden view  → show that view (the others turn off)
 //   - eye of the shown view → hide the hexagons completely
+// The chosen view sits on top with its legend and opacity slider;
+// the other views are listed under it, in MAP_LAYERS order.
 // Brownfields and vacant land, Microzone boundaries and Building
 // switch on and off on their own.
 // =============================================================
@@ -14,17 +16,25 @@
 import { MAP_LAYERS, SCORE_CLASSES, HEX_OPACITY } from '../config.js';
 import { t, percent, onLangChange } from './i18n.js';
 
+const EYE_ON = 'assets/icons/eye.svg';
+const EYE_OFF = 'assets/icons/eye-off.svg';
+
+/** Set an eye button on/off: aria-pressed + open or crossed-out eye. */
+function setPressed(btn, pressed) {
+  btn.setAttribute('aria-pressed', String(pressed));
+  btn.querySelector('img').src = pressed ? EYE_ON : EYE_OFF;
+}
+
 function eyeButton(pressed) {
   const btn = document.createElement('button');
   btn.className = 'eye-btn';
   btn.type = 'button';
-  btn.setAttribute('aria-pressed', String(pressed));
   const img = document.createElement('img');
-  img.src = 'assets/icons/eye.svg';
   img.width = 12.6;
   img.height = 12.6;
   img.alt = '';
   btn.append(img);
+  setPressed(btn, pressed);
   return btn;
 }
 
@@ -36,12 +46,12 @@ function eyeButton(pressed) {
  *   onVacant: (visible: boolean) => void,
  *   onOpacity: (opacity: number) => void,  // 0–1
  * }} handlers
- * @returns {{ showBoundaryOption: () => void, hideAll: () => void }}
+ * @returns {{ showBoundaryOption: () => void, hideAll: () => void, showDefault: () => void }}
  */
 export function initLayerPanel({ onLayer, onBoundaries, onBuildings, onVacant, onOpacity }) {
-  const group = document.getElementById('layer-choice');
+  const currentSlot = document.getElementById('layer-current-row');
+  const others = document.getElementById('layer-choice');
   const legend = document.getElementById('legend');
-  const legendTitle = document.getElementById('legend-title');
 
   // Legend boxes: one per class, with its range as a tooltip.
   const scale = document.getElementById('legend-scale');
@@ -70,22 +80,29 @@ export function initLayerPanel({ onLayer, onBoundaries, onBuildings, onVacant, o
     onOpacity(value / 100);
   });
 
-  let active = MAP_LAYERS[0].id;
+  // `selected` = the view shown on top (stays there when hidden, so
+  // the panel doesn't jump); `active` = the view on the map, or null.
+  let selected = MAP_LAYERS[0].id;
+  let active = selected;
+  const rows = new Map();
   const eyes = new Map();
   const names = new Map();
 
-  // Legend labels under the colour boxes: Low / Medium / High, or
-  // the layer's own (e.g. 0% … 100% for Sealed ground).
+  // Legend labels under the colour boxes: Low … High, or the
+  // layer's own (e.g. 0% … 100% for Sealed ground).
   const legendLabels = ['legend-low', 'legend-mid', 'legend-high'].map((id) => document.getElementById(id));
-  const DEFAULT_LEGEND = ['legend.low', 'legend.medium', 'legend.high'];
+  const DEFAULT_LEGEND = ['legend.low', null, 'legend.high'];
 
   function draw() {
-    eyes.forEach((btn, id) => btn.setAttribute('aria-pressed', String(id === active)));
+    eyes.forEach((btn, id) => setPressed(btn, id === active));
+    // Chosen view on top, the rest below in their usual order.
+    currentSlot.replaceChildren(rows.get(selected));
+    MAP_LAYERS.forEach((l) => { if (l.id !== selected) others.append(rows.get(l.id)); });
+
     legend.hidden = active === null;
     opacityControl.hidden = active === null; // nothing to fade when hidden
     if (!active) return;
     const layer = MAP_LAYERS.find((l) => l.id === active);
-    legendTitle.textContent = t(layer.label);
     const keys = layer.legend ?? DEFAULT_LEGEND;
     legendLabels.forEach((span, i) => { span.textContent = keys[i] ? t(keys[i]) : ''; });
   }
@@ -108,14 +125,18 @@ export function initLayerPanel({ onLayer, onBoundaries, onBuildings, onVacant, o
     name.className = 'layer-row__name';
     const eye = eyeButton(false);
     eye.addEventListener('click', () => {
-      active = active === layer.id ? null : layer.id;
+      if (active === layer.id) {
+        active = null;
+      } else {
+        active = selected = layer.id;
+      }
       draw();
       onLayer(active);
     });
+    rows.set(layer.id, row);
     eyes.set(layer.id, eye);
     names.set(layer.id, name);
     row.append(name, eye);
-    group.append(row);
   });
   translate();
   onLangChange(translate);
@@ -124,10 +145,11 @@ export function initLayerPanel({ onLayer, onBoundaries, onBuildings, onVacant, o
   const toggles = [];
   function wireToggle(selector, onChange) {
     const eye = document.querySelector(selector);
+    setPressed(eye, eye.getAttribute('aria-pressed') === 'true'); // right icon from the start
     toggles.push({ eye, onChange });
     eye.addEventListener('click', () => {
       const visible = eye.getAttribute('aria-pressed') !== 'true';
-      eye.setAttribute('aria-pressed', String(visible));
+      setPressed(eye, visible);
       onChange(visible);
     });
   }
@@ -148,9 +170,18 @@ export function initLayerPanel({ onLayer, onBoundaries, onBuildings, onVacant, o
       }
       toggles.forEach(({ eye, onChange }) => {
         if (eye.getAttribute('aria-pressed') !== 'true') return;
-        eye.setAttribute('aria-pressed', 'false');
+        setPressed(eye, false);
         onChange(false);
       });
+    },
+    // Show the default view, Green infrastructure need (used when
+    // an Ask AI layer is removed).
+    showDefault() {
+      const id = MAP_LAYERS[0].id;
+      if (active === id) return;
+      active = selected = id;
+      draw();
+      onLayer(active);
     },
   };
 }

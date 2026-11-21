@@ -185,18 +185,13 @@
   outline-offset: 2px;
 }
 
+/* Label + (i) icon; the icon's popup explains the filter. */
 .switch__text {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  align-items: center;
+  gap: 4px;
 }
 
 .switch__label {
   font-weight: var(--weight-medium);
-}
-
-.switch__help {
-  font-size: var(--body-sm-size);
-  line-height: var(--body-sm-line);
-  color: var(--grey-700);
 }

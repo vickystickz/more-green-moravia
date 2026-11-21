@@ -292,12 +292,8 @@
   align-self: stretch;
   padding: 10px 12px;
   border-radius: var(--radius-tile);
-  background: var(--surface-lvl-00);
-}
-
-.ask-ai-msg.is-error {
-  background: #FDF1EF;
-  color: #962320;
+  background: var(--grey-50);
+  color: var(--grey-900);
 }
 
 .ask-ai-msg__status {

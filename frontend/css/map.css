@@ -166,7 +166,8 @@
   background: var(--grey-100);
 }
 
-/* Eye button that shows / hides a layer. Faded when hidden. */
+/* Eye button that shows / hides a layer: open eye when shown,
+   crossed-out eye when hidden. */
 .eye-btn {
   display: grid;
   place-items: center;
@@ -175,31 +176,38 @@
   border-radius: 6px;
 }
 
-.eye-btn[aria-pressed="false"] {
-  opacity: 0.35;
-}
-
-/* Hexagon views: what the hexagons are coloured by. */
+/* Hexagon views: the chosen view (with legend and opacity) on top,
+   then a divider, then the other views. */
 .layer-group {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 8px;
 }
 
-.layer-group__title {
-  font-size: var(--caption-3-size);
-  line-height: var(--caption-3-line);
-  color: var(--grey-700);
+.layer-current {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* The visible view is darker than the others. */
+.layer-current .layer-row:has(.eye-btn[aria-pressed="true"]) {
+  color: var(--grey-900);
 }
 
 .layer-choice {
   display: flex;
   flex-direction: column;
+  padding-top: 8px;
+  border-top: 1px solid var(--grey-50);
 }
 
-/* The visible view is darker than the others. */
-.layer-choice .layer-row:has(.eye-btn[aria-pressed="true"]) {
-  color: var(--grey-900);
+/* Brownfields, microzone boundaries, buildings: under a divider. */
+.layer-overlays {
+  display: flex;
+  flex-direction: column;
+  padding-top: 8px;
+  border-top: 1px solid var(--grey-50);
 }
 
 .layer-row[hidden],
@@ -227,20 +235,11 @@
   margin: 0 2px;
 }
 
-/* Legend: title, colour ramp, Low / High. */
+/* Legend: colour ramp, Low / High. */
 .legend {
   display: flex;
   flex-direction: column;
   gap: 2px;
-}
-
-.legend .layer-row {
-  padding: 0;
-}
-
-.legend__title {
-  font-weight: var(--weight-medium);
-  color: var(--grey-900);
 }
 
 /* Classified legend: one box per class (added by layer-panel.js).
@@ -260,24 +259,29 @@
   opacity: var(--hex-opacity, 0.7);
 }
 
-/* Opacity slider for the hexagon colours. */
+/* Opacity slider for the hexagon colours: label · slider · value. */
 .opacity-control {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.opacity-control[hidden] {
-  display: none;
-}
-
-.opacity-control__row {
-  display: flex;
-  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
   font-size: var(--caption-3-size);
   line-height: var(--caption-3-line);
   font-weight: var(--weight-medium);
   color: var(--display-subtle-01);
+}
+
+.opacity-control .range {
+  flex: 1;
+  min-width: 0;
+}
+
+.opacity-control output {
+  min-width: 3.5ch;
+  text-align: right;
+}
+
+.opacity-control[hidden] {
+  display: none;
 }
 
 .legend__numbers {

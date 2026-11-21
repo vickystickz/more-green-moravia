@@ -130,13 +130,14 @@ export const HEX_OPACITY = 0.7;
 // `key` is the feature-state value set in map/layers.js;
 // `label` is the text key in data/lang/*.json;
 // `legend` (optional) = text keys for the left / middle / right
-// legend labels (default: Low / Medium / High).
+// legend labels (default: Low / – / High).
+// The order here is the order in the Map layers panel.
 export const MAP_LAYERS = [
   { id: 'score', key: 'score', label: 'layers.score' },
   { id: 'he', key: 'he', label: 'factor.he' },
   { id: 'night', key: 'night', label: 'layers.night' }, // mu_heatwave_tmin
-  { id: 'v', key: 'v', label: 'factor.v' },
-  { id: 'gd', key: 'gd', label: 'factor.gd' },
   { id: 'sealing', key: 'sealing', label: 'layers.sealing', legend: ['legend.zero', null, 'legend.full'] }, // raw_sealing 0–1
+  { id: 'v', key: 'v', label: 'factor.v' },
   { id: 'feas', key: 'feas', label: 'factor.feas' },
+  { id: 'gd', key: 'gd', label: 'factor.gd' },
 ];

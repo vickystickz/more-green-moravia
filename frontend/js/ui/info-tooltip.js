@@ -1,7 +1,8 @@
 // =============================================================
 // ui/info-tooltip.js
-// Custom popup for the (i) icons next to the weight sliders. On
-// hover or keyboard focus it shows what the factor means, in the
+// Custom popup for the (i) icons next to the weight sliders and the
+// "Only show places we can build" switch. On hover or keyboard
+// focus it shows what the factor or filter means, in the
 // same dark style as the preset tooltips. The text comes from
 // data-info (a key in data/lang/*.json), so it follows the
 // language switch.
@@ -30,8 +31,8 @@ export function initInfoTooltip() {
     icon.addEventListener('mouseleave', hide);
     icon.addEventListener('focus', () => show(icon));
     icon.addEventListener('blur', hide);
-    // The icon sits inside the slider's <label>: a click must not
-    // move focus to the slider.
+    // The icon sits inside a <label>: a click must not move focus
+    // to the slider or flip the switch.
     icon.addEventListener('click', (e) => { e.preventDefault(); show(icon); });
   });
 
