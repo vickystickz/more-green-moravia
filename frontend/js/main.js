@@ -192,7 +192,10 @@ async function init() {
       onLayer: (id) => {
         state.activeLayer = id;
         setHexesVisible(map, id !== null);
-        if (id) setColourKey(map, MAP_LAYERS.find((l) => l.id === id).key);
+        if (id) {
+          const layer = MAP_LAYERS.find((l) => l.id === id);
+          setColourKey(map, layer.key, layer.classes);
+        }
       },
       onBoundaries: (visible) => setBoundariesVisible(map, visible),
       onBuildings: (visible) => setBuildingsVisible(map, visible),

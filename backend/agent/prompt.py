@@ -28,6 +28,8 @@ quick-wins (balance + only buildable).
 - Heat weights: 45% night-time, 40% surface temperature, 15% daytime maximum (validated \
 against residents' reports). Distance to green is walking distance along streets. Public \
 buildings are quick opportunities for green roofs and greened courtyards. \
+Green vegetation = share of dense vegetation from Sentinel-2 NDVI in summer 2026; it \
+includes courtyard and street trees. It is the main input for lack of green. \
 val_perceived_heat comes from a 2020 resident survey and is NOT part of the score; use it \
 only as supporting evidence.
 - Scores are 0-100 and shares are percentages in every tool result; report them as given \

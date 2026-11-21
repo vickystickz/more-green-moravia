@@ -1,5 +1,5 @@
 {
-  "created": "2026-11-21T13:01:43",
+  "created": "2026-11-21T17:32:23",
   "h3_resolution": 9,
   "hex_count": 500,
   "indicators": {
@@ -55,8 +55,8 @@
         "high": "p95"
       },
       "params_resolved": {
-        "low": 0.0,
-        "high": 107.55999208877193
+        "low": 1.888396902181027,
+        "high": 95.31654969999161
       }
     },
     "day_density": {
@@ -69,8 +69,8 @@
         "high": "p95"
       },
       "params_resolved": {
-        "low": 0.0,
-        "high": 107.55999208877193
+        "low": 1.888396902181027,
+        "high": 95.31654969999161
       }
     },
     "share_65plus": {
@@ -126,14 +126,14 @@
       },
       "params_resolved": {
         "low": 0.0,
-        "high": 1.6513597893118521
+        "high": 1.4452385447397051
       }
     },
     "green_share": {
       "component": "green_supply",
       "function": "linear_decreasing",
       "log": false,
-      "weight": 0.3,
+      "weight": 0.2,
       "params_spec": {
         "low": 0.1,
         "high": 0.5
@@ -147,7 +147,7 @@
       "component": "green_supply",
       "function": "linear_decreasing",
       "log": false,
-      "weight": 0.3,
+      "weight": 0.15,
       "params_spec": {
         "low": 5,
         "high": 30
@@ -157,11 +157,25 @@
         "high": 30.0
       }
     },
+    "vegetation_share": {
+      "component": "green_supply",
+      "function": "linear_decreasing",
+      "log": false,
+      "weight": 0.3,
+      "params_spec": {
+        "low": 0.1,
+        "high": 0.4
+      },
+      "params_resolved": {
+        "low": 0.1,
+        "high": 0.4
+      }
+    },
     "green_per_capita": {
       "component": "green_supply",
       "function": "linear_decreasing",
       "log": false,
-      "weight": 0.2,
+      "weight": 0.15,
       "params_spec": {
         "low": 9,
         "high": 50
@@ -241,20 +255,6 @@
         "high": 36.298958422111134
       }
     },
-    "public_building_share": {
-      "component": "opportunity",
-      "function": "linear_increasing",
-      "log": false,
-      "weight": 0.3,
-      "params_spec": {
-        "low": 0,
-        "high": "p95nz"
-      },
-      "params_resolved": {
-        "low": 0.0,
-        "high": 0.10294407544958548
-      }
-    },
     "cycle_density": {
       "component": "corridors",
       "function": "linear_increasing",
@@ -306,9 +306,10 @@
       "mu_sensitive_facilities": 0.25
     },
     "green_supply": {
-      "mu_green_share": 0.3,
-      "mu_tree_cover": 0.3,
-      "mu_green_per_capita": 0.2,
+      "mu_green_share": 0.2,
+      "mu_tree_cover": 0.15,
+      "mu_vegetation_share": 0.3,
+      "mu_green_per_capita": 0.15,
       "mu_sealing": 0.2
     },
     "green_access": {
@@ -388,6 +389,15 @@
         "hexes": 72
       },
       {
+        "layer": "Vegetation share (NDVI)",
+        "column": "raw_vegetation_share",
+        "expected sign": "-",
+        "Spearman r": -0.69,
+        "significant (p<0.05)": "yes",
+        "direction as expected": "yes",
+        "hexes": 72
+      },
+      {
         "layer": "Accessible green share",
         "column": "raw_green_share",
         "expected sign": "-",
@@ -400,7 +410,7 @@
         "layer": "Lack of green (dimension)",
         "column": "d_green_deficit",
         "expected sign": "+",
-        "Spearman r": 0.45,
+        "Spearman r": 0.5,
         "significant (p<0.05)": "yes",
         "direction as expected": "yes",
         "hexes": 72
@@ -409,7 +419,7 @@
         "layer": "GI need (final result)",
         "column": "gi_need_provisional",
         "expected sign": "+",
-        "Spearman r": 0.36,
+        "Spearman r": 0.48,
         "significant (p<0.05)": "yes",
         "direction as expected": "yes",
         "hexes": 72
@@ -417,8 +427,8 @@
     ],
     "hit_rate": {
       "top_share": 0.2,
-      "uncomfortable_in_top": 0.273,
-      "comfortable_in_top": 0.075
+      "uncomfortable_in_top": 0.268,
+      "comfortable_in_top": 0.072
     }
   },
   "config": {
@@ -513,11 +523,13 @@
       ]
     },
     "buildings": {
-      "path": "/content/drive/MyDrive/hackathon-upol/data/buildings_with_class.geojson",
+      "path": "/content/drive/MyDrive/hackathon-upol/data/buildings.geojson",
       "layer": null,
-      "ownership_col": "building_category",
+      "ownership_col": null,
       "public_patterns": [
-        "public"
+        "public",
+        "veřejn",
+        "verejn"
       ]
     },
     "vodafone": {
@@ -575,6 +587,13 @@
     "tree_cover_raster": {
       "path": "/content/drive/MyDrive/hackathon-upol/data/copernicusTreeCoverDensity10m.tif",
       "band": 1
+    },
+    "ndvi_raster": {
+      "path": "/content/drive/MyDrive/hackathon-upol/data/NDVI_microzone_EPSG5514.tif",
+      "band": 1,
+      "scale": 1.0,
+      "offset": 0.0,
+      "veg_threshold": 0.5
     },
     "imperviousness_raster": {
       "path": "/content/drive/MyDrive/hackathon-upol/data/olumouc2024_imperviousness_nodata.tif",

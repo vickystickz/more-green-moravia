@@ -37,6 +37,22 @@ export const MAP_CONFIG = {
 };
 
 // -------------------------------------------------------------
+// Alternative basemap: orthophoto of Czechia by ČÚZK (free, no key).
+// The ORTOFOTO WMTS service is in the Czech S-JTSK grid
+// (EPSG:5514), which MapLibre cannot draw, so we use ČÚZK's
+// Web Mercator copy of the same imagery (ORTOFOTO_WM), WMTS tile
+// matrix set "GoogleMapsCompatible" (EPSG:3857).
+// Capabilities: https://ags.cuzk.gov.cz/arcgis1/rest/services/ORTOFOTO_WM/MapServer/WMTS
+// -------------------------------------------------------------
+export const BASEMAP_CONFIG = {
+  ortho: {
+    tiles: 'https://ags.cuzk.gov.cz/arcgis1/rest/services/ORTOFOTO_WM/MapServer/WMTS/tile/1.0.0/ORTOFOTO_WM/default/GoogleMapsCompatible/{z}/{y}/{x}',
+    maxzoom: 19, // the map stops at 18, so this is always sharp
+    attribution: '© <a href="https://www.cuzk.gov.cz" target="_blank" rel="noopener">ČÚZK</a>',
+  },
+};
+
+// -------------------------------------------------------------
 // Search (geocoding) with the Mapy.com API by Seznam.
 // The API key lives in js/env.js (not committed).
 // Docs: https://developer.mapy.com/rest-api/funkce/geokodovani/
@@ -86,8 +102,8 @@ export const AGENT_CONFIG = {
 // -------------------------------------------------------------
 export const DATA_PATHS = {
   // ?v=… busts the browser/CDN cache: bump it after every new export.
-  hexes: 'data/olomouc_gi_h3_r9.geojson?v=5',
-  metadata: 'data/olomouc_gi_h3_r9_metadata.json?v=5',
+  hexes: 'data/olomouc_gi_h3_r9.geojson?v=6',
+  metadata: 'data/olomouc_gi_h3_r9_metadata.json?v=6',
   // Optional microzone outlines. If this file does not exist, the
   // "Microzone boundaries" checkbox is not shown.
   boundaries: 'data/olomouc_microzones.geojson',
@@ -122,6 +138,16 @@ export const SCORE_CLASSES = [
   { from: 0.8, color: '#962320' },
 ];
 
+// Classes for share layers where more is better (green vegetation):
+// 0–20 % … 80–100 %, light to dark green.
+export const GREEN_CLASSES = [
+  { from: 0.0, color: '#f1f4e4' },
+  { from: 0.2, color: '#c9e0a6' },
+  { from: 0.4, color: '#8cc172' },
+  { from: 0.6, color: '#4c9a4e' },
+  { from: 0.8, color: '#1f6b34' },
+];
+
 // Starting opacity of the hexagon colours (the user can change it
 // with the slider in the Map layers panel).
 export const HEX_OPACITY = 0.7;
@@ -132,7 +158,8 @@ export const HEX_OPACITY = 0.7;
 // `legend` (optional) = text keys for the left / middle / right
 // legend labels (default: Low / – / High);
 // `note` (optional) = text key shown next to a grey box, for hexes
-// without a value.
+// without a value;
+// `classes` (optional) = colour classes (default: SCORE_CLASSES).
 // The order here is the order in the Map layers panel.
 export const MAP_LAYERS = [
   { id: 'score', key: 'score', label: 'layers.score' },
@@ -142,6 +169,12 @@ export const MAP_LAYERS = [
   { id: 'v', key: 'v', label: 'factor.v' },
   { id: 'feas', key: 'feas', label: 'factor.feas' },
   { id: 'gd', key: 'gd', label: 'factor.gd' },
+  // raw_vegetation_share 0–1: dense vegetation (Sentinel-2 NDVI ≥ 0.5,
+  // summer 2026), incl. courtyard and street trees.
+  {
+    id: 'veg', key: 'veg', label: 'layers.vegetation',
+    legend: ['legend.zero', null, 'legend.full'], classes: GREEN_CLASSES,
+  },
   // val_perceived_heat: share of residents' marks (2020 survey) that
   // say "uncomfortable on hot days". Not part of the score; null
   // where a hex has fewer than 3 marks.

@@ -47,6 +47,8 @@ KEY_METRICS = (
     "raw_share_75plus",
     "raw_share_0_4",
     "raw_sensitive_facilities",
+    "raw_vegetation_share",
+    "raw_ndvi_mean",
     "raw_green_share",
     "raw_tree_cover",
     "raw_sealing",
@@ -62,6 +64,7 @@ KEY_METRICS = (
 # Plain names for a few values in a single place's summary:
 # summary key -> metric.
 SUMMARY_ALIASES = {
+    "green_vegetation": "raw_vegetation_share",
     "public_roof_m2": "raw_public_roof_m2",
     "surface_temp_c": "raw_lst_microzone",
     "residents_uncomfortable_share": "val_perceived_heat",

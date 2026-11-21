@@ -6,6 +6,7 @@
 // =============================================================
 
 import { MAP_CONFIG } from '../config.js';
+import { isOrthoOn, setOrthoBasemap } from './basemap.js';
 
 /**
  * Wire up all map buttons.
@@ -51,11 +52,15 @@ export function initMapControls(map) {
     });
 
   // ---------- Basemap switch ----------
-  // TODO: switch between the light basemap and satellite imagery.
-  document.getElementById('btn-basemap')
-    .addEventListener('click', () => {
-      console.info('Basemap switch not built yet.');
-    });
+  // Toggles between the light basemap and the ČÚZK orthophoto.
+  // aria-pressed = true while the orthophoto is shown.
+  const basemapBtn = document.getElementById('btn-basemap');
+  basemapBtn.setAttribute('aria-pressed', 'false');
+  basemapBtn.addEventListener('click', () => {
+    const on = !isOrthoOn();
+    setOrthoBasemap(map, on);
+    basemapBtn.setAttribute('aria-pressed', String(on));
+  });
 
   // ---------- Map layers panel: open / close ----------
   const toggle = document.getElementById('layers-toggle');

@@ -17,7 +17,7 @@ Rows: Heat & people exposed, Vulnerable groups, Lack of green (plus Space to bui
 when "only places we can build" is on).
 
 Why (two bullets at most): the measured values behind the highest factor, e.g.
-night min. °C, residents per ha, share aged 65+, tree cover %, sealed ground %,
+night min. °C, residents per ha, share aged 65+, green vegetation %, tree cover %, sealed ground %,
 walk to the nearest park.
 If `val_perceived_heat` has a value, add one short line: what share of residents'
 reports called it uncomfortable on hot days (2020 survey; not part of the score).

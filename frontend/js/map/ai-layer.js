@@ -5,7 +5,7 @@
 // backend's POST /api/agent/map), coloured by their value with
 // the rank on top, and zooms to them. One AI layer at a time.
 // Steps about public buildings also send building outlines
-// (properties.kind = 'building'): drawn in blue on top of their
+// (properties.kind = 'building'): drawn in light grey on top of their
 // hexagons, without numbers.
 // =============================================================
 
@@ -18,6 +18,10 @@ const LINE = 'ai-layer-line';
 const BUILDING_FILL = 'ai-layer-building-fill';
 const BUILDING_LINE = 'ai-layer-building-line';
 const LABEL = 'ai-layer-label';
+
+// Public building footprints from an Ask AI answer.
+const BUILDING_COLOR = '#E1E1E1';
+const BUILDING_COLOR_OUTLINE = '#737300'; // dark outline for contrast
 const LAYERS = [FILL, LINE, BUILDING_FILL, BUILDING_LINE, LABEL];
 
 const isBuilding = ['==', ['get', 'kind'], 'building'];
@@ -65,20 +69,20 @@ function addLayers(map) {
     filter: notBuilding,
     paint: { 'line-color': '#18002C', 'line-width': 2 },
   }, before);
-  // Public buildings: same blue as the "Public buildings" overlay.
+  // Public building footprints: light fill with a dark outline.
   map.addLayer({
     id: BUILDING_FILL,
     type: 'fill',
     source: SOURCE,
     filter: isBuilding,
-    paint: { 'fill-color': '#2F6FB3', 'fill-opacity': 0.9 },
+    paint: { 'fill-color': BUILDING_COLOR, 'fill-opacity': 0.9 },
   }, before);
   map.addLayer({
     id: BUILDING_LINE,
     type: 'line',
     source: SOURCE,
     filter: isBuilding,
-    paint: { 'line-color': '#0B2F57', 'line-width': 1.5 },
+    paint: { 'line-color': BUILDING_COLOR_OUTLINE, 'line-width': 1.5 },
   }, before);
   // Rank numbers on top of everything, basemap labels included.
   map.addLayer({

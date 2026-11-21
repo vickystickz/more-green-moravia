@@ -20,13 +20,13 @@ const BOUNDARY_LAYER = 'microzones-line';
 
 // Colour expression for one feature-state value: each class gets
 // one flat colour ('step'). Hexes without a value are light grey.
-function colourBy(key) {
+function colourBy(key, classes = SCORE_CLASSES) {
   const value = ['feature-state', key];
   return [
     'case',
     ['==', ['typeof', value], 'number'],
-    ['step', value, SCORE_CLASSES[0].color,
-      ...SCORE_CLASSES.slice(1).flatMap((c) => [c.from, c.color])],
+    ['step', value, classes[0].color,
+      ...classes.slice(1).flatMap((c) => [c.from, c.color])],
     '#e6e6e6',
   ];
 }
@@ -139,15 +139,19 @@ export function updateHexValues(map, hexes) {
         score: h.score, he: h.dims.he, v: h.dims.v, gd: h.dims.gd, feas: h.dims.feas,
         night: h.props.mu_heatwave_tmin, // Night-time heat (raw 0–1 membership)
         sealing: h.props.raw_sealing,    // Sealed ground, share 0–1
+        veg: h.props.raw_vegetation_share, // Green vegetation (NDVI), share 0–1
         reports: h.props.val_perceived_heat, // Residents' heat reports, 0–1 or null (grey)
       },
     );
   }
 }
 
-/** Colour the map by another value (a `key` from MAP_LAYERS in config.js). */
-export function setColourKey(map, key) {
-  if (map.getLayer(FILL)) map.setPaintProperty(FILL, 'fill-color', colourBy(key));
+/**
+ * Colour the map by another value (a `key` from MAP_LAYERS in
+ * config.js), with that layer's colour classes when it has its own.
+ */
+export function setColourKey(map, key, classes) {
+  if (map.getLayer(FILL)) map.setPaintProperty(FILL, 'fill-color', colourBy(key, classes));
 }
 
 /** Opacity of the hexagon colours, 0–1. */
@@ -202,9 +206,6 @@ export function setBoundariesVisible(map, visible) {
   }
 }
 
-/** Show or hide the basemap's building footprints. */
-export function setBuildingsVisible(map, visible) {
-  map.getStyle().layers
-    .filter((l) => l['source-layer'] === 'building')
-    .forEach((l) => map.setLayoutProperty(l.id, 'visibility', visible ? 'visible' : 'none'));
-}
+// Building footprints belong to the basemap, so basemap.js owns
+// them (they are hidden while the orthophoto is shown).
+export { setBuildingsVisible } from './basemap.js';

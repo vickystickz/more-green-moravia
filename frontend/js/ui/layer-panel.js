@@ -54,15 +54,22 @@ export function initLayerPanel({ onLayer, onBoundaries, onBuildings, onVacant, o
   const others = document.getElementById('layer-choice');
   const legend = document.getElementById('legend');
 
-  // Legend boxes: one per class, with its range as a tooltip.
+  // Legend boxes: one per class, with its range as a tooltip. Redrawn
+  // when the shown layer has its own colours (e.g. green vegetation).
   const scale = document.getElementById('legend-scale');
-  SCORE_CLASSES.forEach((c, i) => {
-    const box = document.createElement('span');
-    box.style.background = c.color;
-    const to = SCORE_CLASSES[i + 1]?.from ?? 1;
-    box.title = `${Math.round(c.from * 100)}–${Math.round(to * 100)}`;
-    scale.append(box);
-  });
+  let scaleClasses = null;
+  function drawScale(classes) {
+    if (classes === scaleClasses) return;
+    scaleClasses = classes;
+    scale.replaceChildren(...classes.map((c, i) => {
+      const box = document.createElement('span');
+      box.style.background = c.color;
+      const to = classes[i + 1]?.from ?? 1;
+      box.title = `${Math.round(c.from * 100)}–${Math.round(to * 100)}`;
+      return box;
+    }));
+  }
+  drawScale(SCORE_CLASSES);
 
   // Opacity slider: hexagon fill + legend boxes.
   const opacityControl = document.querySelector('.opacity-control');
@@ -107,6 +114,7 @@ export function initLayerPanel({ onLayer, onBoundaries, onBuildings, onVacant, o
     opacityControl.hidden = active === null; // nothing to fade when hidden
     if (!active) return;
     const layer = MAP_LAYERS.find((l) => l.id === active);
+    drawScale(layer.classes ?? SCORE_CLASSES);
     const keys = layer.legend ?? DEFAULT_LEGEND;
     legendLabels.forEach((span, i) => { span.textContent = keys[i] ? t(keys[i]) : ''; });
     legendNote.hidden = !layer.note;

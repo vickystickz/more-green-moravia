@@ -100,7 +100,7 @@ DIMENSIONS = (
     Metric(
         "gd",
         "Lack of green",
-        "Little green or tree cover, much sealed ground, or far to the nearest green area.",
+        "Little green vegetation or tree cover, much sealed ground, or far to the nearest green area.",
         "dimension",
         Kind.SCORE,
     ),
@@ -124,7 +124,8 @@ COMPONENTS = {
     ),
     "c_green_supply": (
         "Green supply deficit",
-        "Low green share, tree cover and green per person; high sealing.",
+        "Little green vegetation (Sentinel-2 NDVI), green share, tree cover and green per person; "
+        "high sealing.",
     ),
     "c_green_access": (
         "Green access deficit",
@@ -160,6 +161,12 @@ RAW = {
     "raw_share_75plus": ("Share of residents aged 75+", "%", Agg.AVG),
     "raw_share_0_4": ("Share of children aged 0-4", "%", Agg.AVG),
     "raw_sensitive_facilities": ("Kindergartens, schools and doctors", "count", Agg.SUM),
+    "raw_vegetation_share": (
+        "Green vegetation: share with dense vegetation (Sentinel-2 NDVI >= 0.5, summer 2026)",
+        "%",
+        Agg.AVG,
+    ),
+    "raw_ndvi_mean": ("Mean NDVI (Sentinel-2, summer 2026, -1 to 1)", "", Agg.AVG),
     "raw_green_share": ("Share of area that is green", "%", Agg.AVG),
     "raw_tree_cover": ("Tree cover density", "%", Agg.AVG),
     "raw_sealing": ("Sealed ground (imperviousness)", "%", Agg.AVG),

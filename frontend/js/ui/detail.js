@@ -44,12 +44,14 @@ function rawVulnerable(p) {
   ]);
 }
 
-// Lack of green: tree cover, sealed ground (Copernicus
+// Lack of green: green vegetation (Sentinel-2 NDVI, summer 2026; the
+// main green input), tree cover, sealed ground (Copernicus
 // Imperviousness), accessible green (Urban Atlas 2021) and walking
 // distance along streets to the nearest park or forest. Missing
 // parts are left out.
 function rawGreen(p) {
   return rawLine([
+    isNum(p.raw_vegetation_share) && t('raw.vegetation', { v: pct(p.raw_vegetation_share) }),
     isNum(p.raw_tree_cover) && t('raw.tree', { v: percent(Math.round(p.raw_tree_cover)) }),
     isNum(p.raw_sealing) && t('raw.sealing', { v: pct(p.raw_sealing) }),
     isNum(p.raw_green_share) && t('raw.greenShare', { v: pct(p.raw_green_share) }),

@@ -377,6 +377,11 @@
   background: var(--grey-50);
 }
 
+/* Basemap button while the orthophoto is shown. */
+.map-btn[aria-pressed="true"] {
+  background: var(--green-100);
+}
+
 /* Zoom in / out joined into one block with a thin divider. */
 .zoom-group {
   display: flex;
