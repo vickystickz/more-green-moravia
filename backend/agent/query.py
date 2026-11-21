@@ -54,8 +54,18 @@ KEY_METRICS = (
     "raw_dist_green",
     "raw_brownfield_share",
     "raw_vacant_share",
+    "raw_public_building_share",
+    "raw_public_roof_m2",
     "raw_parking",
+    "val_perceived_heat",
 )
+# Plain names for a few values in a single place's summary:
+# summary key -> metric.
+SUMMARY_ALIASES = {
+    "public_roof_m2": "raw_public_roof_m2",
+    "surface_temp_c": "raw_lst_microzone",
+    "residents_uncomfortable_share": "val_perceived_heat",
+}
 RANKED = ("score", "he", "v", "gd", "feas")
 
 
@@ -238,6 +248,32 @@ class LayerSpec(ScoreArgs):
     filters: list[Filter] = Field(default_factory=list)
     agg: Agg | None = None
     title: str | None = None
+    buildings: list[str] | None = Field(
+        None, description="Public buildings (building_id) to outline on top, in rank order"
+    )
+
+
+class BuildingsSpec(ScoreArgs):
+    metric: str = Field(
+        "he", description="Rank by this metric of the place each building stands in"
+    )
+    filters: list[Filter] = Field(
+        default_factory=list, description="Filters on the place's metrics, as in rank_areas"
+    )
+    microzone: str | None = Field(None, description="Only buildings in this microzone")
+    min_roof_m2: float = Field(
+        300, ge=0, description="Smallest roof (footprint) area worth listing, in m²"
+    )
+    flat_roofs_only: bool = Field(
+        False, description="Only buildings mapped with a flat roof (few have a roof shape)"
+    )
+    limit: int = Field(10, ge=1, le=MAX_LOCATE)
+    lang: Language = Field(Language.CS, description="Language of the street names")
+
+    @field_validator("microzone")
+    @classmethod
+    def blank_is_none(cls, value: str | None) -> str | None:
+        return value.strip() or None if isinstance(value, str) else value
 
 
 # ---------------------------------------------------------------------------
@@ -713,6 +749,9 @@ async def detail(db: Database, ctx: AgentContext, spec: DetailSpec) -> QueryResu
     }
     if distance is not None:
         summary["point_distance_to_hexagon_centre_m"] = round(distance)
+    for key, name in SUMMARY_ALIASES.items():
+        if name in r:
+            summary[key] = shown(ctx.metrics[name], r[name])
     rows_out = [
         {
             "metric": m.name,
@@ -861,6 +900,86 @@ async def locate(db: Database, ctx: AgentContext, spec: LocateSpec) -> QueryResu
     )
 
 
+async def public_buildings(db: Database, ctx: AgentContext, spec: BuildingsSpec) -> QueryResult:
+    """Public buildings (schools, offices, hospitals, ...) in the places that rank
+    highest on a metric: candidates for green roofs and greened courtyards."""
+    scoring = spec.resolved()
+    metric = ctx.metric(spec.metric)
+    q = Sql(ctx, scoring)
+    filters = list(spec.filters)
+    if spec.microzone:
+        filters.append(Filter(metric="microzone", op=Op.EQ, value=spec.microzone))
+    flat = "AND b.roof_shape = 'flat'" if spec.flat_roofs_only else ""
+    # The place's values first (unambiguous column names), then its buildings.
+    result = await db.query(
+        f"""
+        WITH h AS (
+            SELECT h3_index AS hex_id, mz_id, {q.metric(metric)} AS value
+            FROM hexes WHERE {q.where(filters)}
+        )
+        SELECT b.building_id, b.name, b.kind, b.roof_m2, b.roof_shape, b.levels,
+               b.lon, b.lat, h.hex_id, h.mz_id, h.value,
+               count(*) OVER () AS matching
+        FROM buildings b JOIN h ON h.hex_id = b.h3_index
+        WHERE b.roof_m2 >= {q.bind(spec.min_roof_m2)} AND h.value IS NOT NULL {flat}
+        ORDER BY h.value DESC, b.roof_m2 DESC, b.building_id
+        LIMIT {spec.limit}
+        """,
+        q.params,
+    )
+    if not result.rows:
+        return QueryResult(
+            columns=[],
+            rows=[],
+            summary={"buildings_found": 0, "hint": "lower min_roof_m2 or loosen the filters"},
+        )
+    matching = result.rows[0]["matching"]
+    places = await places_api.reverse_many(
+        [(r["lon"], r["lat"]) for r in result.rows], spec.lang.value
+    )
+    rows = []
+    for i, (r, place) in enumerate(zip(result.rows, places, strict=True), 1):
+        rows.append(
+            {
+                "rank": i,
+                "building": r["name"],
+                "type": r["kind"],
+                "roof_m2": round(r["roof_m2"]),
+                "roof_shape": r["roof_shape"],
+                "levels": int(r["levels"]) if r["levels"] is not None else None,
+                "street": (place or {}).get("street"),
+                "district": (place or {}).get("district"),
+                "microzone": r["mz_id"],
+                metric.name: shown(metric, r["value"]),
+                "h3_index": r["hex_id"],
+            }
+        )
+    summary: dict[str, Any] = {
+        "ranked_by": _label(metric) | {"of": "the place the building stands in"},
+        "matching_buildings": matching,
+        "min_roof_m2": spec.min_roof_m2,
+    }
+    if not places_api.enabled():
+        summary["street_names"] = "unavailable (no geocoder key); name buildings by microzone"
+    if metric.derived:
+        summary["scoring"] = scoring.describe()
+    hexes = list(dict.fromkeys(r["hex_id"] for r in result.rows))
+    return QueryResult(
+        columns=list(rows[0]),
+        rows=rows,
+        summary=summary,
+        truncated=matching > len(rows),
+        layer=_layer(
+            spec,
+            Level.HEX,
+            metric.name,
+            ids=hexes,
+            title=f"{len(rows)} public buildings: {metric.label}",
+            buildings=[r["building_id"] for r in result.rows],
+        ),
+    )
+
+
 def _place_title(rows: list[dict[str, Any]]) -> str:
     if len(rows) > 1:
         return f"{len(rows)} places"
@@ -895,6 +1014,7 @@ def _layer(
     filters: list[Filter] | None = None,
     agg: Agg | None = None,
     title: str | None = None,
+    buildings: list[str] | None = None,
 ) -> LayerSpec:
     return LayerSpec(
         preset=spec.preset,
@@ -906,4 +1026,5 @@ def _layer(
         filters=filters or [],
         agg=agg,
         title=title,
+        buildings=buildings,
     )

@@ -4,15 +4,24 @@
 // microzones one agent step found (a GeoJSON layer from the
 // backend's POST /api/agent/map), coloured by their value with
 // the rank on top, and zooms to them. One AI layer at a time.
+// Steps about public buildings also send building outlines
+// (properties.kind = 'building'): drawn in blue on top of their
+// hexagons, without numbers.
 // =============================================================
 
 import { SCORE_CLASSES } from '../config.js';
-import { num } from '../ui/i18n.js';
+import { num, t } from '../ui/i18n.js';
 
 const SOURCE = 'ai-layer';
 const FILL = 'ai-layer-fill';
 const LINE = 'ai-layer-line';
+const BUILDING_FILL = 'ai-layer-building-fill';
+const BUILDING_LINE = 'ai-layer-building-line';
 const LABEL = 'ai-layer-label';
+const LAYERS = [FILL, LINE, BUILDING_FILL, BUILDING_LINE, LABEL];
+
+const isBuilding = ['==', ['get', 'kind'], 'building'];
+const notBuilding = ['!=', ['get', 'kind'], 'building'];
 
 let popup = null;
 let current = null; // the MapLayer on the map, or null
@@ -46,20 +55,37 @@ function addLayers(map) {
     id: FILL,
     type: 'fill',
     source: SOURCE,
+    filter: notBuilding,
     paint: { 'fill-color': '#e6e6e6', 'fill-opacity': 0.85 },
   }, before);
   map.addLayer({
     id: LINE,
     type: 'line',
     source: SOURCE,
+    filter: notBuilding,
     paint: { 'line-color': '#18002C', 'line-width': 2 },
+  }, before);
+  // Public buildings: same blue as the "Public buildings" overlay.
+  map.addLayer({
+    id: BUILDING_FILL,
+    type: 'fill',
+    source: SOURCE,
+    filter: isBuilding,
+    paint: { 'fill-color': '#2F6FB3', 'fill-opacity': 0.9 },
+  }, before);
+  map.addLayer({
+    id: BUILDING_LINE,
+    type: 'line',
+    source: SOURCE,
+    filter: isBuilding,
+    paint: { 'line-color': '#0B2F57', 'line-width': 1.5 },
   }, before);
   // Rank numbers on top of everything, basemap labels included.
   map.addLayer({
     id: LABEL,
     type: 'symbol',
     source: SOURCE,
-    filter: ['has', 'rank'],
+    filter: ['all', ['has', 'rank'], notBuilding], // buildings are not numbered
     layout: {
       'text-field': ['to-string', ['get', 'rank']],
       'text-font': ['Noto Sans Regular'],
@@ -88,6 +114,29 @@ function addLayers(map) {
   });
   map.on('mouseenter', FILL, () => { map.getCanvas().style.cursor = 'pointer'; });
   map.on('mouseleave', FILL, () => { map.getCanvas().style.cursor = ''; });
+
+  // A building: its name (or type), roof area and roof shape.
+  map.on('click', BUILDING_FILL, (e) => {
+    const p = e.features?.[0]?.properties;
+    if (!p) return;
+    e.preventDefault();
+    popup?.remove();
+    const box = document.createElement('div');
+    box.className = 'ai-layer-popup';
+    const name = document.createElement('strong');
+    const label = p.name || String(p.type || '').replace(/_/g, ' ');
+    name.textContent = label;
+    const roof = document.createElement('span');
+    roof.textContent = [
+      typeof p.roof_m2 === 'number' && t('askai.roofArea', { v: num(p.roof_m2) }),
+      p.roof_shape === 'flat' && t('askai.flatRoof'),
+    ].filter(Boolean).join(' · ');
+    box.append(name, roof);
+    popup = new maplibregl.Popup({ closeButton: false, maxWidth: '240px' })
+      .setLngLat(e.lngLat).setDOMContent(box).addTo(map);
+  });
+  map.on('mouseenter', BUILDING_FILL, () => { map.getCanvas().style.cursor = 'pointer'; });
+  map.on('mouseleave', BUILDING_FILL, () => { map.getCanvas().style.cursor = ''; });
 }
 
 /**
@@ -103,7 +152,7 @@ export function showAiLayer(map, layer) {
   current = layer;
   map.getSource(SOURCE).setData(layer.features);
   map.setPaintProperty(FILL, 'fill-color', colour(layer.legend?.breaks));
-  [FILL, LINE, LABEL].forEach((id) => map.setLayoutProperty(id, 'visibility', 'visible'));
+  LAYERS.forEach((id) => map.setLayoutProperty(id, 'visibility', 'visible'));
 
   if (layer.bbox) {
     const [w, s, e, n] = layer.bbox;
@@ -117,5 +166,5 @@ export function clearAiLayer(map) {
   current = null;
   if (!map?.getSource(SOURCE)) return;
   map.getSource(SOURCE).setData({ type: 'FeatureCollection', features: [] });
-  [FILL, LINE, LABEL].forEach((id) => map.setLayoutProperty(id, 'visibility', 'none'));
+  LAYERS.forEach((id) => map.setLayoutProperty(id, 'visibility', 'none'));
 }

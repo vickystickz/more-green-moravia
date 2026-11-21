@@ -349,6 +349,22 @@
   margin-top: 8px;
 }
 
+/* "More details": the text after the table, folded by default. */
+.ask-ai-more > summary {
+  cursor: pointer;
+  width: fit-content;
+  font-weight: var(--weight-medium);
+  color: var(--grey-700);
+}
+
+.ask-ai-more > summary:hover {
+  color: var(--grey-900);
+}
+
+.ask-ai-more > * + * {
+  margin-top: 8px;
+}
+
 .ask-ai-msg__text h4 {
   font-size: var(--caption-1-size);
   font-weight: var(--weight-semibold);

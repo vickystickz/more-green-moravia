@@ -164,7 +164,11 @@ RAW = {
     "raw_tree_cover": ("Tree cover density", "%", Agg.AVG),
     "raw_sealing": ("Sealed ground (imperviousness)", "%", Agg.AVG),
     "raw_green_per_capita": ("Green area per resident", "m²/person", Agg.AVG),
-    "raw_dist_green": ("Distance to nearest green area (0.5 ha+)", "m", Agg.AVG),
+    "raw_dist_green": (
+        "Walking distance along streets to the nearest park or forest (0.5 ha+)",
+        "m",
+        Agg.AVG,
+    ),
     "raw_brownfield_share": ("Share of area that is brownfield", "%", Agg.AVG),
     "raw_vacant_share": ("Share of area that is vacant land", "%", Agg.AVG),
     "raw_constraint_share": (
@@ -172,9 +176,39 @@ RAW = {
         "%",
         Agg.AVG,
     ),
+    "raw_public_building_share": (
+        "Share of area covered by public buildings (schools, offices, hospitals, sports halls)",
+        "%",
+        Agg.AVG,
+    ),
+    "raw_public_roof_m2": ("Public building footprint (roof) area", "m²", Agg.SUM),
     "raw_parking": ("Parking spaces", "spaces", Agg.SUM),
     "raw_cycle_density": ("Cycle path density", "", Agg.AVG),
-    "raw_street_density": ("Street and sidewalk density", "", Agg.AVG),
+    "raw_street_density": ("Street density (OpenStreetMap streets)", "m/ha", Agg.AVG),
+}
+
+# val_* columns: residents' 2020 heat survey, used to check the index.
+# NOT part of any score. (label, unit, how hexes add up, description)
+VALIDATION = {
+    "val_perceived_heat": (
+        "Share of residents' marks saying uncomfortable on hot days (2020 survey)",
+        "%",
+        Agg.AVG,
+        "Not part of the score; supporting evidence only. Empty where a place has fewer "
+        "than 3 marks.",
+    ),
+    "val_uncomfortable": (
+        "Residents' marks: uncomfortable on hot days (2020 survey)",
+        "marks",
+        Agg.SUM,
+        "Not part of the score.",
+    ),
+    "val_comfortable": (
+        "Residents' marks: comfortable on hot days (2020 survey)",
+        "marks",
+        Agg.SUM,
+        "Not part of the score.",
+    ),
 }
 
 OTHER = {
@@ -261,6 +295,9 @@ def build_context(db: Database) -> AgentContext:
                     Kind.SCORE,
                 )
             )
+    for name, (label, unit, agg, description) in VALIDATION.items():
+        if name in present:
+            metrics.append(Metric(name, label, description, "validation", Kind.RAW, unit, agg))
     for name, (label, unit, agg) in OTHER.items():
         if name in present:
             metrics.append(Metric(name, label, "", "other", Kind.RAW, unit, agg))

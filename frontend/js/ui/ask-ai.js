@@ -178,31 +178,39 @@ export function initAskAi(getMap = () => null, { onMapLayer = () => {}, onMapLay
     }
   }
 
-  // One button per step that found places (same layer only once).
+  // True when every place in b is already in a (same level). E.g. the
+  // street-name lookup after a ranking draws the same 5 places again.
+  function samePlaces(a, b) {
+    const ids = a.layer.ids;
+    return a.layer.level === b.layer.level && ids?.length > 0
+      && b.layer.ids?.length > 0 && b.layer.ids.every((id) => ids.includes(id));
+  }
+
+  // One "Show on map" button per answer. Steps that only repeat
+  // earlier places are dropped (the earlier one has the better title
+  // and colouring); of the rest, the last step is what the answer is
+  // about.
   function addMapButtons(reply, items) {
-    const seen = new Set();
-    const unique = items.filter((i) => {
-      const key = JSON.stringify(i.layer);
-      return !seen.has(key) && seen.add(key);
-    });
-    if (!unique.length) return;
+    const distinct = [];
+    for (const item of items) {
+      if (!distinct.some((d) => samePlaces(d, item))) distinct.push(item);
+    }
+    const item = distinct.at(-1);
+    if (!item) return;
 
     const box = el('div', 'ask-ai-msg__maps');
-    for (const item of unique) {
-      const btn = el('button', 'ask-ai-map-btn');
-      btn.type = 'button';
-      btn.setAttribute('aria-pressed', 'false');
-      const icon = document.createElement('img');
-      icon.src = 'assets/icons/map.svg';
-      icon.width = 14;
-      icon.height = 14;
-      icon.alt = '';
-      const label = unique.length === 1 ? t('askai.showOnMap') : item.title;
-      btn.append(icon, el('span', '', label));
-      btn.title = item.title;
-      btn.addEventListener('click', () => showOnMap(btn, item));
-      box.append(btn);
-    }
+    const btn = el('button', 'ask-ai-map-btn');
+    btn.type = 'button';
+    btn.setAttribute('aria-pressed', 'false');
+    const icon = document.createElement('img');
+    icon.src = 'assets/icons/map.svg';
+    icon.width = 14;
+    icon.height = 14;
+    icon.alt = '';
+    btn.append(icon, el('span', '', t('askai.showOnMap')));
+    btn.title = item.title; // what will be drawn, on hover
+    btn.addEventListener('click', () => showOnMap(btn, item));
+    box.append(btn);
     reply.querySelector('.ask-ai-msg__text').after(box);
   }
 
@@ -267,6 +275,7 @@ export function initAskAi(getMap = () => null, { onMapLayer = () => {}, onMapLay
       status.remove();
       const text = el('div', 'ask-ai-msg__text');
       text.innerHTML = renderMarkdown(answer);
+      foldAfterTable(text);
       reply.prepend(text);
       addMapButtons(reply, layers);
       collapseSteps(steps);
@@ -302,6 +311,24 @@ export function initAskAi(getMap = () => null, { onMapLayer = () => {}, onMapLay
     body.scrollTop = body.scrollHeight;
   }
 
+  // Keep answers short: the sentence and the table stay visible,
+  // everything after the first table folds into "More details".
+  // A closing "Show on map" line stays visible, since it points to
+  // the buttons right under it.
+  function foldAfterTable(text) {
+    const table = text.querySelector(':scope > .ask-ai-table');
+    if (!table) return;
+    const rest = [];
+    for (let n = table.nextElementSibling; n; n = n.nextElementSibling) rest.push(n);
+    const last = rest.at(-1);
+    if (last && SHOW_ON_MAP.test(last.textContent)) rest.pop();
+    if (!rest.length) return;
+
+    const more = el('details', 'ask-ai-more');
+    more.append(el('summary', '', t('askai.moreDetails')), ...rest);
+    table.after(more);
+  }
+
   // After the answer, the query list folds into "N queries run".
   function collapseSteps(steps) {
     if (!steps.children.length) {
@@ -318,6 +345,10 @@ export function initAskAi(getMap = () => null, { onMapLayer = () => {}, onMapLay
 }
 
 class AgentError extends Error {}
+
+// The closing line the agent writes (backend/agent/skills/answer-style.md),
+// in English or Czech, whatever the app's language.
+const SHOW_ON_MAP = /show on map|zobrazit na mapě/i;
 
 // POST the question and call handlers[event](data) for each
 // server-sent event as it arrives.

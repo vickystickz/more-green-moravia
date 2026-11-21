@@ -39,6 +39,13 @@ const vacantShare = ['+',
   ['coalesce', ['get', 'raw_vacant_share'], 0]];
 let vacantVisible = false; // off by default; kept if toggled before the data loads
 
+// "Public buildings" overlay: hexes where public buildings (schools,
+// offices, hospitals, sports halls) cover at least 5 %.
+const PUBLIC = 'gi-hexes-public';
+const PUBLIC_FROM = 0.05;
+const PUBLIC_COLOR = '#2F6FB3'; // same blue as the icon in css/map.css
+let publicVisible = false;
+
 // Put our layers under the basemap's first label layer, so street
 // and place names stay readable on top of the colours.
 function firstLabelLayer(map) {
@@ -89,6 +96,17 @@ export function addHexLayer(map, geojson, onClick) {
     paint: { 'line-color': '#1F1F1F', 'line-width': 2.5 },
   }, before);
 
+  // Public buildings: blue outline, drawn inset a little so it stays
+  // visible where a hex is also outlined as brownfield / vacant.
+  map.addLayer({
+    id: PUBLIC,
+    type: 'line',
+    source: SOURCE,
+    filter: ['>=', ['coalesce', ['get', 'raw_public_building_share'], 0], PUBLIC_FROM],
+    layout: { visibility: publicVisible ? 'visible' : 'none' },
+    paint: { 'line-color': PUBLIC_COLOR, 'line-width': 2, 'line-offset': 2 },
+  }, before);
+
   // Thick dark outline around the selected hex.
   map.addLayer({
     id: SELECTED,
@@ -121,12 +139,13 @@ export function updateHexValues(map, hexes) {
         score: h.score, he: h.dims.he, v: h.dims.v, gd: h.dims.gd, feas: h.dims.feas,
         night: h.props.mu_heatwave_tmin, // Night-time heat (raw 0–1 membership)
         sealing: h.props.raw_sealing,    // Sealed ground, share 0–1
+        reports: h.props.val_perceived_heat, // Residents' heat reports, 0–1 or null (grey)
       },
     );
   }
 }
 
-/** Colour the map by another value (score, he, night, v, gd, sealing or feas). */
+/** Colour the map by another value (a `key` from MAP_LAYERS in config.js). */
 export function setColourKey(map, key) {
   if (map.getLayer(FILL)) map.setPaintProperty(FILL, 'fill-color', colourBy(key));
 }
@@ -154,6 +173,12 @@ export function setHexesVisible(map, visible) {
 export function setVacantVisible(map, visible) {
   vacantVisible = visible;
   if (map.getLayer(VACANT)) map.setLayoutProperty(VACANT, 'visibility', visible ? 'visible' : 'none');
+}
+
+/** Show or hide the "Public buildings" overlay. */
+export function setPublicVisible(map, visible) {
+  publicVisible = visible;
+  if (map.getLayer(PUBLIC)) map.setLayoutProperty(PUBLIC, 'visibility', visible ? 'visible' : 'none');
 }
 
 /**

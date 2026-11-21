@@ -18,16 +18,19 @@ function priorityLabel(score) {
 // Czech definition of a tropical night: minimum of 20 °C or more.
 const TROPICAL_NIGHT_C = 20;
 
-// "Heatwave max. 31.2 °C · 85 residents/ha" — parts with missing
-// values are left out; returns '' when every part is missing.
+// "Night min. 20.1 °C · day max. 34.3 °C · 85 residents/ha" — parts
+// with missing values are left out; returns '' when every part is
+// missing.
 function rawLine(parts) {
   return parts.filter(Boolean).join(' · ');
 }
 
+// Same order as the heat weights: night 45 %, surface 40 %, day 15 %.
 function rawHeat(p) {
   return rawLine([
-    isNum(p.raw_heatwave_tmax) && t('raw.heatwave', { v: num(p.raw_heatwave_tmax, 1) }),
-    isNum(p.raw_heatwave_tmin) && t('raw.heatwaveNight', { v: num(p.raw_heatwave_tmin, 1) }),
+    isNum(p.raw_heatwave_tmin) && t('raw.nightMin', { v: num(p.raw_heatwave_tmin, 1) }),
+    isNum(p.raw_heatwave_tmax) && t('raw.dayMax', { v: num(p.raw_heatwave_tmax, 1) }),
+    isNum(p.raw_lst_microzone) && t('raw.surface', { v: num(p.raw_lst_microzone, 1) }),
     isNum(p.raw_res_density) && t('raw.density', { v: num(p.raw_res_density) }),
     isNum(p.raw_heatwave_tmin) && p.raw_heatwave_tmin >= TROPICAL_NIGHT_C && t('raw.tropicalNights'),
   ]);
@@ -42,8 +45,9 @@ function rawVulnerable(p) {
 }
 
 // Lack of green: tree cover, sealed ground (Copernicus
-// Imperviousness), accessible green (Urban Atlas 2021) and distance
-// to the nearest park or forest. Missing parts are left out.
+// Imperviousness), accessible green (Urban Atlas 2021) and walking
+// distance along streets to the nearest park or forest. Missing
+// parts are left out.
 function rawGreen(p) {
   return rawLine([
     isNum(p.raw_tree_cover) && t('raw.tree', { v: percent(Math.round(p.raw_tree_cover)) }),
@@ -53,15 +57,32 @@ function rawGreen(p) {
   ]);
 }
 
-// Space to build: brownfield + vacant land, or a short message
-// when both are 0.
+// Space to build: brownfield + vacant land (or a short message when
+// both are 0), plus the roof area of public buildings when there is
+// any.
 function rawFeasibility(p) {
   const shares = [p.raw_brownfield_share, p.raw_vacant_share].filter(isNum);
-  if (shares.length && shares.every((v) => v === 0)) return t('raw.noSpace');
+  const land = shares.length && shares.every((v) => v === 0)
+    ? [t('raw.noSpace')]
+    : [
+      isNum(p.raw_brownfield_share) && t('raw.brownfield', { v: pct(p.raw_brownfield_share) }),
+      isNum(p.raw_vacant_share) && t('raw.vacant', { v: pct(p.raw_vacant_share) }),
+    ];
   return rawLine([
-    isNum(p.raw_brownfield_share) && t('raw.brownfield', { v: pct(p.raw_brownfield_share) }),
-    isNum(p.raw_vacant_share) && t('raw.vacant', { v: pct(p.raw_vacant_share) }),
+    ...land,
+    isNum(p.raw_public_roof_m2) && p.raw_public_roof_m2 > 0
+      && t('raw.publicRoof', { v: num(p.raw_public_roof_m2) }),
   ]);
+}
+
+// "Residents' reports: 12 of 15 marks say uncomfortable…", only
+// where the export has a value (3+ marks in the hex). Not part of
+// the score.
+function reportsLine(p) {
+  if (!isNum(p.val_perceived_heat)) return '';
+  const bad = isNum(p.val_uncomfortable) ? p.val_uncomfortable : 0;
+  const good = isNum(p.val_comfortable) ? p.val_comfortable : 0;
+  return t('detail.reports', { n: num(Math.round(bad)), total: num(Math.round(bad + good)) });
 }
 
 // Land where no green infrastructure is possible (already taken out
@@ -124,6 +145,9 @@ export function renderDetail(hex, { onlyBuildable, weightLabels }) {
   document.getElementById('detail-hex').textContent = t('detail.hex');
   document.getElementById('detail-score').textContent = `${Math.round(hex.score * 100)} / 100`;
   document.getElementById('detail-label').textContent = priorityLabel(hex.score);
+  const reports = document.getElementById('detail-reports');
+  reports.textContent = reportsLine(p);
+  reports.hidden = !reports.textContent;
 
   const list = document.getElementById('detail-factors');
   list.innerHTML = '';

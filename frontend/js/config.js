@@ -86,8 +86,8 @@ export const AGENT_CONFIG = {
 // -------------------------------------------------------------
 export const DATA_PATHS = {
   // ?v=… busts the browser/CDN cache: bump it after every new export.
-  hexes: 'data/olomouc_gi_h3_r9.geojson?v=4',
-  metadata: 'data/olomouc_gi_h3_r9_metadata.json?v=4',
+  hexes: 'data/olomouc_gi_h3_r9.geojson?v=5',
+  metadata: 'data/olomouc_gi_h3_r9_metadata.json?v=5',
   // Optional microzone outlines. If this file does not exist, the
   // "Microzone boundaries" checkbox is not shown.
   boundaries: 'data/olomouc_microzones.geojson',
@@ -130,7 +130,9 @@ export const HEX_OPACITY = 0.7;
 // `key` is the feature-state value set in map/layers.js;
 // `label` is the text key in data/lang/*.json;
 // `legend` (optional) = text keys for the left / middle / right
-// legend labels (default: Low / – / High).
+// legend labels (default: Low / – / High);
+// `note` (optional) = text key shown next to a grey box, for hexes
+// without a value.
 // The order here is the order in the Map layers panel.
 export const MAP_LAYERS = [
   { id: 'score', key: 'score', label: 'layers.score' },
@@ -140,4 +142,11 @@ export const MAP_LAYERS = [
   { id: 'v', key: 'v', label: 'factor.v' },
   { id: 'feas', key: 'feas', label: 'factor.feas' },
   { id: 'gd', key: 'gd', label: 'factor.gd' },
+  // val_perceived_heat: share of residents' marks (2020 survey) that
+  // say "uncomfortable on hot days". Not part of the score; null
+  // where a hex has fewer than 3 marks.
+  {
+    id: 'reports', key: 'reports', label: 'layers.reports',
+    legend: ['legend.comfortable', null, 'legend.uncomfortable'], note: 'legend.fewReports',
+  },
 ];

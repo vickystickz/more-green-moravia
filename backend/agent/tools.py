@@ -24,6 +24,7 @@ from pydantic import BaseModel, ValidationError
 from agent.catalog import AgentContext
 from agent.llm import ToolCall
 from agent.query import (
+    BuildingsSpec,
     DescribeSpec,
     DetailSpec,
     LocateSpec,
@@ -36,6 +37,7 @@ from agent.query import (
     detail,
     locate,
     overview,
+    public_buildings,
     rank,
     summarize,
 )
@@ -164,6 +166,26 @@ TOOLS: dict[str, Tool] = {
             label=lambda spec: (
                 f"Found the street names of {len(spec.h3_indexes)} place"
                 + ("s" if len(spec.h3_indexes) != 1 else "")
+            ),
+        ),
+        Tool(
+            name="public_buildings",
+            description=(
+                "Individual public buildings (schools, kindergartens, offices, hospitals, "
+                "university buildings, libraries ...) in the places that rank highest on a "
+                "metric (default he, heat & people exposed), biggest roofs first within a "
+                "place. Each row: building name (often empty: then say its type), type, "
+                "roof (footprint) area in m², roof shape when known, street and district, "
+                "microzone. Use it for green roofs, greened courtyards or anything about "
+                "public buildings; it already names streets, so no locate_hexagons call is "
+                "needed. The map shows the buildings on top of their places. "
+                "lang: 'en' for English answers, else 'cs'." + SCORING_HELP
+            ),
+            args=BuildingsSpec,
+            run=public_buildings,
+            label=lambda spec: (
+                f"Found public buildings in places ranked by {spec.metric}"
+                + (" (filtered)" if spec.filters or spec.microzone else "")
             ),
         ),
     )

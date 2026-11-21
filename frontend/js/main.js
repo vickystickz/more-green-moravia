@@ -15,7 +15,7 @@ import { initMapControls } from './map/controls.js';
 import {
   addHexLayer, updateHexValues, setColourKey, highlightHex,
   addBoundaryLayer, setBoundariesVisible, setBuildingsVisible, setHexesVisible,
-  setVacantVisible,
+  setVacantVisible, setPublicVisible,
   setHexOpacity,
 } from './map/layers.js';
 import { initSearch } from './ui/search.js';
@@ -197,6 +197,7 @@ async function init() {
       onBoundaries: (visible) => setBoundariesVisible(map, visible),
       onBuildings: (visible) => setBuildingsVisible(map, visible),
       onVacant: (visible) => setVacantVisible(map, visible),
+      onPublic: (visible) => setPublicVisible(map, visible),
       onOpacity: (opacity) => setHexOpacity(map, opacity),
     });
 

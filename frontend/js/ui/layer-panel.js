@@ -9,8 +9,8 @@
 //   - eye of the shown view → hide the hexagons completely
 // The chosen view sits on top with its legend and opacity slider;
 // the other views are listed under it, in MAP_LAYERS order.
-// Brownfields and vacant land, Microzone boundaries and Building
-// switch on and off on their own.
+// Brownfields and vacant land, Public buildings, Microzone
+// boundaries and Building switch on and off on their own.
 // =============================================================
 
 import { MAP_LAYERS, SCORE_CLASSES, HEX_OPACITY } from '../config.js';
@@ -44,11 +44,12 @@ function eyeButton(pressed) {
  *   onBoundaries: (visible: boolean) => void,
  *   onBuildings: (visible: boolean) => void,
  *   onVacant: (visible: boolean) => void,
+ *   onPublic: (visible: boolean) => void,
  *   onOpacity: (opacity: number) => void,  // 0–1
  * }} handlers
  * @returns {{ showBoundaryOption: () => void, hideAll: () => void, showDefault: () => void }}
  */
-export function initLayerPanel({ onLayer, onBoundaries, onBuildings, onVacant, onOpacity }) {
+export function initLayerPanel({ onLayer, onBoundaries, onBuildings, onVacant, onPublic, onOpacity }) {
   const currentSlot = document.getElementById('layer-current-row');
   const others = document.getElementById('layer-choice');
   const legend = document.getElementById('legend');
@@ -92,6 +93,9 @@ export function initLayerPanel({ onLayer, onBoundaries, onBuildings, onVacant, o
   // layer's own (e.g. 0% … 100% for Sealed ground).
   const legendLabels = ['legend-low', 'legend-mid', 'legend-high'].map((id) => document.getElementById(id));
   const DEFAULT_LEGEND = ['legend.low', null, 'legend.high'];
+  // Grey box + text for hexes without a value (only some layers).
+  const legendNote = document.getElementById('legend-note');
+  const legendNoteText = document.getElementById('legend-note-text');
 
   function draw() {
     eyes.forEach((btn, id) => setPressed(btn, id === active));
@@ -105,6 +109,8 @@ export function initLayerPanel({ onLayer, onBoundaries, onBuildings, onVacant, o
     const layer = MAP_LAYERS.find((l) => l.id === active);
     const keys = layer.legend ?? DEFAULT_LEGEND;
     legendLabels.forEach((span, i) => { span.textContent = keys[i] ? t(keys[i]) : ''; });
+    legendNote.hidden = !layer.note;
+    legendNoteText.textContent = layer.note ? t(layer.note) : '';
   }
 
   // Text that JS wrote: redo it in the new language.
@@ -156,6 +162,7 @@ export function initLayerPanel({ onLayer, onBoundaries, onBuildings, onVacant, o
   wireToggle('.eye-btn[data-layer="boundaries"]', onBoundaries);
   wireToggle('.eye-btn[data-layer="buildings"]', onBuildings);
   wireToggle('.eye-btn[data-layer="vacant"]', onVacant);
+  wireToggle('.eye-btn[data-layer="public"]', onPublic);
 
   return {
     showBoundaryOption() {

@@ -211,7 +211,8 @@
 }
 
 .layer-row[hidden],
-.legend[hidden] {
+.legend[hidden],
+.legend__note[hidden] {
   display: none;
 }
 
@@ -219,6 +220,17 @@
 .layer-row__icon--outline {
   background: none;
   border: 2.5px solid #1F1F1F;
+  border-radius: 3px;
+  width: 12px;
+  height: 12px;
+  margin: 0 2px;
+}
+
+/* Blue square in front of "Public buildings" (same blue as the
+   outline on the map, PUBLIC_COLOR in js/map/layers.js). */
+.layer-row__icon--public {
+  background: none;
+  border: 2px solid #2F6FB3;
   border-radius: 3px;
   width: 12px;
   height: 12px;
@@ -240,6 +252,24 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
+}
+
+/* Grey box + "too few reports": hexes without a value. */
+.legend__note {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--caption-3-size);
+  line-height: var(--caption-3-line);
+  font-weight: var(--weight-medium);
+  color: var(--display-subtle-02);
+}
+
+.legend__swatch {
+  width: 12px;
+  height: 12px;
+  background: #e6e6e6; /* the no-value grey in js/map/layers.js */
+  opacity: var(--hex-opacity, 0.7);
 }
 
 /* Classified legend: one box per class (added by layer-panel.js).

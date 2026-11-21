@@ -88,6 +88,21 @@
   color: var(--grey-700);
 }
 
+/* Residents' heat reports: a small line under the note, set apart
+   by a thin rule because it is not part of the score. */
+.detail-card__reports {
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: 1px solid var(--grey-100);
+  font-size: var(--body-sm-size);
+  line-height: var(--body-sm-line);
+  color: var(--grey-700);
+}
+
+.detail-card__reports[hidden] {
+  display: none;
+}
+
 /* "What made up the score" */
 .detail-card__factors {
   display: flex;

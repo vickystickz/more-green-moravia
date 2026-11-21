@@ -1,5 +1,7 @@
 """GeoJSON layers for the map: what one agent step found, drawn as hexagons or
-microzones. No model is involved; the body is the step's `layer`."""
+microzones, plus public building outlines on top when the step found buildings
+(their features have `kind: "building"`). No model is involved; the body is the
+step's `layer`."""
 
 import json
 from typing import Any
@@ -11,6 +13,7 @@ from agent.query import CLASS_BREAKS, LayerSpec, Level, Sql, _agg, _agg_sql, sho
 from app.database import Database
 
 MAX_IDS = 1000
+MAX_BUILDINGS = 50
 
 
 class Legend(BaseModel):
@@ -65,9 +68,10 @@ async def build(db: Database, ctx: AgentContext, spec: LayerSpec) -> MapLayer:
             q.params,
         )
 
+    # With buildings, the buildings carry the rank numbers, not their places.
     order = (
         {i: n for n, i in enumerate(names if spec.level is Level.MICROZONE else ids, 1)}
-        if ids
+        if ids and not spec.buildings
         else {}
     )
     features = []
@@ -90,6 +94,8 @@ async def build(db: Database, ctx: AgentContext, spec: LayerSpec) -> MapLayer:
             }
         )
     features.sort(key=lambda f: f["properties"].get("rank") or 0)
+    if spec.buildings:
+        features += await _building_features(db, Sql(ctx, scoring), spec.buildings[:MAX_BUILDINGS])
 
     return MapLayer(
         title=spec.title or metric.label,
@@ -106,6 +112,37 @@ async def build(db: Database, ctx: AgentContext, spec: LayerSpec) -> MapLayer:
         bbox=_bbox(features),
         scoring=scoring.describe() if metric.derived else None,
     )
+
+
+async def _building_features(db: Database, q: Sql, ids: list[str]) -> list[dict[str, Any]]:
+    """Public building outlines, drawn on top of their places, numbered in order.
+    q must be a fresh Sql: its parameters are this query's only."""
+    result = await db.query(
+        f"""
+        SELECT building_id, name, kind, roof_m2, roof_shape, geometry
+        FROM buildings WHERE building_id IN ({", ".join(q.bind(i) for i in ids)})
+        """,
+        q.params,
+    )
+    rank = {i: n for n, i in enumerate(ids, 1)}
+    features = [
+        {
+            "type": "Feature",
+            "id": row["building_id"],
+            "properties": {
+                "kind": "building",
+                "id": row["building_id"],
+                "name": row["name"],
+                "type": row["kind"],
+                "roof_m2": round(row["roof_m2"]) if row["roof_m2"] is not None else None,
+                "roof_shape": row["roof_shape"],
+                "rank": rank.get(row["building_id"]),
+            },
+            "geometry": json.loads(row["geometry"]),
+        }
+        for row in result.rows
+    ]
+    return sorted(features, key=lambda f: f["properties"]["rank"] or 0)
 
 
 def _quantile_breaks(values: list[float]) -> list[float]:

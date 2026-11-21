@@ -1,5 +1,5 @@
 {
-  "created": "2026-11-20T12:12:56",
+  "created": "2026-11-21T13:01:43",
   "h3_resolution": 9,
   "hex_count": 500,
   "indicators": {
@@ -7,7 +7,7 @@
       "component": "heat",
       "function": "linear_increasing",
       "log": false,
-      "weight": 0.3,
+      "weight": 0.15,
       "params_spec": {
         "low": "p50",
         "high": "p95"
@@ -21,7 +21,7 @@
       "component": "heat",
       "function": "linear_increasing",
       "log": false,
-      "weight": 0.3,
+      "weight": 0.45,
       "params_spec": {
         "low": "p50",
         "high": "p95"
@@ -35,7 +35,7 @@
       "component": "heat",
       "function": "linear_increasing",
       "log": false,
-      "weight": 0.1,
+      "weight": 0.4,
       "params_spec": {
         "low": "p50",
         "high": "p95"
@@ -56,7 +56,7 @@
       },
       "params_resolved": {
         "low": 0.0,
-        "high": 107.42248411233484
+        "high": 107.55999208877193
       }
     },
     "day_density": {
@@ -70,7 +70,7 @@
       },
       "params_resolved": {
         "low": 0.0,
-        "high": 107.42248411233484
+        "high": 107.55999208877193
       }
     },
     "share_65plus": {
@@ -126,7 +126,7 @@
       },
       "params_resolved": {
         "low": 0.0,
-        "high": 1.6513597701235063
+        "high": 1.6513597893118521
       }
     },
     "green_share": {
@@ -241,6 +241,20 @@
         "high": 36.298958422111134
       }
     },
+    "public_building_share": {
+      "component": "opportunity",
+      "function": "linear_increasing",
+      "log": false,
+      "weight": 0.3,
+      "params_spec": {
+        "low": 0,
+        "high": "p95nz"
+      },
+      "params_resolved": {
+        "low": 0.0,
+        "high": 0.10294407544958548
+      }
+    },
     "cycle_density": {
       "component": "corridors",
       "function": "linear_increasing",
@@ -266,16 +280,16 @@
       },
       "params_resolved": {
         "low": 0.0,
-        "high": 324.19689029941543
+        "high": 182.14092238826325
       }
     }
   },
   "component_weights": {
     "heat": {
-      "mu_heatwave_tmax": 0.3,
-      "mu_heatwave_tmin": 0.3,
+      "mu_heatwave_tmax": 0.15,
+      "mu_heatwave_tmin": 0.45,
       "mu_lst_copernicus": 0.2,
-      "mu_lst_microzone": 0.1,
+      "mu_lst_microzone": 0.4,
       "mu_air_temp_sensors": 0.05,
       "mu_heat_island": 0.05
     },
@@ -304,7 +318,8 @@
       "mu_brownfield_share": 0.4,
       "mu_vacant_share": 0.3,
       "mu_parking": 0.3,
-      "mu_municipal_share": 0.3
+      "mu_municipal_share": 0.3,
+      "mu_public_building_share": 0.3
     },
     "corridors": {
       "mu_cycle_density": 0.5,
@@ -334,6 +349,78 @@
   },
   "heat_hazard_share_a": 0.5,
   "day_weight": 0.5,
+  "validation": {
+    "spearman": [
+      {
+        "layer": "Heat (2026 heatwave + thermal)",
+        "column": "c_heat",
+        "expected sign": "+",
+        "Spearman r": 0.48,
+        "significant (p<0.05)": "yes",
+        "direction as expected": "yes",
+        "hexes": 72
+      },
+      {
+        "layer": "Heatwave max. temperature",
+        "column": "raw_heatwave_tmax",
+        "expected sign": "+",
+        "Spearman r": -0.05,
+        "significant (p<0.05)": "no",
+        "direction as expected": "NO",
+        "hexes": 72
+      },
+      {
+        "layer": "Sealed ground",
+        "column": "raw_sealing",
+        "expected sign": "+",
+        "Spearman r": 0.59,
+        "significant (p<0.05)": "yes",
+        "direction as expected": "yes",
+        "hexes": 72
+      },
+      {
+        "layer": "Tree cover",
+        "column": "raw_tree_cover",
+        "expected sign": "-",
+        "Spearman r": -0.77,
+        "significant (p<0.05)": "yes",
+        "direction as expected": "yes",
+        "hexes": 72
+      },
+      {
+        "layer": "Accessible green share",
+        "column": "raw_green_share",
+        "expected sign": "-",
+        "Spearman r": -0.58,
+        "significant (p<0.05)": "yes",
+        "direction as expected": "yes",
+        "hexes": 72
+      },
+      {
+        "layer": "Lack of green (dimension)",
+        "column": "d_green_deficit",
+        "expected sign": "+",
+        "Spearman r": 0.45,
+        "significant (p<0.05)": "yes",
+        "direction as expected": "yes",
+        "hexes": 72
+      },
+      {
+        "layer": "GI need (final result)",
+        "column": "gi_need_provisional",
+        "expected sign": "+",
+        "Spearman r": 0.36,
+        "significant (p<0.05)": "yes",
+        "direction as expected": "yes",
+        "hexes": 72
+      }
+    ],
+    "hit_rate": {
+      "top_share": 0.2,
+      "uncomfortable_in_top": 0.273,
+      "comfortable_in_top": 0.075
+    }
+  },
   "config": {
     "h3_res": 9,
     "min_hex_coverage": 0.1,
@@ -426,8 +513,12 @@
       ]
     },
     "buildings": {
-      "path": "/content/drive/MyDrive/hackathon-upol/data/buildings.geojson",
-      "layer": null
+      "path": "/content/drive/MyDrive/hackathon-upol/data/buildings_with_class.geojson",
+      "layer": null,
+      "ownership_col": "building_category",
+      "public_patterns": [
+        "public"
+      ]
     },
     "vodafone": {
       "zones_path": null,
@@ -490,25 +581,34 @@
       "band": 1
     },
     "roads": {
-      "path": null,
+      "path": "/content/drive/MyDrive/hackathon-upol/data/roads.geojson",
       "layer": null,
-      "class_col": null,
+      "class_col": "street_class",
       "street_classes": [
         "primary",
+        "primary_link",
         "secondary",
+        "secondary_link",
         "tertiary",
+        "tertiary_link",
         "residential",
         "living_street",
+        "unclassified",
         "pedestrian"
       ],
       "walk_exclude": [
         "motorway",
         "motorway_link",
         "trunk",
-        "trunk_link"
+        "trunk_link",
+        "construction",
+        "proposed",
+        "abandoned",
+        "raceway"
       ],
-      "snap_m": 30,
-      "max_dist_m": 3000
+      "snap_m": 50,
+      "max_dist_m": 3000,
+      "detour_factor": 1.3
     },
     "brownfields": {
       "path": "/content/drive/MyDrive/hackathon-upol/data/brownfields_mz.geojson",
@@ -536,6 +636,17 @@
       "value_col": "heat_kwh",
       "year_col": null,
       "year": null
+    },
+    "perception_heat": {
+      "path": "/content/drive/MyDrive/hackathon-upol/data/pocitova-teplotni-mapa-olomouce-2.geojson",
+      "layer": null,
+      "type_col": "typ_ident",
+      "uncomfortable": "a",
+      "comfortable": "b",
+      "comment_col": "desc_detail",
+      "max_polygon_ha": 50,
+      "min_marks": 3,
+      "top_share": 0.2
     },
     "heat_hazard_share_a": 0.5,
     "day_weight": 0.5,

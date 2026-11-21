@@ -32,6 +32,9 @@ class Settings(BaseSettings):
     INDEX_GEOJSON: Path = Path("data/olomouc_gi_h3_r9.geojson")
     INDEX_METADATA: Path = Path("data/olomouc_gi_h3_r9_metadata.json")
     MICROZONES_GEOJSON: Path = Path("data/olomouc_microzones.geojson")
+    # Building footprints with a public / private class (any CRS given in the
+    # file, e.g. EPSG:5514). Only public ones are loaded. Optional.
+    BUILDINGS_GEOJSON: Path = Path("data/buildings_with_class.geojson")
 
     CORS_ORIGINS: str = "http://localhost:8000,http://127.0.0.1:8000"
     # Also allowed: any localhost port, so the site can be served on its own

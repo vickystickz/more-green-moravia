@@ -157,7 +157,7 @@
                   <img src="assets/icons/factor-heat.svg" width="18" height="18" alt="">
                   <span data-i18n="factor.he">Heat &amp; people exposed</span>
                   <button class="weight__info" type="button" data-info="factor.he.info"
-                          aria-label="Hot areas where many people live or spend the day. Uses heatwave temperatures by day (10:00-17:00) and by night, when warm nights hit older residents hardest." data-i18n-attr="aria-label:factor.he.info">
+                          aria-label="Hot areas where many people live. Heat combines night-time heatwave temperature (45%), surface temperature (40%) and daytime maximum (15%): the urban heat island is strongest at night, when sealed surfaces release stored heat." data-i18n-attr="aria-label:factor.he.info">
                     <img src="assets/icons/info-circle.svg" width="14" height="14" alt="">
                   </button>
                 </label>
@@ -205,7 +205,7 @@
             <span class="switch__text">
               <span class="switch__label" data-i18n="toggle.label">Only show places we can build</span>
               <button class="weight__info" type="button" data-info="toggle.help"
-                      aria-label="Limits results to areas with brownfields, vacant land, under-used car parks, cycle routes or suitable streets. Railways, main roads and water are left out." data-i18n-attr="aria-label:toggle.help">
+                      aria-label="Limits results to areas with brownfields, vacant land, public buildings, under-used car parks, cycle routes or suitable streets. Railways, main roads and water are left out." data-i18n-attr="aria-label:toggle.help">
                 <img src="assets/icons/info-circle.svg" width="14" height="14" alt="">
               </button>
             </span>
@@ -225,7 +225,7 @@
         </ol>
       </section>
 
-      <p class="sidebar-note" data-i18n="footer.note">Provisional results. Scores combine heatwave temperatures by day and night, population, vulnerable groups, green space and sealed ground (Copernicus Urban Atlas 2021, 10 m tree cover and imperviousness) and available land in areas of about 200 m. This version focuses on heat stress. Use as a guide, not a final decision.</p>
+      <p class="sidebar-note" data-i18n="footer.note">Provisional results. Scores combine heatwave temperatures (night and day), surface temperature, population, vulnerable groups, green space, sealed ground, walking distance to parks and available land on a 200 m hexagon grid (H3). Checked against 2,091 places residents marked as comfortable or uncomfortable on hot days. This version focuses on heat stress. Use as a guide, not a final decision.</p>
     </aside>
 
     <!-- =======================================================
@@ -276,6 +276,11 @@
                 <div class="legend__numbers" aria-hidden="true">
                   <span id="legend-low">Low</span><span id="legend-mid"></span><span id="legend-high">High</span>
                 </div>
+                <!-- Grey = no value (e.g. too few residents' reports) -->
+                <div class="legend__note" id="legend-note" hidden>
+                  <span class="legend__swatch" aria-hidden="true"></span>
+                  <span id="legend-note-text"></span>
+                </div>
               </div>
 
               <!-- Opacity of the hexagon colours -->
@@ -297,6 +302,17 @@
               <button class="eye-btn" type="button" data-layer="vacant"
                       aria-pressed="false" aria-label="Show or hide brownfields and vacant land"
                       data-i18n-attr="aria-label:layers.vacant">
+                <img src="assets/icons/eye.svg" width="12.6" height="12.6" alt="">
+              </button>
+            </div>
+
+            <!-- Public buildings: outline where they cover 5 %+, off by default -->
+            <div class="layer-row">
+              <span class="layer-row__icon layer-row__icon--public" aria-hidden="true"></span>
+              <span class="layer-row__name" data-i18n="layers.public">Public buildings</span>
+              <button class="eye-btn" type="button" data-layer="public"
+                      aria-pressed="false" aria-label="Public buildings"
+                      data-i18n-attr="aria-label:layers.public">
                 <img src="assets/icons/eye.svg" width="12.6" height="12.6" alt="">
               </button>
             </div>
@@ -354,6 +370,8 @@
           <span class="detail-card__number" id="detail-score"></span>
           <span class="detail-card__label" id="detail-label"></span>
           <span class="detail-card__note" data-i18n="detail.note">Based on your selected priorities.</span>
+          <!-- Residents' heat reports (2020 survey), where there are enough -->
+          <span class="detail-card__reports" id="detail-reports" hidden></span>
         </div>
 
         <section class="detail-card__factors">
@@ -362,7 +380,7 @@
           <ul class="factor-list" id="detail-factors"></ul>
         </section>
 
-        <p class="detail-card__source" data-i18n="detail.treeSource">Land use: Copernicus Urban Atlas 2021 · Tree cover: Copernicus 10 m · Sealed ground: Copernicus Imperviousness 10 m (2024). Distances are straight-line.</p>
+        <p class="detail-card__source" data-i18n="detail.treeSource">Land use: Copernicus Urban Atlas 2021 · Tree cover: Copernicus 10 m · Sealed ground: Copernicus Imperviousness 10 m (2024). Walking distances along streets (OpenStreetMap).</p>
       </article>
 
       <!-- Ask AI + map buttons (bottom right) -->
@@ -445,6 +463,7 @@
           <li><button class="ask-ai-chip" type="button" data-i18n="askai.suggest4">Where can we build green improvements quickly?</button></li>
           <li><button class="ask-ai-chip" type="button" data-i18n="askai.suggest5">Which neighbourhoods are far from a park?</button></li>
           <li><button class="ask-ai-chip" type="button" data-i18n="askai.suggest6">Why is this area ranked so high?</button></li>
+          <li><button class="ask-ai-chip" type="button" data-i18n="askai.suggest7">Which public buildings in hot areas could get green roofs?</button></li>
         </ul>
 
         <!-- Questions and answers, filled by ask-ai.js -->
