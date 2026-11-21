@@ -68,6 +68,11 @@ def ingest(
         _load_buildings(conn, buildings, features, _crs(buildings_path) if buildings else None)
         conn.execute("CREATE TABLE metadata (doc JSON)")
         conn.execute("INSERT INTO metadata VALUES (?)", [json.dumps(metadata)])
+        conn.execute("CREATE TABLE build_info (sources VARCHAR)")
+        conn.execute(
+            "INSERT INTO build_info VALUES (?)",
+            [_sources_stamp(index_path, metadata_path, microzones_path, buildings_path)],
+        )
         conn.execute("CHECKPOINT")
     finally:
         conn.close()
@@ -339,11 +344,50 @@ def _drop_z(geometry: dict[str, Any] | None) -> dict[str, Any] | None:
     return {**geometry, "coordinates": strip(geometry.get("coordinates"))}
 
 
+def _sources_stamp(*paths: Path | None) -> str:
+    """Which input files (name, size, modified time) a database was built from."""
+    parts = []
+    for path in paths:
+        if path and path.exists():
+            stat = path.stat()
+            parts.append(f"{path.resolve()}:{stat.st_size}:{stat.st_mtime_ns}")
+        else:
+            parts.append(f"{path}:missing")
+    return "|".join(parts)
+
+
+def _built_from(db_path: Path) -> str | None:
+    """The sources stamp stored in an existing database, or None (old or unreadable file)."""
+    try:
+        conn = duckdb.connect(str(db_path), read_only=True)
+    except duckdb.Error:
+        return None
+    try:
+        row = conn.execute("SELECT sources FROM build_info").fetchone()
+        return row[0] if row else None
+    except duckdb.Error:
+        return None
+    finally:
+        conn.close()
+
+
 def ensure_database(force: bool = False) -> Path:
-    """Build the DuckDB file when it is missing (or force); return its path."""
+    """Build the DuckDB file when it is missing, out of date or forced; return its path.
+
+    Out of date = built from other data files than the ones in settings (e.g.
+    INDEX_GEOJSON switched from r9 to r10), or those files changed since.
+    """
     db_path = settings.path(settings.DUCKDB_PATH)
+    sources = [
+        settings.path(settings.INDEX_GEOJSON),
+        settings.path(settings.INDEX_METADATA),
+        settings.path(settings.MICROZONES_GEOJSON),
+        settings.path(settings.BUILDINGS_GEOJSON),
+    ]
     if db_path.exists() and not force:
-        return db_path
+        if _built_from(db_path) == _sources_stamp(*sources):
+            return db_path
+        logger.info("Data files changed since %s was built: rebuilding it", db_path.name)
     index = settings.path(settings.INDEX_GEOJSON)
     if not index.exists():
         raise FileNotFoundError(f"index GeoJSON not found: {index} (set INDEX_GEOJSON)")

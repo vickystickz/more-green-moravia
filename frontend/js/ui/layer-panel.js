@@ -65,7 +65,7 @@ export function initLayerPanel({ onLayer, onBoundaries, onBuildings, onVacant, o
       const box = document.createElement('span');
       box.style.background = c.color;
       const to = classes[i + 1]?.from ?? 1;
-      box.title = `${Math.round(c.from * 100)}–${Math.round(to * 100)}`;
+      box.title = c.title ?? `${Math.round(c.from * 100)}–${Math.round(to * 100)}`;
       return box;
     }));
   }

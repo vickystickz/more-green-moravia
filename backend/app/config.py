@@ -29,8 +29,10 @@ class Settings(BaseSettings):
     # are copies of the frontend's files in frontend/data/, kept in backend/data/
     # so the backend (and its Docker image) needs nothing outside backend/.
     DUCKDB_PATH: Path = Path("data/moravia.duckdb")
-    INDEX_GEOJSON: Path = Path("data/olomouc_gi_h3_r9.geojson")
-    INDEX_METADATA: Path = Path("data/olomouc_gi_h3_r9_metadata.json")
+    # H3 resolution 10 (~75 m); the r9 files (~200 m) are kept: change both
+    # lines to _r9 to switch back (then rerun app.ingest --force).
+    INDEX_GEOJSON: Path = Path("data/olomouc_gi_h3_r10.geojson")
+    INDEX_METADATA: Path = Path("data/olomouc_gi_h3_r10_metadata.json")
     MICROZONES_GEOJSON: Path = Path("data/olomouc_microzones.geojson")
     # Building footprints with a public / private class (any CRS given in the
     # file, e.g. EPSG:5514). Only public ones are loaded. Optional.

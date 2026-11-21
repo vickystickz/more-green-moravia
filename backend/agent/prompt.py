@@ -16,8 +16,8 @@ You are the analyst behind "More Green, Moravia", a map that shows the city of O
 the most people during heatwaves. Answer questions about its index by calling the tools.
 
 How the index works:
-- The city is split into {hexes} H3 hexagons of about 200 m (resolution 9), grouped into \
-{zones} microzones (city districts).
+- The city is split into {hexes} H3 hexagons of about {size} (resolution {res}), grouped \
+into {zones} microzones (city districts).{mixed}
 - Each hexagon has three factors, 0-100: Heat & people exposed (he), Vulnerable groups \
 (v) and Lack of green (gd), plus Space to build (feas).
 - GI need = he^w_he x v^w_v x gd^w_gd (INFORM-style), with weights the user sets with \
@@ -25,8 +25,11 @@ sliders or presets. The map score ('score') is GI need, times space to build whe
 "only places we can build" is on. Presets: balance (1/3 each), cool-street (heat 50%, \
 vulnerable 20%, green 30%), protect-vulnerable (30/50/20), pocket-parks (20/40/40), \
 quick-wins (balance + only buildable).
-- Heat weights: 45% night-time, 40% surface temperature, 15% daytime maximum (validated \
-against residents' reports). Distance to green is walking distance along streets. Public \
+- Heat weights: 45% Landsat surface temperature (30 m), 30% night-time air temperature, \
+15% neighbourhood surface temperature, 10% daytime air maximum. Station air temperatures \
+vary little across the city; surface temperature shows local hot spots such as car parks \
+and large roofs. raw_lst_copernicus is the Landsat surface temperature (the column name \
+is historical). Distance to green is walking distance along streets. Public \
 buildings are quick opportunities for green roofs and greened courtyards. \
 Green vegetation = share of dense vegetation from Sentinel-2 NDVI in summer 2026; it \
 includes courtyard and street trees. It is the main input for lack of green. \
@@ -63,10 +66,31 @@ question (often Czech or English).
 - If a tool returns an error, fix the arguments and try again."""
 
 
+# Hexagon edge length per H3 resolution, as said to users.
+HEX_SIZE = {9: "200 m", 10: "75 m"}
+MIXED_RES = (
+    " The map uses ~75 m hexagons. Heat, green space and space to build vary per "
+    "hexagon; people and vulnerable groups are per ~200 m neighbourhood. When ranked "
+    "hexagons share a microzone, name the microzone once (see by_microzone in the "
+    "result) instead of listing neighbouring spots."
+)
+
+
+def _rules(ctx: AgentContext) -> str:
+    res = int(ctx.metadata.get("h3_resolution") or 9)
+    return RULES.format(
+        hexes=ctx.hex_count,
+        zones=len(ctx.microzones),
+        size=HEX_SIZE.get(res, f"res {res}"),
+        res=res,
+        mixed=MIXED_RES if res >= 10 else "",
+    )
+
+
 def system_prompt(ctx: AgentContext, now: datetime | None = None) -> str:
     today = (now or datetime.now(UTC)).date().isoformat()
     parts = [
-        RULES.format(hexes=ctx.hex_count, zones=len(ctx.microzones)),
+        _rules(ctx),
         # Read on every call, so edited skill files apply to the next question.
         skills_prompt(load_skills()),
         _metrics(ctx),

@@ -104,7 +104,8 @@ TOOLS: dict[str, Tool] = {
                 "for 'where', 'which', 'top', 'worst', 'best' questions, e.g. the hottest "
                 "microzones, hexagons with the most need where people live (filter "
                 "raw_residents gt 0), or places with space to build. show adds more metrics "
-                "per row." + SCORING_HELP
+                "per row. Hexagons: at most 10; summary.by_microzone groups them by "
+                "microzone (best value, number of hexagons)." + SCORING_HELP
             ),
             args=RankSpec,
             run=rank,

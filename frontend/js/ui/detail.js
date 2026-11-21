@@ -5,6 +5,7 @@
 // =============================================================
 
 import { t, num, percent } from './i18n.js';
+import { RES } from '../config.js';
 
 const isNum = (v) => typeof v === 'number' && Number.isFinite(v);
 const pct = (share) => percent(Math.round(share * 100));
@@ -25,12 +26,15 @@ function rawLine(parts) {
   return parts.filter(Boolean).join(' · ');
 }
 
-// Same order as the heat weights: night 45 %, surface 40 %, day 15 %.
+// Satellite surface temperature first: it is the main heat input
+// (45 %), then night 30 % and day 10 %. The neighbourhood surface
+// temperature (raw_lst_microzone, 15 %) stays in the data but is
+// not shown here.
 function rawHeat(p) {
   return rawLine([
+    isNum(p.raw_lst_copernicus) && t('raw.surfaceSat', { v: num(p.raw_lst_copernicus, 1) }),
     isNum(p.raw_heatwave_tmin) && t('raw.nightMin', { v: num(p.raw_heatwave_tmin, 1) }),
     isNum(p.raw_heatwave_tmax) && t('raw.dayMax', { v: num(p.raw_heatwave_tmax, 1) }),
-    isNum(p.raw_lst_microzone) && t('raw.surface', { v: num(p.raw_lst_microzone, 1) }),
     isNum(p.raw_res_density) && t('raw.density', { v: num(p.raw_res_density) }),
     isNum(p.raw_heatwave_tmin) && p.raw_heatwave_tmin >= TROPICAL_NIGHT_C && t('raw.tropicalNights'),
   ]);
@@ -144,7 +148,8 @@ export function renderDetail(hex, { onlyBuildable, weightLabels }) {
 
   const { props: p, dims: d } = hex;
   document.getElementById('detail-title').textContent = hex.name;
-  document.getElementById('detail-hex').textContent = t('detail.hex');
+  document.getElementById('detail-hex').textContent = t('detail.hex', { size: RES.hexSize });
+  document.getElementById('detail-res-note').hidden = !RES.mixed;
   document.getElementById('detail-score').textContent = `${Math.round(hex.score * 100)} / 100`;
   document.getElementById('detail-label').textContent = priorityLabel(hex.score);
   const reports = document.getElementById('detail-reports');

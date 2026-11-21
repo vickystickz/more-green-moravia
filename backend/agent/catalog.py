@@ -152,7 +152,12 @@ COMPONENTS = {
 RAW = {
     "raw_heatwave_tmax": ("Heatwave daytime max temperature", "°C", Agg.AVG),
     "raw_heatwave_tmin": ("Heatwave night-time min temperature", "°C", Agg.AVG),
-    "raw_lst_microzone": ("Land surface temperature (microzone mean)", "°C", Agg.AVG),
+    "raw_lst_copernicus": (
+        "Daytime surface temperature from satellite (Landsat, summer 2026, 30 m)",
+        "°C",
+        Agg.AVG,
+    ),
+    "raw_lst_microzone": ("Neighbourhood surface temperature (microzone mean)", "°C", Agg.AVG),
     "raw_residents": ("Residents", "people", Agg.SUM),
     "raw_day_people": ("People present during the day", "people", Agg.SUM),
     "raw_res_density": ("Residents per hectare", "people/ha", Agg.AVG),

@@ -1,5 +1,5 @@
 {
-  "created": "2026-11-21T17:32:23",
+  "created": "2026-11-21T18:12:41",
   "h3_resolution": 9,
   "hex_count": 500,
   "indicators": {
@@ -7,7 +7,7 @@
       "component": "heat",
       "function": "linear_increasing",
       "log": false,
-      "weight": 0.15,
+      "weight": 0.1,
       "params_spec": {
         "low": "p50",
         "high": "p95"
@@ -21,7 +21,7 @@
       "component": "heat",
       "function": "linear_increasing",
       "log": false,
-      "weight": 0.45,
+      "weight": 0.3,
       "params_spec": {
         "low": "p50",
         "high": "p95"
@@ -31,11 +31,25 @@
         "high": 20.24634213844935
       }
     },
+    "lst_copernicus": {
+      "component": "heat",
+      "function": "linear_increasing",
+      "log": false,
+      "weight": 0.45,
+      "params_spec": {
+        "low": "p50",
+        "high": "p95"
+      },
+      "params_resolved": {
+        "low": 29.478567503205717,
+        "high": 33.877433628318585
+      }
+    },
     "lst_microzone": {
       "component": "heat",
       "function": "linear_increasing",
       "log": false,
-      "weight": 0.4,
+      "weight": 0.15,
       "params_spec": {
         "low": "p50",
         "high": "p95"
@@ -286,10 +300,10 @@
   },
   "component_weights": {
     "heat": {
-      "mu_heatwave_tmax": 0.15,
-      "mu_heatwave_tmin": 0.45,
-      "mu_lst_copernicus": 0.2,
-      "mu_lst_microzone": 0.4,
+      "mu_heatwave_tmax": 0.1,
+      "mu_heatwave_tmin": 0.3,
+      "mu_lst_copernicus": 0.45,
+      "mu_lst_microzone": 0.15,
       "mu_air_temp_sensors": 0.05,
       "mu_heat_island": 0.05
     },
@@ -356,7 +370,7 @@
         "layer": "Heat (2026 heatwave + thermal)",
         "column": "c_heat",
         "expected sign": "+",
-        "Spearman r": 0.48,
+        "Spearman r": 0.5,
         "significant (p<0.05)": "yes",
         "direction as expected": "yes",
         "hexes": 72
@@ -419,7 +433,7 @@
         "layer": "GI need (final result)",
         "column": "gi_need_provisional",
         "expected sign": "+",
-        "Spearman r": 0.48,
+        "Spearman r": 0.39,
         "significant (p<0.05)": "yes",
         "direction as expected": "yes",
         "hexes": 72
@@ -427,8 +441,8 @@
     ],
     "hit_rate": {
       "top_share": 0.2,
-      "uncomfortable_in_top": 0.268,
-      "comfortable_in_top": 0.072
+      "uncomfortable_in_top": 0.272,
+      "comfortable_in_top": 0.074
     }
   },
   "config": {
@@ -480,7 +494,7 @@
       "offset": 0.0
     },
     "lst_raster": {
-      "path": null,
+      "path": "/content/drive/MyDrive/hackathon-upol/data/LST_landsat_microzone_EPSG5514.tif",
       "band": 1,
       "scale": 1.0,
       "offset": 0.0

@@ -5,10 +5,10 @@
 // The scores live in MapLibre "feature state" (keyed by h3_index),
 // not in the GeoJSON itself. Updating feature state for ~500 hexes
 // is much faster than re-sending the whole GeoJSON, so the map
-// keeps up while a slider is being dragged.
+// keeps up while a slider is being dragged (~3,000 hexes at r10).
 // =============================================================
 
-import { SCORE_CLASSES, HEX_OPACITY } from '../config.js';
+import { SCORE_CLASSES, HEX_OPACITY, RES } from '../config.js';
 
 const SOURCE = 'gi-hexes';
 const FILL = 'gi-hexes-fill';
@@ -82,7 +82,15 @@ export function addHexLayer(map, geojson, onClick) {
     id: OUTLINE,
     type: 'line',
     source: SOURCE,
-    paint: { 'line-color': '#ffffff', 'line-width': 0.5, 'line-opacity': 0.8 },
+    paint: {
+      'line-color': '#ffffff',
+      'line-width': RES.outline.width,
+      // Small hexagons (r10): no outlines when zoomed out, so the
+      // map reads as a smooth surface; they fade in when zooming in.
+      'line-opacity': RES.outline.fade
+        ? ['interpolate', ['linear'], ['zoom'], RES.outline.fade[0], 0, RES.outline.fade[1], 0.8]
+        : 0.8,
+    },
   }, before);
 
   // Brownfields and vacant land: thick dark outline on top of the
@@ -137,6 +145,7 @@ export function updateHexValues(map, hexes) {
       { source: SOURCE, id: h.id },
       {
         score: h.score, he: h.dims.he, v: h.dims.v, gd: h.dims.gd, feas: h.dims.feas,
+        lst: h.props.raw_lst_copernicus, // Surface temperature (Landsat), °C
         night: h.props.mu_heatwave_tmin, // Night-time heat (raw 0–1 membership)
         sealing: h.props.raw_sealing,    // Sealed ground, share 0–1
         veg: h.props.raw_vegetation_share, // Green vegetation (NDVI), share 0–1

@@ -14,6 +14,24 @@ try {
 }
 
 // -------------------------------------------------------------
+// Data resolution: which H3 export the portal loads.
+//   'r10' = ~75 m hexagons (~3,000), people per ~200 m parent
+//   'r9'  = ~200 m hexagons (~500)
+// Switching back is this one line; texts and outlines follow.
+// -------------------------------------------------------------
+export const DATA_RES = 'r10';
+
+// Per-resolution settings. `hexSize` goes into the detail card;
+// `mixed` = people and vulnerable groups come from the res-9
+// parent (shows the resolution note); `outline` = hex outline
+// width, and the zooms over which it fades in (null = always on).
+const RES_SETTINGS = {
+  r9: { hexSize: '200 m', mixed: false, outline: { width: 0.5, fade: null } },
+  r10: { hexSize: '75 m', mixed: true, outline: { width: 0.25, fade: [13, 14] } },
+};
+export const RES = RES_SETTINGS[DATA_RES];
+
+// -------------------------------------------------------------
 // Map settings
 // -------------------------------------------------------------
 export const MAP_CONFIG = {
@@ -98,12 +116,12 @@ export const AGENT_CONFIG = {
 // -------------------------------------------------------------
 // Data files (relative paths, so they work on GitHub Pages)
 // Both files are exported by the GI index notebook. Put them in
-// the data/ folder with exactly these names.
+// the data/ folder with exactly these names (DATA_RES picks r9 / r10).
 // -------------------------------------------------------------
 export const DATA_PATHS = {
   // ?v=… busts the browser/CDN cache: bump it after every new export.
-  hexes: 'data/olomouc_gi_h3_r9.geojson?v=6',
-  metadata: 'data/olomouc_gi_h3_r9_metadata.json?v=6',
+  hexes: `data/olomouc_gi_h3_${DATA_RES}.geojson?v=9`,
+  metadata: `data/olomouc_gi_h3_${DATA_RES}_metadata.json?v=9`,
   // Optional microzone outlines. If this file does not exist, the
   // "Microzone boundaries" checkbox is not shown.
   boundaries: 'data/olomouc_microzones.geojson',
@@ -160,10 +178,27 @@ export const HEX_OPACITY = 0.7;
 // `note` (optional) = text key shown next to a grey box, for hexes
 // without a value;
 // `classes` (optional) = colour classes (default: SCORE_CLASSES).
+// Surface temperature (Landsat, °C): 5 classes from 20 to 36 °C,
+// blue (cool) to red (hot). `from` is in °C, so each class has its
+// own tooltip `title` for the legend box.
+const LST_STEP = 3.2;
+export const SURFACE_TEMP_CLASSES = ['#2c7bb6', '#abd9e9', '#ffffbf', '#fdae61', '#d7191c']
+  .map((color, i) => {
+    const from = 20 + i * LST_STEP;
+    const to = from + LST_STEP;
+    return { from, color, title: `${from.toFixed(1)}–${to.toFixed(1)} °C` };
+  });
+
 // The order here is the order in the Map layers panel.
 export const MAP_LAYERS = [
   { id: 'score', key: 'score', label: 'layers.score' },
   { id: 'he', key: 'he', label: 'factor.he' },
+  // raw_lst_copernicus: Landsat daytime surface temperature, summer
+  // 2026, 30 m (the column name is historical). Main heat input (45 %).
+  {
+    id: 'lst', key: 'lst', label: 'layers.surfaceSat',
+    legend: ['legend.c20', null, 'legend.c36'], classes: SURFACE_TEMP_CLASSES,
+  },
   { id: 'night', key: 'night', label: 'layers.night' }, // mu_heatwave_tmin
   { id: 'sealing', key: 'sealing', label: 'layers.sealing', legend: ['legend.zero', null, 'legend.full'] }, // raw_sealing 0–1
   { id: 'v', key: 'v', label: 'factor.v' },

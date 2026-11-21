@@ -1,0 +1,703 @@
+{
+  "created": "2026-11-21T19:05:43",
+  "h3_resolution": 10,
+  "hex_count": 2999,
+  "indicators": {
+    "heatwave_tmax": {
+      "component": "heat",
+      "function": "linear_increasing",
+      "log": false,
+      "weight": 0.1,
+      "params_spec": {
+        "low": "p50",
+        "high": "p95"
+      },
+      "params_resolved": {
+        "low": 34.273711395263675,
+        "high": 34.37799466451009
+      }
+    },
+    "heatwave_tmin": {
+      "component": "heat",
+      "function": "linear_increasing",
+      "log": false,
+      "weight": 0.3,
+      "params_spec": {
+        "low": "p50",
+        "high": "p95"
+      },
+      "params_resolved": {
+        "low": 20.102283477783203,
+        "high": 20.2501156943185
+      }
+    },
+    "lst_copernicus": {
+      "component": "heat",
+      "function": "linear_increasing",
+      "log": false,
+      "weight": 0.45,
+      "params_spec": {
+        "low": "p50",
+        "high": "p95"
+      },
+      "params_resolved": {
+        "low": 29.625,
+        "high": 34.5
+      }
+    },
+    "lst_microzone": {
+      "component": "heat",
+      "function": "linear_increasing",
+      "log": false,
+      "weight": 0.15,
+      "params_spec": {
+        "low": "p50",
+        "high": "p95"
+      },
+      "params_resolved": {
+        "low": 29.2400102863,
+        "high": 31.2415760427
+      }
+    },
+    "res_density": {
+      "component": "exposure_night",
+      "function": "linear_increasing",
+      "log": true,
+      "weight": 1.0,
+      "params_spec": {
+        "low": "p5",
+        "high": "p95"
+      },
+      "params_resolved": {
+        "low": 0.0,
+        "high": 129.09587885121974
+      }
+    },
+    "day_density": {
+      "component": "exposure_day",
+      "function": "linear_increasing",
+      "log": true,
+      "weight": 1.0,
+      "params_spec": {
+        "low": "p5",
+        "high": "p95"
+      },
+      "params_resolved": {
+        "low": 0.0,
+        "high": 129.09587885121974
+      }
+    },
+    "share_65plus": {
+      "component": "vulnerability",
+      "function": "linear_increasing",
+      "log": false,
+      "weight": 0.35,
+      "params_spec": {
+        "low": "p5",
+        "high": "p95"
+      },
+      "params_resolved": {
+        "low": 0.14497816593886462,
+        "high": 0.29312865497076024
+      }
+    },
+    "share_75plus": {
+      "component": "vulnerability",
+      "function": "linear_increasing",
+      "log": false,
+      "weight": 0.2,
+      "params_spec": {
+        "low": "p5",
+        "high": "p95"
+      },
+      "params_resolved": {
+        "low": 0.05102040816326531,
+        "high": 0.16966357308584687
+      }
+    },
+    "share_0_4": {
+      "component": "vulnerability",
+      "function": "linear_increasing",
+      "log": false,
+      "weight": 0.2,
+      "params_spec": {
+        "low": "p5",
+        "high": "p95"
+      },
+      "params_resolved": {
+        "low": 0.02947845804988662,
+        "high": 0.07628865979381445
+      }
+    },
+    "sensitive_facilities": {
+      "component": "vulnerability",
+      "function": "linear_increasing",
+      "log": true,
+      "weight": 0.25,
+      "params_spec": {
+        "low": 0,
+        "high": "p95nz"
+      },
+      "params_resolved": {
+        "low": 0.0,
+        "high": 0.3035132030504704
+      }
+    },
+    "green_share": {
+      "component": "green_supply",
+      "function": "linear_decreasing",
+      "log": false,
+      "weight": 0.2,
+      "params_spec": {
+        "low": 0.1,
+        "high": 0.5
+      },
+      "params_resolved": {
+        "low": 0.1,
+        "high": 0.5
+      }
+    },
+    "tree_cover": {
+      "component": "green_supply",
+      "function": "linear_decreasing",
+      "log": false,
+      "weight": 0.15,
+      "params_spec": {
+        "low": 5,
+        "high": 30
+      },
+      "params_resolved": {
+        "low": 5.0,
+        "high": 30.0
+      }
+    },
+    "vegetation_share": {
+      "component": "green_supply",
+      "function": "linear_decreasing",
+      "log": false,
+      "weight": 0.3,
+      "params_spec": {
+        "low": 0.1,
+        "high": 0.4
+      },
+      "params_resolved": {
+        "low": 0.1,
+        "high": 0.4
+      }
+    },
+    "green_per_capita": {
+      "component": "green_supply",
+      "function": "linear_decreasing",
+      "log": false,
+      "weight": 0.15,
+      "params_spec": {
+        "low": 9,
+        "high": 50
+      },
+      "params_resolved": {
+        "low": 9.0,
+        "high": 50.0
+      }
+    },
+    "sealing": {
+      "component": "green_supply",
+      "function": "linear_increasing",
+      "log": false,
+      "weight": 0.2,
+      "params_spec": {
+        "low": 0.3,
+        "high": 0.8
+      },
+      "params_resolved": {
+        "low": 0.3,
+        "high": 0.8
+      }
+    },
+    "dist_green": {
+      "component": "green_access",
+      "function": "linear_increasing",
+      "log": false,
+      "weight": 1.0,
+      "params_spec": {
+        "low": 300,
+        "high": 800
+      },
+      "params_resolved": {
+        "low": 300.0,
+        "high": 800.0
+      }
+    },
+    "brownfield_share": {
+      "component": "opportunity",
+      "function": "linear_increasing",
+      "log": false,
+      "weight": 0.4,
+      "params_spec": {
+        "low": 0,
+        "high": 0.25
+      },
+      "params_resolved": {
+        "low": 0.0,
+        "high": 0.25
+      }
+    },
+    "vacant_share": {
+      "component": "opportunity",
+      "function": "linear_increasing",
+      "log": false,
+      "weight": 0.3,
+      "params_spec": {
+        "low": 0,
+        "high": 0.25
+      },
+      "params_resolved": {
+        "low": 0.0,
+        "high": 0.25
+      }
+    },
+    "parking": {
+      "component": "opportunity",
+      "function": "linear_increasing",
+      "log": true,
+      "weight": 0.3,
+      "params_spec": {
+        "low": 0,
+        "high": "p95nz"
+      },
+      "params_resolved": {
+        "low": 0.0,
+        "high": 36.298958422111134
+      }
+    },
+    "public_building_share": {
+      "component": "opportunity",
+      "function": "linear_increasing",
+      "log": false,
+      "weight": 0.3,
+      "params_spec": {
+        "low": 0,
+        "high": "p95nz"
+      },
+      "params_resolved": {
+        "low": 0.0,
+        "high": 0.22055040182901753
+      }
+    },
+    "cycle_density": {
+      "component": "corridors",
+      "function": "linear_increasing",
+      "log": false,
+      "weight": 0.5,
+      "params_spec": {
+        "low": 0,
+        "high": "p95nz"
+      },
+      "params_resolved": {
+        "low": 0.0,
+        "high": 232.97001883305097
+      }
+    },
+    "street_density": {
+      "component": "corridors",
+      "function": "linear_increasing",
+      "log": false,
+      "weight": 0.5,
+      "params_spec": {
+        "low": 0,
+        "high": "p95nz"
+      },
+      "params_resolved": {
+        "low": 0.0,
+        "high": 246.5009091897519
+      }
+    }
+  },
+  "component_weights": {
+    "heat": {
+      "mu_heatwave_tmax": 0.1,
+      "mu_heatwave_tmin": 0.3,
+      "mu_lst_copernicus": 0.45,
+      "mu_lst_microzone": 0.15,
+      "mu_air_temp_sensors": 0.05,
+      "mu_heat_island": 0.05
+    },
+    "exposure_night": {
+      "mu_res_density": 1.0
+    },
+    "exposure_day": {
+      "mu_day_density": 1.0
+    },
+    "vulnerability": {
+      "mu_share_65plus": 0.35,
+      "mu_share_75plus": 0.2,
+      "mu_share_0_4": 0.2,
+      "mu_sensitive_facilities": 0.25
+    },
+    "green_supply": {
+      "mu_green_share": 0.2,
+      "mu_tree_cover": 0.15,
+      "mu_vegetation_share": 0.3,
+      "mu_green_per_capita": 0.15,
+      "mu_sealing": 0.2
+    },
+    "green_access": {
+      "mu_dist_green": 1.0
+    },
+    "opportunity": {
+      "mu_brownfield_share": 0.4,
+      "mu_vacant_share": 0.3,
+      "mu_parking": 0.3,
+      "mu_municipal_share": 0.3,
+      "mu_public_building_share": 0.3
+    },
+    "corridors": {
+      "mu_cycle_density": 0.5,
+      "mu_street_density": 0.5
+    },
+    "buildings": {
+      "mu_up_energy": 1.0
+    }
+  },
+  "dimension_weights": {
+    "green_deficit": {
+      "c_green_supply": 0.5,
+      "c_green_access": 0.5
+    },
+    "feasibility": {
+      "c_opportunity": 0.5,
+      "c_corridors": 0.35,
+      "c_buildings": 0.15
+    },
+    "feasibility_agg": "max",
+    "opportunity_agg": "max",
+    "need": {
+      "d_heat_exposure": 0.3333333333333333,
+      "d_vulnerability": 0.3333333333333333,
+      "d_green_deficit": 0.3333333333333333
+    }
+  },
+  "heat_hazard_share_a": 0.5,
+  "day_weight": 0.5,
+  "validation": {
+    "spearman": [
+      {
+        "layer": "Heat (2026 heatwave + thermal)",
+        "column": "c_heat",
+        "expected sign": "+",
+        "Spearman r": 0.66,
+        "significant (p<0.05)": "yes",
+        "direction as expected": "yes",
+        "hexes": 114
+      },
+      {
+        "layer": "Heatwave max. temperature",
+        "column": "raw_heatwave_tmax",
+        "expected sign": "+",
+        "Spearman r": 0.37,
+        "significant (p<0.05)": "yes",
+        "direction as expected": "yes",
+        "hexes": 114
+      },
+      {
+        "layer": "Sealed ground",
+        "column": "raw_sealing",
+        "expected sign": "+",
+        "Spearman r": 0.7,
+        "significant (p<0.05)": "yes",
+        "direction as expected": "yes",
+        "hexes": 114
+      },
+      {
+        "layer": "Tree cover",
+        "column": "raw_tree_cover",
+        "expected sign": "-",
+        "Spearman r": -0.81,
+        "significant (p<0.05)": "yes",
+        "direction as expected": "yes",
+        "hexes": 114
+      },
+      {
+        "layer": "Vegetation share (NDVI)",
+        "column": "raw_vegetation_share",
+        "expected sign": "-",
+        "Spearman r": -0.74,
+        "significant (p<0.05)": "yes",
+        "direction as expected": "yes",
+        "hexes": 114
+      },
+      {
+        "layer": "Accessible green share",
+        "column": "raw_green_share",
+        "expected sign": "-",
+        "Spearman r": -0.76,
+        "significant (p<0.05)": "yes",
+        "direction as expected": "yes",
+        "hexes": 114
+      },
+      {
+        "layer": "Lack of green (dimension)",
+        "column": "d_green_deficit",
+        "expected sign": "+",
+        "Spearman r": 0.78,
+        "significant (p<0.05)": "yes",
+        "direction as expected": "yes",
+        "hexes": 114
+      },
+      {
+        "layer": "GI need (final result)",
+        "column": "gi_need_provisional",
+        "expected sign": "+",
+        "Spearman r": 0.73,
+        "significant (p<0.05)": "yes",
+        "direction as expected": "yes",
+        "hexes": 114
+      }
+    ],
+    "hit_rate": {
+      "top_share": 0.2,
+      "uncomfortable_in_top": 0.558,
+      "comfortable_in_top": 0.066
+    }
+  },
+  "config": {
+    "h3_res": 10,
+    "min_hex_coverage": 0.1,
+    "crs_metric": 5514,
+    "microzones": {
+      "path": "/content/drive/MyDrive/hackathon-upol/data/microzones.geojson",
+      "id_col": "Name",
+      "population_col": "PopGrid_No",
+      "lst_col": "Termal_MEA",
+      "tree_cover_col": "TreeCoverD",
+      "green_ha_cols": [
+        "Forest_all",
+        "SmallWoody",
+        "Grassland_"
+      ],
+      "cycle_km_col": "Cyklostezk",
+      "sidewalk_km_col": "Chodniky_k",
+      "parking_spaces_col": "PocetParkM",
+      "age_total_col": "obyv_vek_c",
+      "age_65plus_cols": [
+        "obyv_vek_6",
+        "obyv_vek_7"
+      ],
+      "age_75plus_cols": [
+        "obyv_vek_7"
+      ],
+      "age_0_4_cols": [
+        "obyv_vek_0"
+      ],
+      "facility_cols": [
+        "PocetMS",
+        "PocetZS",
+        "PocetLekar"
+      ],
+      "min_residents_for_shares": 50
+    },
+    "heatwave_tmax": {
+      "path": "/content/drive/MyDrive/hackathon-upol/data/HWmax_T_C.tif",
+      "band": 1,
+      "scale": 1.0,
+      "offset": 0.0
+    },
+    "heatwave_tmin": {
+      "path": "/content/drive/MyDrive/hackathon-upol/data/HWmin_T_C.tif",
+      "band": 1,
+      "scale": 1.0,
+      "offset": 0.0
+    },
+    "lst_raster": {
+      "path": "/content/drive/MyDrive/hackathon-upol/data/LST_landsat_microzone_EPSG5514.tif",
+      "band": 1,
+      "scale": 1.0,
+      "offset": 0.0
+    },
+    "sensors": {
+      "path": null,
+      "lat_col": "lat",
+      "lon_col": "lon",
+      "value_col": "air_temp_mean",
+      "idw_power": 2,
+      "max_dist_m": 1500
+    },
+    "heat_islands": {
+      "path": null,
+      "kind": "polygon",
+      "value_col": "intensity",
+      "layer": null
+    },
+    "urban_atlas": {
+      "path": "/content/drive/MyDrive/hackathon-upol/data/UrbanAtlas2021_microzone_EPSG5514.geojson",
+      "layer": null,
+      "code_col": "code_2021",
+      "vacant_codes": [
+        "13400",
+        "13300"
+      ],
+      "constraint_codes": [
+        "12210",
+        "12230",
+        "12400",
+        "50000"
+      ],
+      "residential_codes": [
+        "11100",
+        "11210",
+        "11220",
+        "11230",
+        "11240",
+        "11300"
+      ]
+    },
+    "buildings": {
+      "path": "/content/drive/MyDrive/hackathon-upol/data/buildings_with_class.geojson",
+      "layer": null,
+      "ownership_col": "building_category",
+      "public_patterns": [
+        "public"
+      ]
+    },
+    "vodafone": {
+      "zones_path": null,
+      "zones_layer": null,
+      "zone_id_col": "KOD",
+      "table_path": null,
+      "table_layer": null,
+      "table_zone_col": "KOD",
+      "hour_col": "HOUR",
+      "count_col": "COUNT",
+      "filter": null,
+      "day_hours": [
+        12,
+        13,
+        14,
+        15,
+        16
+      ],
+      "night_hours": [
+        2,
+        3,
+        4
+      ],
+      "calibrate_to_residents": true
+    },
+    "city_daytime_population": null,
+    "up_workplaces": {
+      "path": null,
+      "lat_col": "lat",
+      "lon_col": "lon",
+      "name_col": "name",
+      "dept_col": "department",
+      "staff_col": null
+    },
+    "up_students": {
+      "path": null,
+      "dept_col": "department",
+      "count_col": "students"
+    },
+    "green_polygons": [
+      {
+        "path": "/content/drive/MyDrive/hackathon-upol/data/UrbanAtlas2021_microzone_EPSG5514.geojson",
+        "layer": null,
+        "column": "code_2021",
+        "values": [
+          "14110",
+          "14130",
+          "31000",
+          "32000"
+        ]
+      }
+    ],
+    "green_min_area_ha": 0.5,
+    "tree_cover_raster": {
+      "path": "/content/drive/MyDrive/hackathon-upol/data/copernicusTreeCoverDensity10m.tif",
+      "band": 1
+    },
+    "ndvi_raster": {
+      "path": "/content/drive/MyDrive/hackathon-upol/data/NDVI_microzone_EPSG5514.tif",
+      "band": 1,
+      "scale": 1.0,
+      "offset": 0.0,
+      "veg_threshold": 0.5
+    },
+    "imperviousness_raster": {
+      "path": "/content/drive/MyDrive/hackathon-upol/data/olumouc2024_imperviousness_nodata.tif",
+      "band": 1
+    },
+    "roads": {
+      "path": "/content/drive/MyDrive/hackathon-upol/data/roads.geojson",
+      "layer": null,
+      "class_col": "street_class",
+      "street_classes": [
+        "primary",
+        "primary_link",
+        "secondary",
+        "secondary_link",
+        "tertiary",
+        "tertiary_link",
+        "residential",
+        "living_street",
+        "unclassified",
+        "pedestrian"
+      ],
+      "walk_exclude": [
+        "motorway",
+        "motorway_link",
+        "trunk",
+        "trunk_link",
+        "construction",
+        "proposed",
+        "abandoned",
+        "raceway"
+      ],
+      "snap_m": 50,
+      "max_dist_m": 3000,
+      "detour_factor": 1.3
+    },
+    "brownfields": {
+      "path": "/content/drive/MyDrive/hackathon-upol/data/brownfields_mz.geojson",
+      "layer": null
+    },
+    "municipal_land": {
+      "path": null,
+      "layer": null
+    },
+    "parking": {
+      "path": null,
+      "lat_col": "lat",
+      "lon_col": "lon",
+      "capacity_col": "capacity",
+      "occupancy_col": "occupancy_mean",
+      "occupancy_is_share": true
+    },
+    "cycle_paths": {
+      "path": "/content/drive/MyDrive/hackathon-upol/data/cycle_path.geojson",
+      "layer": null
+    },
+    "up_energy": {
+      "path": null,
+      "building_col": "building",
+      "value_col": "heat_kwh",
+      "year_col": null,
+      "year": null
+    },
+    "perception_heat": {
+      "path": "/content/drive/MyDrive/hackathon-upol/data/pocitova-teplotni-mapa-olomouce-2.geojson",
+      "layer": null,
+      "type_col": "typ_ident",
+      "uncomfortable": "a",
+      "comfortable": "b",
+      "comment_col": "desc_detail",
+      "max_polygon_ha": 50,
+      "min_marks": 3,
+      "top_share": 0.2
+    },
+    "heat_hazard_share_a": 0.5,
+    "day_weight": 0.5,
+    "dimension_floor": 0.01,
+    "smooth_rings": 1,
+    "opportunity_agg": "max",
+    "feasibility_agg": "max"
+  }
+}

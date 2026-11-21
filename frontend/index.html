@@ -46,7 +46,7 @@
   <div class="loader" id="loader" role="status" aria-live="polite">
     <img class="loader__logo" src="assets/img/logo.png" alt="More Green, Moravia">
     <div class="loader__status">
-      <p class="loader__message" data-i18n="loader.loading">Loading map…</p>
+      <p class="loader__message" data-i18n="loader.loading">Loading map data…</p>
       <span class="loader__bar" aria-hidden="true"></span>
     </div>
   </div>
@@ -157,7 +157,7 @@
                   <img src="assets/icons/factor-heat.svg" width="18" height="18" alt="">
                   <span data-i18n="factor.he">Heat &amp; people exposed</span>
                   <button class="weight__info" type="button" data-info="factor.he.info"
-                          aria-label="Hot areas where many people live. Heat combines night-time heatwave temperature (45%), surface temperature (40%) and daytime maximum (15%): the urban heat island is strongest at night, when sealed surfaces release stored heat." data-i18n-attr="aria-label:factor.he.info">
+                          aria-label="Hot areas where many people live. Heat combines satellite surface temperature (45%, Landsat, summer 2026), night-time heatwave temperature (30%), neighbourhood surface temperature (15%) and daytime heatwave maximum (10%). Surface temperature shows which places heat up most; warm nights matter most for health." data-i18n-attr="aria-label:factor.he.info">
                     <img src="assets/icons/info-circle.svg" width="14" height="14" alt="">
                   </button>
                 </label>
@@ -225,7 +225,7 @@
         </ol>
       </section>
 
-      <p class="sidebar-note" data-i18n="footer.note">Provisional results. Scores combine heatwave temperatures (night and day), surface temperature, population, vulnerable groups, green vegetation (Sentinel-2, summer 2026), tree cover, sealed ground, walking distance to parks and available land on a 200 m hexagon grid (H3). Checked against 2,091 places residents marked as comfortable or uncomfortable on hot days. This version focuses on heat stress. Use as a guide, not a final decision.</p>
+      <p class="sidebar-note" data-i18n="footer.note.r10" id="footer-note">Provisional results. Scores combine satellite surface temperature (Landsat, summer 2026), heatwave temperatures (night and day), population, vulnerable groups, green vegetation (Sentinel-2, summer 2026), tree cover, sealed ground, walking distance to parks and available land on a 75 m hexagon grid (H3); people and vulnerable groups per ~200 m neighbourhood. Checked against 2,091 places residents marked as comfortable or uncomfortable on hot days. This version focuses on heat stress. Use as a guide, not a final decision.</p>
     </aside>
 
     <!-- =======================================================
@@ -378,9 +378,11 @@
           <h3 class="section-title" data-i18n="detail.factorsTitle">What made up the score</h3>
           <p class="section-desc" data-i18n="detail.factorsDesc">How this area scores on each factor (0 = low need, 100 = high need)</p>
           <ul class="factor-list" id="detail-factors"></ul>
+          <!-- Shown only for mixed-resolution data (r10), see RES in config.js -->
+          <p class="detail-card__source" id="detail-res-note" data-i18n="detail.resNote" hidden>Heat, green space and space to build are measured per ~75 m area. People and vulnerable groups are measured per neighbourhood (~200 m), so neighbouring areas share those values.</p>
         </section>
 
-        <p class="detail-card__source" data-i18n="detail.treeSource">Vegetation: Sentinel-2 NDVI, summer 2026 · Land use: Copernicus Urban Atlas 2021 · Tree cover: Copernicus 10 m · Sealed ground: Copernicus Imperviousness 10 m (2024). Walking distances along streets (OpenStreetMap).</p>
+        <p class="detail-card__source" data-i18n="detail.treeSource">Vegetation: Sentinel-2 NDVI, summer 2026 · Land use: Copernicus Urban Atlas 2021 · Tree cover: Copernicus 10 m · Sealed ground: Copernicus Imperviousness 10 m (2024). Walking distances along streets (OpenStreetMap). Surface temperature: Landsat, summer 2026 (30 m).</p>
       </article>
 
       <!-- Ask AI + map buttons (bottom right) -->
@@ -464,6 +466,7 @@
           <li><button class="ask-ai-chip" type="button" data-i18n="askai.suggest5">Which neighbourhoods are far from a park?</button></li>
           <li><button class="ask-ai-chip" type="button" data-i18n="askai.suggest6">Why is this area ranked so high?</button></li>
           <li><button class="ask-ai-chip" type="button" data-i18n="askai.suggest7">Which public buildings in hot areas could get green roofs?</button></li>
+          <li><button class="ask-ai-chip" type="button" data-i18n="askai.suggest8">Where are the hottest surfaces in the city?</button></li>
         </ul>
 
         <!-- Questions and answers, filled by ask-ai.js -->

@@ -62,8 +62,8 @@ def test_score_matches_notebook(db, ctx):
 
 async def test_overview(db, ctx):
     result = await overview(db, ctx, OverviewSpec())
-    assert result.summary["hexagons"] == 500
-    assert sum(result.summary["hexagons_per_score_band"].values()) == 500
+    assert result.summary["hexagons"] == ctx.hex_count
+    assert sum(result.summary["hexagons_per_score_band"].values()) == ctx.hex_count
     assert len(result.rows) == 5
 
 
@@ -88,10 +88,19 @@ async def test_rank_hexes_filtered_and_scaled(db, ctx):
     assert all(r["residents"] > 0 for r in result.rows)
 
 
+async def test_rank_hexes_capped_and_grouped_by_microzone(db, ctx):
+    result = await rank(db, ctx, RankSpec(metric="score", limit=50))
+    assert len(result.rows) <= 10
+    groups = result.summary["by_microzone"]
+    assert sum(g["hexagons"] for g in groups) == len(result.rows)
+    assert len({g["microzone"] for g in groups}) == len(groups)
+    assert groups[0]["best"] == result.rows[0]["score"]
+
+
 async def test_summarize_by_filter(db, ctx):
     spec = SummarizeSpec(filters=[Filter(metric="score", op=Op.GTE, value=0)])
     result = await summarize(db, ctx, spec)
-    assert result.summary["hexagons"] == 500
+    assert result.summary["hexagons"] == ctx.hex_count
     assert result.summary["share_of_city_hexagons_pct"] == 100.0
 
 

@@ -24,6 +24,7 @@ from app.database import Database
 
 FLOOR = 0.01
 MAX_ROWS = 50
+MAX_HEX_ROWS = 10  # neighbouring small hexagons repeat each other; group them instead
 MAX_EXTRA = 5
 MAX_LOCATE = 20
 NEAREST_MAX_M = 400  # a point further than this from every hexagon is outside the index
@@ -42,6 +43,7 @@ KEY_METRICS = (
     "raw_day_people",
     "raw_heatwave_tmax",
     "raw_heatwave_tmin",
+    "raw_lst_copernicus",
     "raw_lst_microzone",
     "raw_share_65plus",
     "raw_share_75plus",
@@ -66,6 +68,7 @@ KEY_METRICS = (
 SUMMARY_ALIASES = {
     "green_vegetation": "raw_vegetation_share",
     "public_roof_m2": "raw_public_roof_m2",
+    "surface_temp_satellite_c": "raw_lst_copernicus",
     "surface_temp_c": "raw_lst_microzone",
     "residents_uncomfortable_share": "val_perceived_heat",
 }
@@ -189,7 +192,9 @@ class OverviewSpec(ScoreArgs):
 
 class RankSpec(ScoreArgs):
     metric: str = Field("score", description="What to rank by")
-    level: Level = Field(Level.HEX, description="hex: 200 m hexagons; microzone: city districts")
+    level: Level = Field(
+        Level.HEX, description="hex: small hexagons (~75 m at res 10); microzone: city districts"
+    )
     order: Order = Field(Order.DESC, description="desc: highest first")
     limit: int = Field(10, ge=1, le=MAX_ROWS)
     agg: Agg | None = Field(
@@ -493,6 +498,21 @@ async def overview(db: Database, ctx: AgentContext, spec: OverviewSpec) -> Query
     )
 
 
+def _by_microzone(rows: list[dict[str, Any]], key: str) -> list[dict[str, Any]]:
+    """Ranked hexagons grouped by microzone, in rank order: microzone, best value, count.
+
+    Small hexagons next to each other often share a microzone, so the answer can
+    name places instead of listing neighbouring hexagons.
+    """
+    groups: dict[str, dict[str, Any]] = {}
+    for row in rows:  # already best first
+        zone = row["microzone"]
+        if zone not in groups:
+            groups[zone] = {"microzone": zone, "best": row[key], "hexagons": 0}
+        groups[zone]["hexagons"] += 1
+    return list(groups.values())
+
+
 async def rank(db: Database, ctx: AgentContext, spec: RankSpec) -> QueryResult:
     scoring = spec.resolved()
     metric = ctx.metric(spec.metric)
@@ -504,6 +524,7 @@ async def rank(db: Database, ctx: AgentContext, spec: RankSpec) -> QueryResult:
     residents = "raw_residents" in ctx.metrics
 
     if spec.level is Level.HEX:
+        limit = min(spec.limit, MAX_HEX_ROWS)
         cols = [f'{q.metric(m)} AS "{m.name}"' for m in extras]
         sql = f"""
             SELECT h3_index, mz_id AS microzone, {value} AS value
@@ -513,7 +534,7 @@ async def rank(db: Database, ctx: AgentContext, spec: RankSpec) -> QueryResult:
             FROM hexes
             WHERE {where} AND {value} IS NOT NULL
             ORDER BY value {direction} NULLS LAST, h3_index
-            LIMIT {spec.limit}
+            LIMIT {limit}
         """
         id_key = "h3_index"
         agg = None
@@ -556,6 +577,8 @@ async def rank(db: Database, ctx: AgentContext, spec: RankSpec) -> QueryResult:
         "order": "highest first" if spec.order is Order.DESC else "lowest first",
         f"matching_{unit_name}": matching,
     }
+    if spec.level is Level.HEX and rows:
+        summary["by_microzone"] = _by_microzone(rows, metric.name)
     if agg:
         summary["per_microzone"] = f"{agg.value} of its hexagons"
     if metric.derived:
@@ -862,7 +885,7 @@ async def locate(db: Database, ctx: AgentContext, spec: LocateSpec) -> QueryResu
     if not found:
         raise ToolError(
             f"none of {', '.join(ids)} is in the index; h3_index values come from "
-            "rank_areas or area_detail (resolution 9 hexagons in Olomouc)"
+            "rank_areas or area_detail (hexagons in Olomouc)"
         )
     hits = [found[i] for i in ids if i in found]
     places = await places_api.reverse_many([(r["lon"], r["lat"]) for r in hits], spec.lang.value)

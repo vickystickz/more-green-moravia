@@ -38,6 +38,19 @@
   background: var(--green-25);
 }
 
+/* Name with "N priority areas" under it. */
+.zone-row__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.zone-row__meta {
+  font-size: var(--caption-3-size);
+  line-height: var(--caption-3-line);
+  color: var(--grey-700);
+}
+
 .zone-row__name {
   min-width: 0;
   font-weight: var(--weight-medium);
