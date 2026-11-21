@@ -4,8 +4,8 @@ public_buildings tool, and drawn on the map on top of their places."""
 import pytest
 from fastapi.testclient import TestClient
 
-from agent import places
-from agent.query import BuildingsSpec, Filter, Op, ToolError, public_buildings
+from agent import maps, places
+from agent.query import BuildingsSpec, Filter, LayerSpec, Op, ToolError, public_buildings
 from app.database import get_db
 from app.main import app
 
@@ -87,3 +87,41 @@ async def test_map_draws_buildings_on_top(client, db, ctx):
     assert [f["properties"]["rank"] for f in buildings] == [1, 2, 3]
     assert places_ and all("rank" not in f["properties"] for f in places_)
     assert buildings[0]["geometry"]["type"] in ("Polygon", "MultiPolygon")
+
+
+async def test_building_layer_has_green_roof_costs(db, ctx):
+    from agent import costs as green_roof
+
+    costs = green_roof.load()
+    assert costs is not None and costs.currency == "CZK"
+    row = db.query_sync(
+        "SELECT building_id, roof_m2 FROM buildings WHERE roof_m2 > 500 AND h3_index IS NOT NULL "
+        "LIMIT 1"
+    ).rows[0]
+    hex_id = db.query_sync(
+        "SELECT h3_index FROM buildings WHERE building_id = ?", [row["building_id"]]
+    ).rows[0]["h3_index"]
+    layer = await maps.build(
+        db, ctx, LayerSpec(level="hex", metric="he", ids=[hex_id], buildings=[row["building_id"]])
+    )
+    building = next(
+        f["properties"]
+        for f in layer.features["features"]
+        if f["properties"].get("kind") == "building"
+    )
+    assert building["install_min"] <= building["install_avg"] <= building["install_max"]
+    assert building["maint_min"] <= building["maint_avg"] <= building["maint_max"]
+    expected = costs.install.avg * row["roof_m2"]
+    assert abs(building["install_avg"] - expected) / expected < 0.01  # 3 significant figures
+    assert layer.costs["install"]["url"].startswith("https://")
+    assert layer.costs["maintenance"]["url"].startswith("https://")
+
+
+def test_costs_parse_rejects_missing_record():
+
+    from agent import costs as green_roof
+
+    with pytest.raises(ValueError):
+        green_roof.parse(
+            {"records": [{"unit": "CZK/m² (installation)", "cost_min": 1, "cost_max": 2}]}
+        )

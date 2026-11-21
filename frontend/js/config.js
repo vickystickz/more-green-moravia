@@ -125,6 +125,21 @@ export const DATA_PATHS = {
   // Optional microzone outlines. If this file does not exist, the
   // "Microzone boundaries" checkbox is not shown.
   boundaries: 'data/olomouc_microzones.geojson',
+  // Building footprints for the "Building" layer (WGS84 copy of
+  // buildings_with_class.geojson, made by
+  // backend/scripts/buildings_for_web.py). Loaded the first time
+  // the layer is shown.
+  buildings: 'data/olomouc_buildings.geojson?v=1',
+};
+
+// Building outlines: the "Building" layer and the public buildings
+// in Ask AI answers use the same look.
+export const BUILDING_STYLE = {
+  fill: '#E1E1E1',
+  fillOpacity: 0.2,
+  line: '#737300', // dark outline for contrast
+  lineOpacity: 0.3,
+  lineWidth: 1.5,
 };
 
 // -------------------------------------------------------------

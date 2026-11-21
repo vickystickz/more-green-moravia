@@ -154,5 +154,15 @@
   "ranking.areas.one": "{n} prioritní oblast",
   "ranking.areas.few": "{n} prioritní oblasti",
   "ranking.areas.many": "{n} prioritní oblasti",
-  "ranking.areas.other": "{n} prioritních oblastí"
+  "ranking.areas.other": "{n} prioritních oblastí",
+  "askai.costTitle": "Odhad pro zelenou střechu (extenzivní)",
+  "askai.costSources": "Zdroje:",
+  "askai.costSourceSetup": "náklady na založení",
+  "askai.costSourceUpkeep": "náklady na údržbu",
+  "askai.currency": "Kč",
+  "askai.costAbout": "Asi ({c})",
+  "askai.costRange": "Rozpětí ({c})",
+  "askai.costPerM2": "{c}/m²",
+  "askai.costRowSetup": "Založení",
+  "askai.costRowUpkeep": "Údržba ročně"
 }

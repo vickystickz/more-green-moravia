@@ -9,8 +9,9 @@
 // hexagons, without numbers.
 // =============================================================
 
-import { SCORE_CLASSES } from '../config.js';
+import { SCORE_CLASSES, BUILDING_STYLE } from '../config.js';
 import { num, t } from '../ui/i18n.js';
+import { underBuildings } from './buildings.js';
 
 const SOURCE = 'ai-layer';
 const FILL = 'ai-layer-fill';
@@ -19,9 +20,6 @@ const BUILDING_FILL = 'ai-layer-building-fill';
 const BUILDING_LINE = 'ai-layer-building-line';
 const LABEL = 'ai-layer-label';
 
-// Public building footprints from an Ask AI answer.
-const BUILDING_COLOR = '#E1E1E1';
-const BUILDING_COLOR_OUTLINE = '#737300'; // dark outline for contrast
 const LAYERS = [FILL, LINE, BUILDING_FILL, BUILDING_LINE, LABEL];
 
 const isBuilding = ['==', ['get', 'kind'], 'building'];
@@ -29,10 +27,6 @@ const notBuilding = ['!=', ['get', 'kind'], 'building'];
 
 let popup = null;
 let current = null; // the MapLayer on the map, or null
-
-function firstLabelLayer(map) {
-  return map.getStyle().layers.find((l) => l.type === 'symbol')?.id;
-}
 
 // Same five colours as the GI index, split at the layer's own
 // legend breaks (score classes, or quantiles for raw values).
@@ -53,7 +47,7 @@ function formatValue(value, unit) {
 }
 
 function addLayers(map) {
-  const before = firstLabelLayer(map);
+  const before = underBuildings(map); // the Building layer stays on top
   map.addSource(SOURCE, { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
   map.addLayer({
     id: FILL,
@@ -75,14 +69,14 @@ function addLayers(map) {
     type: 'fill',
     source: SOURCE,
     filter: isBuilding,
-    paint: { 'fill-color': BUILDING_COLOR, 'fill-opacity': 0.9 },
+    paint: { 'fill-color': BUILDING_STYLE.fill, 'fill-opacity': BUILDING_STYLE.fillOpacity },
   }, before);
   map.addLayer({
     id: BUILDING_LINE,
     type: 'line',
     source: SOURCE,
     filter: isBuilding,
-    paint: { 'line-color': BUILDING_COLOR_OUTLINE, 'line-width': 1.5 },
+    paint: { 'line-color': BUILDING_STYLE.line, 'line-width': BUILDING_STYLE.lineWidth },
   }, before);
   // Rank numbers on top of everything, basemap labels included.
   map.addLayer({
@@ -135,12 +129,85 @@ function addLayers(map) {
       typeof p.roof_m2 === 'number' && t('askai.roofArea', { v: num(p.roof_m2) }),
       p.roof_shape === 'flat' && t('askai.flatRoof'),
     ].filter(Boolean).join(' · ');
-    box.append(name, roof);
-    popup = new maplibregl.Popup({ closeButton: false, maxWidth: '240px' })
+    box.append(name, roof, ...costLines(p, current?.costs));
+    popup = new maplibregl.Popup({ closeButton: false, maxWidth: '360px' })
       .setLngLat(e.lngLat).setDOMContent(box).addTo(map);
   });
   map.on('mouseenter', BUILDING_FILL, () => { map.getCanvas().style.cursor = 'pointer'; });
   map.on('mouseleave', BUILDING_FILL, () => { map.getCanvas().style.cursor = ''; });
+}
+
+// Green roof estimate for a building popup, as a small table in the
+// Ask AI answer style (.ask-ai-table): set-up (one-off) and upkeep
+// (per year) = roof area x the backend's rates per m², plus the rate
+// itself, then links to the sources of those rates (layer.costs).
+// Nothing when the backend sent no costs.
+//
+//                 About (CZK)  Range (CZK)            CZK/m²
+//   Set-up        1,750,000    1,000,000–2,500,000    1,750
+//   Upkeep a year    30,500       12,200–48,800       30.48
+function costLines(p, costs) {
+  if (!costs || typeof p.install_avg !== 'number') return [];
+  const c = t('askai.currency');
+  const cell = (tag, text) => {
+    const el = document.createElement(tag);
+    el.textContent = text;
+    return el;
+  };
+  const row = (labelKey, prefix, rate) => {
+    const per = rate?.per_m2;
+    const d = per && per.avg < 100 ? 2 : 0; // small rates (upkeep) keep two decimals
+    const tr = document.createElement('tr');
+    tr.append(
+      cell('th', t(labelKey)),
+      cell('td', num(p[`${prefix}_avg`])),
+      cell('td', `${num(p[`${prefix}_min`])}–${num(p[`${prefix}_max`])}`),
+      cell('td', per ? num(per.avg, d) : '–'),
+    );
+    return tr;
+  };
+
+  const title = document.createElement('span');
+  title.className = 'ai-layer-popup__title';
+  title.textContent = t('askai.costTitle');
+
+  const wrap = document.createElement('div');
+  wrap.className = 'ask-ai-table ai-layer-popup__table';
+  const table = document.createElement('table');
+  const head = document.createElement('tr');
+  head.append(
+    cell('th', ''),
+    cell('th', t('askai.costAbout', { c })),
+    cell('th', t('askai.costRange', { c })),
+    cell('th', t('askai.costPerM2', { c })),
+  );
+  const thead = document.createElement('thead');
+  thead.append(head);
+  const tbody = document.createElement('tbody');
+  tbody.append(
+    row('askai.costRowSetup', 'install', costs.install),
+    row('askai.costRowUpkeep', 'maint', costs.maintenance),
+  );
+  table.append(thead, tbody);
+  wrap.append(table);
+
+  const sources = document.createElement('span');
+  sources.className = 'ai-layer-popup__sources';
+  sources.append(t('askai.costSources'), ' ');
+  [[costs.install, 'askai.costSourceSetup'], [costs.maintenance, 'askai.costSourceUpkeep']]
+    .filter(([rate]) => rate?.url)
+    .forEach(([rate, key], i) => {
+      if (i) sources.append(' · ');
+      const link = document.createElement('a');
+      link.href = rate.url;
+      link.target = '_blank';
+      link.rel = 'noopener';
+      link.textContent = t(key);
+      link.title = rate.source; // full source name on hover
+      sources.append(link);
+    });
+
+  return [title, wrap, sources];
 }
 
 /**

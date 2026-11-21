@@ -195,26 +195,31 @@ export function setPublicVisible(map, visible) {
 }
 
 /**
- * Optional microzone outlines (dashed dark lines), visible at start.
+ * Optional microzone outlines (dashed dark lines), hidden at start
+ * (or as the user set the eye before the file loaded).
  * Added after the hexagons so the outlines are drawn ON TOP of them
  * (still under the basemap's place names).
  */
+let boundariesVisible = false;
+
 export function addBoundaryLayer(map, geojson) {
   map.addSource(BOUNDARY_SOURCE, { type: 'geojson', data: geojson });
   map.addLayer({
     id: BOUNDARY_LAYER,
     type: 'line',
     source: BOUNDARY_SOURCE,
+    layout: { visibility: boundariesVisible ? 'visible' : 'none' },
     paint: { 'line-color': '#3A3A3A', 'line-width': 1.2, 'line-dasharray': [2, 1.5] },
   }, firstLabelLayer(map));
 }
 
 export function setBoundariesVisible(map, visible) {
+  boundariesVisible = visible;
   if (map.getLayer(BOUNDARY_LAYER)) {
     map.setLayoutProperty(BOUNDARY_LAYER, 'visibility', visible ? 'visible' : 'none');
   }
 }
 
-// Building footprints belong to the basemap, so basemap.js owns
-// them (they are hidden while the orthophoto is shown).
+// The Building layer is switched together with the basemap's own
+// footprints, so basemap.js owns it (see map/buildings.js).
 export { setBuildingsVisible } from './basemap.js';

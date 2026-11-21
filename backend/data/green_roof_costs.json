@@ -1,0 +1,42 @@
+{
+  "title": "Green roof costs for Czechia: installation and annual maintenance (CZK)",
+  "accessed": "2026-11-21",
+  "unit_note": "Prices per m² of roof area. Record 1 = installation (investment) cost in CZK/m²; record 5 = annual maintenance cost in CZK/m²/yr, converted from EUR at the CNB rate of 24.385 CZK/EUR (18 Nov 2026). cost_min/cost_max cover the first (extensive) range in cost_text. cost_average = (cost_min + cost_max) / 2.",
+  "records": [
+    {
+      "id": 1,
+      "source": "UJEP Ústí n. L., report for key stakeholders no. 4",
+      "source_class": "Czech university",
+      "region": "Czechia",
+      "type": "Extensive green roof, investment",
+      "cost_text": "1,000–2,500 Kč/m²",
+      "cost_min": 1000,
+      "cost_max": 2500,
+      "currency": "CZK",
+      "notes": "Typical realisation cost, substrate 8–15 cm. Intensive: 2,000–4,000 Kč/m².",
+      "url": "https://www.fse.ujep.cz/wp-content/uploads/2024/01/Zprava_pro_klicove_aktery_c_4_zelene_strechy.pdf",
+      "cost_average": 1750.0,
+      "unit": "CZK/m² (installation)"
+    },
+    {
+      "id": 5,
+      "source": "HLNUG Hesse, Factsheet 7 Cost-Benefit",
+      "source_class": "German state agency",
+      "region": "Germany",
+      "type": "Annual maintenance cost",
+      "cost_text": "12.19–48.77 Kč/m²/yr extensive (≈ €0.5–2/m²/yr); 60.96–97.54 Kč/m²/yr intensive (≈ €2.5–4/m²/yr)",
+      "cost_min": 12.19,
+      "cost_max": 48.77,
+      "currency": "CZK",
+      "notes": "Also: retention 20–50 l/m² (extensive); roof membrane life +10–20 yr. Table text extracted unclearly: verify in original. Intensive range: 2.5–4 EUR/m²/yr (≈ 60.96–97.54 CZK/m²/yr).",
+      "url": "https://hlnug.de/fileadmin/dokumente/klima/klimprax/IB-Green/Factsheet7-Kosten-Nutzen_Gewerbegebiet_Englisch.pdf",
+      "original_currency": "EUR",
+      "original_cost_min": 0.5,
+      "original_cost_max": 2,
+      "exchange_rate_eur_czk": 24.385,
+      "exchange_rate_source": "Czech National Bank (CNB) rate declared for 18 Nov 2026",
+      "cost_average": 30.48,
+      "unit": "CZK/m²/yr (annual maintenance)"
+    }
+  ]
+}

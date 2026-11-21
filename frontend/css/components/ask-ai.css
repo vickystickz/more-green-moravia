@@ -516,6 +516,32 @@
   line-height: var(--caption-2-line);
 }
 
+/* Green roof estimate in a building popup. */
+.ai-layer-popup__title {
+  margin-top: 6px;
+  font-weight: var(--weight-medium);
+}
+
+/* Cost table: the answer table style, numbers right-aligned. */
+.ai-layer-popup__table {
+  margin-top: 2px;
+}
+
+.ai-layer-popup__table td {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.ai-layer-popup__sources {
+  margin-top: 4px;
+  color: var(--grey-700);
+}
+
+.ai-layer-popup__sources a {
+  color: inherit;
+  text-decoration: underline;
+}
+
 /* ---------- Small screens: panel covers the page ----------
    It slides in from the right over everything instead. */
 @media (max-width: 768px) {

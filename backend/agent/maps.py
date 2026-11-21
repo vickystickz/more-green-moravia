@@ -8,6 +8,7 @@ from typing import Any
 
 from pydantic import BaseModel
 
+from agent import costs as green_roof
 from agent.catalog import AgentContext
 from agent.query import CLASS_BREAKS, LayerSpec, Level, Sql, _agg, _agg_sql, shown
 from app.database import Database
@@ -32,6 +33,8 @@ class MapLayer(BaseModel):
     features: dict[str, Any]  # GeoJSON FeatureCollection
     bbox: list[float] | None  # [west, south, east, north]
     scoring: dict[str, Any] | None
+    # Green roof cost rates and their sources, when the layer has buildings.
+    costs: dict[str, Any] | None = None
 
 
 async def build(db: Database, ctx: AgentContext, spec: LayerSpec) -> MapLayer:
@@ -111,7 +114,13 @@ async def build(db: Database, ctx: AgentContext, spec: LayerSpec) -> MapLayer:
         features={"type": "FeatureCollection", "features": features},
         bbox=_bbox(features),
         scoring=scoring.describe() if metric.derived else None,
+        costs=_costs_info() if spec.buildings else None,
     )
+
+
+def _costs_info() -> dict[str, Any] | None:
+    costs = green_roof.load()
+    return costs.describe() if costs else None
 
 
 async def _building_features(db: Database, q: Sql, ids: list[str]) -> list[dict[str, Any]]:
@@ -125,6 +134,7 @@ async def _building_features(db: Database, q: Sql, ids: list[str]) -> list[dict[
         q.params,
     )
     rank = {i: n for n, i in enumerate(ids, 1)}
+    costs = green_roof.load()
     features = [
         {
             "type": "Feature",
@@ -137,6 +147,9 @@ async def _building_features(db: Database, q: Sql, ids: list[str]) -> list[dict[
                 "roof_m2": round(row["roof_m2"]) if row["roof_m2"] is not None else None,
                 "roof_shape": row["roof_shape"],
                 "rank": rank.get(row["building_id"]),
+                # install_min/avg/max (one-off) and maint_min/avg/max (per
+                # year), in costs.currency: roof area x rate per m².
+                **(costs.for_roof(row["roof_m2"]) if costs else {}),
             },
             "geometry": json.loads(row["geometry"]),
         }

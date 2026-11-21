@@ -11,6 +11,7 @@
 // =============================================================
 
 import { BASEMAP_CONFIG } from '../config.js';
+import { showBuildingLayer } from './buildings.js';
 
 const ORTHO = 'ortho';
 
@@ -46,15 +47,18 @@ function ensureOrtho(map) {
   );
 }
 
+// The basemap's own building footprints are always hidden: the
+// "Building" layer (map/buildings.js) replaces them.
 function apply(map) {
   if (orthoOn) ensureOrtho(map);
   if (map.getLayer(ORTHO)) {
     map.setLayoutProperty(ORTHO, 'visibility', orthoOn ? 'visible' : 'none');
   }
   coveringLayers(map).forEach((l) => {
-    const visible = !orthoOn && (!isBuilding(l) || buildingsWanted);
+    const visible = !orthoOn && !isBuilding(l);
     map.setLayoutProperty(l.id, 'visibility', visible ? 'visible' : 'none');
   });
+  showBuildingLayer(map, buildingsWanted); // shown on both basemaps
 }
 
 /** Is the orthophoto basemap shown? */
@@ -75,14 +79,17 @@ export function setOrthoBasemap(map, on) {
 }
 
 /**
- * Show or hide the basemap's building footprints. They stay hidden
- * on the orthophoto (the photo already shows the roofs); the choice
- * is applied when the user switches back to the light basemap.
+ * Show or hide the "Building" layer (buildings_with_class), on the
+ * light basemap and on the orthophoto alike (the photo is always the
+ * bottom layer, so the footprints are drawn on top of it).
  */
 export function setBuildingsVisible(map, visible) {
   buildingsWanted = visible;
-  if (orthoOn) return;
-  map.getStyle().layers
-    .filter(isBuilding)
-    .forEach((l) => map.setLayoutProperty(l.id, 'visibility', visible ? 'visible' : 'none'));
+  const update = () => {
+    map.getStyle().layers.filter(isBuilding)
+      .forEach((l) => map.setLayoutProperty(l.id, 'visibility', 'none'));
+    showBuildingLayer(map, visible);
+  };
+  if (map.isStyleLoaded()) update();
+  else map.once('load', update);
 }

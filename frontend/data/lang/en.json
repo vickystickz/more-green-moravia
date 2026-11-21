@@ -152,5 +152,15 @@
   "askai.suggest8": "Where are the hottest surfaces in the city?",
   "detail.resNote": "Heat, green space and space to build are measured per ~75 m area. People and vulnerable groups are measured per neighbourhood (~200 m), so neighbouring areas share those values.",
   "ranking.areas.one": "{n} priority area",
-  "ranking.areas.other": "{n} priority areas"
+  "ranking.areas.other": "{n} priority areas",
+  "askai.costTitle": "Green roof estimate (extensive)",
+  "askai.costSources": "Sources:",
+  "askai.costSourceSetup": "set-up cost",
+  "askai.costSourceUpkeep": "upkeep cost",
+  "askai.currency": "CZK",
+  "askai.costAbout": "About ({c})",
+  "askai.costRange": "Range ({c})",
+  "askai.costPerM2": "{c}/m²",
+  "askai.costRowSetup": "Set-up",
+  "askai.costRowUpkeep": "Upkeep a year"
 }

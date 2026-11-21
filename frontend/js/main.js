@@ -236,6 +236,11 @@ async function init() {
       addHexLayer(map, hexes, (id) => selectHex(id));
     }
 
+    // Building layer: as the "Building" eye says (off at the start).
+    // Drawn on top of the hexagons; the file loads in the background.
+    const buildingsEye = document.querySelector('.eye-btn[data-layer="buildings"]');
+    setBuildingsVisible(map, buildingsEye?.getAttribute('aria-pressed') === 'true');
+
     // After the hexagons, so the outlines are drawn on top of them.
     if (boundaries) {
       addBoundaryLayer(map, boundaries);
