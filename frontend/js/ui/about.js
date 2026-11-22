@@ -10,7 +10,7 @@
 import { getLang, onLangChange, t } from './i18n.js';
 
 // Raise after editing the Markdown, so browsers fetch the new text.
-const VERSION = 5;
+const VERSION = 6;
 const path = (lang) => `data/about/${lang}.md?v=${VERSION}`;
 
 const cache = new Map(); // lang -> rendered HTML

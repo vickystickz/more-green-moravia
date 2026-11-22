@@ -128,3 +128,5 @@ The index was checked in two independent ways. Neither is used in the score.
 ## Team
 
 Built by **Team deCoDE**: **Victor**, **Pamela** and **Redoy** for the [UPOL Hackathon 2026](https://hackathon.upol.cz/en/).
+
+**Source code:** [github.com/vickystickz/more-green-moravia](https://github.com/vickystickz/more-green-moravia) (the map site, the Ask AI backend and how to run them).

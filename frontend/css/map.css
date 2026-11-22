@@ -289,6 +289,33 @@
   opacity: var(--hex-opacity, 0.7);
 }
 
+/* Numbers at the class breaks, centred under the box edges (the
+   first and last are aligned to the ends so they stay inside). */
+.legend__ticks {
+  position: relative;
+  height: 14px;
+  margin-top: 2px;
+  font-size: var(--caption-3-size);
+  line-height: var(--caption-3-line);
+  font-variant-numeric: tabular-nums;
+  color: var(--display-subtle-01);
+}
+
+.legend__ticks span {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+.legend__ticks span:first-child {
+  transform: none;
+}
+
+.legend__ticks span:last-child {
+  transform: translateX(-100%);
+}
+
 /* Opacity slider for the hexagon colours: label · slider · value. */
 .opacity-control {
   display: flex;

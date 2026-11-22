@@ -124,3 +124,5 @@ Index byl ověřen dvěma nezávislými způsoby. Ani jeden do skóre nevstupuje
 ## Tým
 
 Vytvořil **tým deCoDE**: **Victor**, **Pamela** a **Redoy** pro [UPOL Hackathon 2026](https://hackathon.upol.cz/en/).
+
+**Zdrojový kód:** [github.com/vickystickz/more-green-moravia](https://github.com/vickystickz/more-green-moravia) (mapový web, backend Zeptat se AI a návod ke spuštění).

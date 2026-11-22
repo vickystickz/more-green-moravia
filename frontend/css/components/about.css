@@ -40,6 +40,25 @@
   font-size: var(--p3-size);
   font-weight: var(--weight-semibold);
   color: var(--color-nav);
+  margin-right: auto;
+}
+
+/* GitHub link next to the close button. */
+.about-dialog__github {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: var(--radius-row);
+  background: var(--grey-50);
+  font-size: var(--caption-2-size);
+  font-weight: var(--weight-medium);
+  color: var(--color-nav);
+  text-decoration: none;
+}
+
+.about-dialog__github:hover {
+  background: var(--grey-100);
 }
 
 .about-dialog__close {

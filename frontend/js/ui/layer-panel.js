@@ -14,7 +14,7 @@
 // =============================================================
 
 import { MAP_LAYERS, SCORE_CLASSES, HEX_OPACITY } from '../config.js';
-import { t, percent, onLangChange } from './i18n.js';
+import { t, num, percent, onLangChange } from './i18n.js';
 
 const EYE_ON = 'assets/icons/eye.svg';
 const EYE_OFF = 'assets/icons/eye-off.svg';
@@ -71,6 +71,26 @@ export function initLayerPanel({ onLayer, onBoundaries, onBuildings, onVacant, o
   }
   drawScale(SCORE_CLASSES);
 
+  // Numbers at the class breaks (0, 20, … 100), each under the edge
+  // between two boxes; the layer's unit goes on the last one.
+  const ticks = document.getElementById('legend-ticks');
+  function drawTicks(layer, classes) {
+    const scaleBy = layer.tickScale ?? 100;
+    const n = classes.length;
+    const step = classes[n - 1].from - classes[n - 2].from;
+    const values = [...classes.map((c) => c.from), classes[n - 1].from + step];
+    ticks.replaceChildren(...values.map((v, i) => {
+      const value = Math.round(v * scaleBy * 10) / 10;
+      const last = i === values.length - 1;
+      const span = document.createElement('span');
+      span.style.left = `${(i / n) * 100}%`;
+      span.textContent = last && layer.tickUnit === '%'
+        ? percent(value)
+        : `${num(value, Number.isInteger(value) ? 0 : 1)}${last && layer.tickUnit ? layer.tickUnit : ''}`;
+      return span;
+    }));
+  }
+
   // Opacity slider: hexagon fill + legend boxes.
   const opacityControl = document.querySelector('.opacity-control');
   const opacityInput = document.getElementById('hex-opacity');
@@ -115,6 +135,7 @@ export function initLayerPanel({ onLayer, onBoundaries, onBuildings, onVacant, o
     if (!active) return;
     const layer = MAP_LAYERS.find((l) => l.id === active);
     drawScale(layer.classes ?? SCORE_CLASSES);
+    drawTicks(layer, layer.classes ?? SCORE_CLASSES);
     const keys = layer.legend ?? DEFAULT_LEGEND;
     legendLabels.forEach((span, i) => { span.textContent = keys[i] ? t(keys[i]) : ''; });
     legendNote.hidden = !layer.note;

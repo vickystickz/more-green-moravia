@@ -29,7 +29,7 @@ const listeners = [];
 const warned = new Set();
 
 // Raise after editing en.json / cs.json, so browsers fetch the new texts.
-const LANG_VERSION = 2;
+const LANG_VERSION = 4;
 
 async function loadDict(code) {
   try {

@@ -274,6 +274,8 @@
               <!-- Legend for the visible view -->
               <div class="legend" id="legend">
                 <div class="legend__scale" id="legend-scale" aria-hidden="true"></div>
+                <!-- Values at the class breaks, under the box edges -->
+                <div class="legend__ticks" id="legend-ticks" aria-hidden="true"></div>
                 <div class="legend__numbers" aria-hidden="true">
                   <span id="legend-low">Low</span><span id="legend-mid"></span><span id="legend-high">High</span>
                 </div>
@@ -505,6 +507,11 @@
   <dialog class="about-dialog" id="about-dialog" aria-labelledby="about-title">
     <div class="about-dialog__head">
       <h2 class="about-dialog__title" id="about-title" data-i18n="intro.about">About this tool</h2>
+      <a class="about-dialog__github" href="https://github.com/vickystickz/more-green-moravia" target="_blank" rel="noopener"
+         title="Source code on GitHub" data-i18n-attr="title:about.github">
+        <img src="assets/icons/github.svg" width="16" height="16" alt="">
+        <span data-i18n="about.githubShort">Source code</span>
+      </a>
       <button class="about-dialog__close" id="about-close" type="button" aria-label="Close"
               data-i18n-attr="aria-label:about.close,title:about.close">
         <img src="assets/icons/close.svg" width="14" height="14" alt="">

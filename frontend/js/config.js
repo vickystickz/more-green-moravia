@@ -193,6 +193,10 @@ export const HEX_OPACITY = 0.7;
 // `note` (optional) = text key shown next to a grey box, for hexes
 // without a value;
 // `classes` (optional) = colour classes (default: SCORE_CLASSES).
+// Numbers at the class breaks are drawn under the legend boxes:
+// class.from × 100 by default (scores 0–100, shares in %), or as
+// they are with `tickScale: 1` (°C); `tickUnit` is added to the
+// last number (e.g. '%', ' °C').
 // Surface temperature (Landsat, °C): 5 classes from 20 to 36 °C,
 // blue (cool) to red (hot). `from` is in °C, so each class has its
 // own tooltip `title` for the legend box.
@@ -212,10 +216,11 @@ export const MAP_LAYERS = [
   // 2026, 30 m (the column name is historical). Main heat input (45 %).
   {
     id: 'lst', key: 'lst', label: 'layers.surfaceSat',
-    legend: ['legend.c20', null, 'legend.c36'], classes: SURFACE_TEMP_CLASSES,
+    legend: ['legend.cool', null, 'legend.hot'], classes: SURFACE_TEMP_CLASSES,
+    tickScale: 1, tickUnit: ' °C',
   },
   { id: 'night', key: 'night', label: 'layers.night' }, // mu_heatwave_tmin
-  { id: 'sealing', key: 'sealing', label: 'layers.sealing', legend: ['legend.zero', null, 'legend.full'] }, // raw_sealing 0–1
+  { id: 'sealing', key: 'sealing', label: 'layers.sealing', tickUnit: '%' }, // raw_sealing 0–1
   { id: 'v', key: 'v', label: 'factor.v' },
   { id: 'feas', key: 'feas', label: 'factor.feas' },
   { id: 'gd', key: 'gd', label: 'factor.gd' },
@@ -223,7 +228,7 @@ export const MAP_LAYERS = [
   // summer 2026), incl. courtyard and street trees.
   {
     id: 'veg', key: 'veg', label: 'layers.vegetation',
-    legend: ['legend.zero', null, 'legend.full'], classes: GREEN_CLASSES,
+    legend: ['legend.little', null, 'legend.lots'], classes: GREEN_CLASSES, tickUnit: '%',
   },
   // val_perceived_heat: share of residents' marks (2020 survey) that
   // say "uncomfortable on hot days". Not part of the score; null
@@ -231,5 +236,6 @@ export const MAP_LAYERS = [
   {
     id: 'reports', key: 'reports', label: 'layers.reports',
     legend: ['legend.comfortable', null, 'legend.uncomfortable'], note: 'legend.fewReports',
+    tickUnit: '%',
   },
 ];
