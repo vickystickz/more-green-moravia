@@ -28,9 +28,12 @@ let lang = 'en';
 const listeners = [];
 const warned = new Set();
 
+// Raise after editing en.json / cs.json, so browsers fetch the new texts.
+const LANG_VERSION = 2;
+
 async function loadDict(code) {
   try {
-    const res = await fetch(`data/lang/${code}.json`);
+    const res = await fetch(`data/lang/${code}.json?v=${LANG_VERSION}`);
     if (!res.ok) throw new Error(res.status);
     dicts[code] = await res.json();
   } catch (err) {

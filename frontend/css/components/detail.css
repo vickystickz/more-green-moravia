@@ -67,7 +67,8 @@
   gap: 2px;
   padding: 8px;
   border-radius: var(--radius-row);
-  background: var(--grey-50);
+  /* --score-bg: the hex's colour on the map, set in ui/detail.js */
+  background: var(--score-bg, var(--grey-50));
 }
 
 .detail-card__number {
@@ -86,6 +87,64 @@
   font-size: var(--body-sm-size);
   line-height: var(--body-sm-line);
   color: var(--grey-700);
+}
+
+/* Small 0–100 scale in the map's 5 colours, with a marker at this
+   area's score. A white edge keeps it visible on any background. */
+.score-scale {
+  position: relative;
+  display: block;
+  margin: 6px 0 4px;
+}
+
+.score-scale__bar {
+  display: flex;
+  height: 6px;
+  border-radius: 3px;
+  overflow: hidden;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.9);
+}
+
+.score-scale__bar > span {
+  flex: 1;
+}
+
+.score-scale__marker {
+  position: absolute;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  background: var(--grey-900);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+  transform: translate(-50%, -50%);
+}
+
+/* On the score colours the light grey note is too faint: use the
+   main text colour, slightly softened. */
+.detail-card__score .detail-card__note,
+.detail-card__score .detail-card__reports {
+  color: rgba(31, 31, 31, 0.78);
+}
+
+.detail-card__score .detail-card__reports {
+  border-top-color: rgba(31, 31, 31, 0.15);
+}
+
+/* Dark score colours (60–100): white text. */
+.detail-card__score--dark .detail-card__number,
+.detail-card__score--dark .detail-card__label {
+  color: #ffffff;
+}
+
+.detail-card__score--dark .detail-card__note,
+.detail-card__score--dark .detail-card__reports {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.detail-card__score--dark .detail-card__reports {
+  border-top-color: rgba(255, 255, 255, 0.3);
 }
 
 /* Residents' heat reports: a small line under the note, set apart
@@ -167,4 +226,40 @@
   font-size: var(--caption-3-size);
   line-height: var(--caption-3-line);
   color: var(--grey-700);
+}
+
+/* "More about the data": the sources line, closed by default. */
+.detail-card__more summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  list-style: none;
+  font-size: var(--caption-3-size);
+  line-height: var(--caption-3-line);
+  font-weight: var(--weight-medium);
+  color: var(--green-600);
+}
+
+.detail-card__more summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Small arrow that turns when open. */
+.detail-card__more summary::after {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg) translateY(-2px);
+  transition: transform 150ms;
+}
+
+.detail-card__more[open] summary::after {
+  transform: rotate(225deg) translateY(-1px);
+}
+
+.detail-card__more .detail-card__source {
+  margin-top: 4px;
 }

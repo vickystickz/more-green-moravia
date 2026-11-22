@@ -5,15 +5,18 @@
 // =============================================================
 
 import { t, num, percent } from './i18n.js';
-import { RES } from '../config.js';
+import { RES, SCORE_CLASSES } from '../config.js';
 
 const isNum = (v) => typeof v === 'number' && Number.isFinite(v);
 const pct = (share) => percent(Math.round(share * 100));
 
+// One label per map colour class (0–20 … 80–100), so the words
+// and the colour of the score box always agree.
+const PRIORITY_KEYS = ['detail.veryLow', 'detail.low', 'detail.medium', 'detail.high', 'detail.veryHigh'];
+
 function priorityLabel(score) {
-  if (score >= 0.66) return t('detail.high');
-  if (score >= 0.33) return t('detail.medium');
-  return t('detail.low');
+  const i = SCORE_CLASSES.reduce((at, c, n) => (score >= c.from ? n : at), 0);
+  return t(PRIORITY_KEYS[i]);
 }
 
 // Czech definition of a tropical night: minimum of 20 °C or more.
@@ -101,6 +104,13 @@ function constraintNote(p) {
     : '';
 }
 
+// Same colour as the hex on the map (SCORE_CLASSES, 'step' by
+// class.from). The two darkest classes get white text.
+function scoreColour(score) {
+  const i = SCORE_CLASSES.reduce((at, c, n) => (score >= c.from ? n : at), 0);
+  return { color: SCORE_CLASSES[i].color, dark: i >= 3 };
+}
+
 function el(tag, className, text) {
   const node = document.createElement(tag);
   if (className) node.className = className;
@@ -152,6 +162,21 @@ export function renderDetail(hex, { onlyBuildable, weightLabels }) {
   document.getElementById('detail-res-note').hidden = !RES.mixed;
   document.getElementById('detail-score').textContent = `${Math.round(hex.score * 100)} / 100`;
   document.getElementById('detail-label').textContent = priorityLabel(hex.score);
+  const box = card.querySelector('.detail-card__score');
+  const { color, dark } = scoreColour(hex.score);
+  box.style.setProperty('--score-bg', color);
+  box.classList.toggle('detail-card__score--dark', dark);
+  const bar = document.getElementById('detail-scale-bar');
+  const marker = document.getElementById('detail-scale-marker');
+  if (bar && !bar.childElementCount) {
+    SCORE_CLASSES.forEach((c) => {
+      const seg = document.createElement('span');
+      seg.style.background = c.color;
+      bar.append(seg);
+    });
+  }
+  const pos = Math.min(Math.max(hex.score, 0), 1) * 100;
+  if (marker) marker.style.left = `${pos}%`;
   const reports = document.getElementById('detail-reports');
   reports.textContent = reportsLine(p);
   reports.hidden = !reports.textContent;

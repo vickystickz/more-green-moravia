@@ -370,6 +370,11 @@
         <div class="detail-card__score">
           <span class="detail-card__number" id="detail-score"></span>
           <span class="detail-card__label" id="detail-label"></span>
+          <!-- Where this score sits on the map's 5 colours (ui/detail.js) -->
+          <span class="score-scale" id="detail-scale" aria-hidden="true">
+            <span class="score-scale__bar" id="detail-scale-bar"></span>
+            <span class="score-scale__marker" id="detail-scale-marker"></span>
+          </span>
           <span class="detail-card__note" data-i18n="detail.note">Based on your selected priorities.</span>
           <!-- Residents' heat reports (2020 survey), where there are enough -->
           <span class="detail-card__reports" id="detail-reports" hidden></span>
@@ -383,7 +388,11 @@
           <p class="detail-card__source" id="detail-res-note" data-i18n="detail.resNote" hidden>Heat, green space and space to build are measured per ~75 m area. People and vulnerable groups are measured per neighbourhood (~200 m), so neighbouring areas share those values.</p>
         </section>
 
-        <p class="detail-card__source" data-i18n="detail.treeSource">Vegetation: Sentinel-2 NDVI, summer 2026 · Land use: Copernicus Urban Atlas 2021 · Tree cover: Copernicus 10 m · Sealed ground: Copernicus Imperviousness 10 m (2024). Walking distances along streets (OpenStreetMap). Surface temperature: Landsat, summer 2026 (30 m).</p>
+        <!-- Data sources, folded away until asked for. -->
+        <details class="detail-card__more">
+          <summary data-i18n="detail.moreData">More about the data</summary>
+          <p class="detail-card__source" data-i18n="detail.treeSource">Vegetation: Sentinel-2 NDVI, summer 2026 · Land use: Copernicus Urban Atlas 2021 · Tree cover: Copernicus 10 m · Sealed ground: Copernicus Imperviousness 10 m (2024). Walking distances along streets (OpenStreetMap). Surface temperature: Landsat, summer 2026 (30 m).</p>
+        </details>
       </article>
 
       <!-- Ask AI + map buttons (bottom right) -->
