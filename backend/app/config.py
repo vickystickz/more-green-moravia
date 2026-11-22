@@ -1,6 +1,7 @@
 """Settings from the environment (and backend/.env)."""
 
 from pathlib import Path
+from typing import Literal
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -12,11 +13,21 @@ class Settings(BaseSettings):
 
     APP_NAME: str = "More Green, Moravia API"
 
+    # Which API answers: "openai" (any OpenAI-compatible API, the AI_* settings)
+    # or "anthropic" (the Claude API via the Anthropic SDK, the ANTHROPIC_* settings).
+    AI_PROVIDER: Literal["openai", "anthropic"] = "openai"
+
     # Model: any OpenAI-compatible chat-completions API
     AI_BASE_URL: str | None = None
     AI_API_KEY: str | None = None
     AI_MODEL: str | None = None
-    AI_TIMEOUT_SECONDS: float = 60
+    AI_TIMEOUT_SECONDS: float = 60  # used by both providers
+
+    # Model: the Claude API (AI_PROVIDER=anthropic)
+    ANTHROPIC_API_KEY: str | None = None
+    ANTHROPIC_MODEL: str = "claude-opus-5-5"
+    # How hard Claude thinks: low | medium | high | xhigh | max
+    ANTHROPIC_EFFORT: Literal["low", "medium", "high", "xhigh", "max"] = "medium"
 
     # Optional: Mapy.com key for street / district names of hexagons (reverse geocoding).
     # Without it the agent names places by microzone only.
@@ -47,7 +58,22 @@ class Settings(BaseSettings):
 
     @property
     def agent_configured(self) -> bool:
+        if self.AI_PROVIDER == "anthropic":
+            return bool(self.ANTHROPIC_API_KEY)
         return bool(self.AI_BASE_URL and self.AI_MODEL)
+
+    @property
+    def agent_model(self) -> str | None:
+        """The model that answers, when the agent is configured."""
+        if not self.agent_configured:
+            return None
+        return self.ANTHROPIC_MODEL if self.AI_PROVIDER == "anthropic" else self.AI_MODEL
+
+    @property
+    def agent_setup_hint(self) -> str:
+        if self.AI_PROVIDER == "anthropic":
+            return "set ANTHROPIC_API_KEY"
+        return "set AI_BASE_URL and AI_MODEL"
 
     @property
     def cors_origins(self) -> list[str]:

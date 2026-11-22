@@ -219,6 +219,7 @@ class ScriptedLLM:
 
 
 def test_chat_json_and_stream(client, monkeypatch):
+    monkeypatch.setattr(settings, "AI_PROVIDER", "openai")
     monkeypatch.setattr(settings, "AI_BASE_URL", "http://fake")
     monkeypatch.setattr(settings, "AI_MODEL", "scripted")
     app.dependency_overrides[get_llm] = ScriptedLLM
@@ -245,6 +246,7 @@ def test_chat_json_and_stream(client, monkeypatch):
 
 
 def test_chat_off_without_model(client, monkeypatch):
+    monkeypatch.setattr(settings, "AI_PROVIDER", "openai")
     monkeypatch.setattr(settings, "AI_BASE_URL", None)
     assert client.post("/api/agent/chat", json={"message": "hi"}).status_code == 503
     assert client.get("/api/agent/status").json()["enabled"] is False

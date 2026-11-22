@@ -37,7 +37,7 @@ def get_context(request: Request) -> AgentContext:
 
 def require_agent() -> None:
     if not settings.agent_configured:
-        raise HTTPException(503, "The AI agent is not enabled: set AI_BASE_URL and AI_MODEL")
+        raise HTTPException(503, f"The AI agent is not enabled: {settings.agent_setup_hint}")
 
 
 @router.get("/status", response_model=AgentStatus)
@@ -45,7 +45,7 @@ async def agent_status(ctx: AgentContext = Depends(get_context)):
     """Whether the agent is enabled, and which model answers. Use it to show or hide "Ask AI"."""
     return AgentStatus(
         enabled=settings.agent_configured,
-        model=settings.AI_MODEL if settings.agent_configured else None,
+        model=settings.agent_model,
         hexagons=ctx.hex_count,
         microzones=len(ctx.microzones),
     )

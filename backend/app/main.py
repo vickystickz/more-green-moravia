@@ -33,9 +33,9 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         path,
         app.state.agent_context.hex_count,
         len(app.state.agent_context.metrics),
-        f"on ({settings.AI_MODEL})"
+        f"on ({settings.AI_PROVIDER}: {settings.agent_model})"
         if settings.agent_configured
-        else "off (set AI_BASE_URL and AI_MODEL)",
+        else f"off ({settings.agent_setup_hint})",
     )
     yield
     close_database()

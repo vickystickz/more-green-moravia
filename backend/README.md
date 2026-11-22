@@ -23,7 +23,8 @@ On start the server builds `data/moravia.duckdb` from the GeoJSON exports in
 uv run python -m app.ingest --force
 ```
 
-Without `AI_BASE_URL` and `AI_MODEL` the server still starts; `/chat` answers 503
+Without `AI_BASE_URL` and `AI_MODEL` (or, with `AI_PROVIDER=anthropic`,
+without `ANTHROPIC_API_KEY`) the server still starts; `/chat` answers 503
 and `/status` reports `enabled: false`. `/map` works either way.
 
 Tests: `uv run pytest`. Lint: `uv run ruff check . && uv run ruff format .`
@@ -57,6 +58,22 @@ Any OpenAI-compatible chat-completions API that supports **tool calling**:
 
 `AI_API_KEY` is the provider's key. It stays on the server: never put it in the
 frontend.
+
+### Claude API directly (Anthropic SDK)
+
+To call Claude through the official `anthropic` SDK instead of an
+OpenAI-compatible endpoint, set:
+
+```sh
+AI_PROVIDER=anthropic
+ANTHROPIC_API_KEY=sk-ant-...
+# optional: ANTHROPIC_MODEL (default claude-opus-5-5), ANTHROPIC_EFFORT (default medium)
+```
+
+The `AI_BASE_URL` / `AI_API_KEY` / `AI_MODEL` settings are ignored then.
+`agent/llm_anthropic.py` translates the loop's messages to the Messages API,
+caches the system prompt and tools, and turns on the API's server-side refusal
+fallback (`fallbacks: "default"`).
 
 ## Endpoints (`/api/agent`)
 

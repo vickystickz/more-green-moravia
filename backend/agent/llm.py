@@ -3,6 +3,9 @@
 One client covers hosted providers (OpenRouter, DeepInfra, Groq, Google AI
 Studio's OpenAI endpoint) and self-hosted servers (vLLM, Ollama). Switching
 between them only changes AI_BASE_URL, AI_API_KEY and AI_MODEL.
+
+With AI_PROVIDER=anthropic, get_llm() returns the Claude client in
+agent/llm_anthropic.py instead; it speaks the same message format.
 """
 
 import asyncio
@@ -59,6 +62,8 @@ class LLMReply:
     content: str
     tool_calls: list[ToolCall] = field(default_factory=list)
     usage: Usage = field(default_factory=Usage)
+    # Content blocks a provider needs replayed as-is (Claude's thinking and tool_use).
+    provider_content: list[dict[str, Any]] | None = None
 
     def as_message(self) -> dict[str, Any]:
         """The assistant message to append to the conversation."""
@@ -73,6 +78,8 @@ class LLMReply:
                 }
                 for call in self.tool_calls
             ]
+        if self.provider_content is not None:
+            message["provider_content"] = self.provider_content
         return message
 
 
@@ -172,6 +179,17 @@ def parse_reply(body: dict[str, Any]) -> LLMReply:
 
 def get_llm() -> LLMClient:
     """FastAPI dependency; tests override it with a scripted fake."""
+    if settings.AI_PROVIDER == "anthropic":
+        from agent.llm_anthropic import AnthropicClient
+
+        if not settings.ANTHROPIC_API_KEY:
+            raise LLMError("ANTHROPIC_API_KEY must be set")
+        return AnthropicClient(
+            model=settings.ANTHROPIC_MODEL,
+            api_key=settings.ANTHROPIC_API_KEY,
+            effort=settings.ANTHROPIC_EFFORT,
+            timeout=settings.AI_TIMEOUT_SECONDS,
+        )
     if not settings.AI_BASE_URL or not settings.AI_MODEL:
         raise LLMError("AI_BASE_URL and AI_MODEL must be set")
     return OpenAICompatibleClient(
