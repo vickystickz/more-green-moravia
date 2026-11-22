@@ -38,6 +38,7 @@
   <link rel="stylesheet" href="css/components/ranking.css">
   <link rel="stylesheet" href="css/components/detail.css">
   <link rel="stylesheet" href="css/components/ask-ai.css">
+  <link rel="stylesheet" href="css/components/about.css">
 </head>
 <body>
   <!-- =========================================================
@@ -75,7 +76,8 @@
           <div class="section-head">
             <div class="section-head__row">
               <h2 class="section-title" id="intro-title" data-i18n="intro.title">Your city, your plan, your priorities</h2>
-              <button class="icon-btn" type="button" aria-label="About this tool" data-i18n-attr="aria-label:intro.about">
+              <button class="icon-btn" id="about-open" type="button" aria-haspopup="dialog" aria-controls="about-dialog"
+                      aria-label="About this tool" data-i18n-attr="aria-label:intro.about,title:intro.about">
                 <img src="assets/icons/info-circle.svg" width="14" height="14" alt="">
               </button>
             </div>
@@ -225,7 +227,6 @@
         </ol>
       </section>
 
-      <p class="sidebar-note" data-i18n="footer.note.r10" id="footer-note">Provisional results. Scores combine satellite surface temperature (Landsat, summer 2026), heatwave temperatures (night and day), population, vulnerable groups, green vegetation (Sentinel-2, summer 2026), tree cover, sealed ground, walking distance to parks and available land on a 75 m hexagon grid (H3); people and vulnerable groups per ~200 m neighbourhood. Checked against 2,091 places residents marked as comfortable or uncomfortable on hot days. This version focuses on heat stress. Use as a guide, not a final decision.</p>
     </aside>
 
     <!-- =======================================================
@@ -490,6 +491,19 @@
 
   <!-- MapLibre GL JS: a normal script that creates the global
        `maplibregl`. It must come before our module script. -->
+  <!-- "About this tool": methodology, data and team. The text is
+       Markdown in data/about/en.md and cs.md (ui/about.js). -->
+  <dialog class="about-dialog" id="about-dialog" aria-labelledby="about-title">
+    <div class="about-dialog__head">
+      <h2 class="about-dialog__title" id="about-title" data-i18n="intro.about">About this tool</h2>
+      <button class="about-dialog__close" id="about-close" type="button" aria-label="Close"
+              data-i18n-attr="aria-label:about.close,title:about.close">
+        <img src="assets/icons/close.svg" width="14" height="14" alt="">
+      </button>
+    </div>
+    <div class="about-dialog__body" id="about-body"></div>
+  </dialog>
+
   <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 
   <!-- Our app (ES module, needs a local server to run) -->

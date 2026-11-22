@@ -1,0 +1,153 @@
+/* =============================================================
+   about.css
+   "About this tool" window (ui/about.js): a centred card over a
+   dimmed page, with a fixed title bar and a scrolling body that
+   holds the Markdown from data/about/<lang>.md.
+   ============================================================= */
+
+.about-dialog {
+  width: min(760px, calc(100vw - 32px));
+  max-height: min(86vh, 900px);
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-card);
+  background: var(--surface-base);
+  color: var(--display-body);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+  overflow: hidden;
+}
+
+.about-dialog[open] {
+  display: flex;
+  flex-direction: column;
+}
+
+.about-dialog::backdrop {
+  background: rgba(24, 0, 44, 0.35);
+}
+
+.about-dialog__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--grey-100);
+  flex-shrink: 0;
+}
+
+.about-dialog__title {
+  font-size: var(--p3-size);
+  font-weight: var(--weight-semibold);
+  color: var(--color-nav);
+}
+
+.about-dialog__close {
+  display: flex;
+  padding: 6px;
+  border-radius: var(--radius-row);
+  background: var(--grey-50);
+}
+
+.about-dialog__close:hover {
+  background: var(--grey-100);
+}
+
+/* ---------- Markdown body ---------- */
+.about-dialog__body {
+  padding: 16px 20px 24px;
+  overflow-y: auto;
+  font-size: var(--caption-1-size);
+  line-height: 20px;
+}
+
+.about-dialog__body > * + * {
+  margin-top: 10px;
+}
+
+.about-dialog__body h2 {
+  font-size: var(--p1-size);
+  line-height: var(--p1-line);
+  font-weight: var(--weight-semibold);
+  color: var(--green-600);
+}
+
+.about-dialog__body h3 {
+  margin-top: 20px;
+  font-size: 15px;
+  font-weight: var(--weight-semibold);
+  color: var(--display-02);
+}
+
+.about-dialog__body h4 {
+  margin-top: 16px;
+  font-size: var(--caption-1-size);
+  font-weight: var(--weight-semibold);
+  color: var(--display-02);
+}
+
+.about-dialog__body strong {
+  color: var(--display-02);
+  font-weight: var(--weight-semibold);
+}
+
+.about-dialog__body a {
+  color: var(--green-600);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.about-dialog__body ul,
+.about-dialog__body ol {
+  padding-left: 20px;
+}
+
+.about-dialog__body ul { list-style: disc; }
+.about-dialog__body ol { list-style: decimal; }
+
+.about-dialog__body li + li {
+  margin-top: 4px;
+}
+
+.about-dialog__body code {
+  padding: 1px 4px;
+  border-radius: 3px;
+  background: var(--grey-50);
+  font-size: 0.92em;
+}
+
+.about-dialog__body hr {
+  margin: 20px 0;
+  border: none;
+  border-top: 1px solid var(--grey-100);
+}
+
+.about-dialog__body figure {
+  margin: 12px 0 4px;
+}
+
+.about-dialog__body figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--grey-100);
+  border-radius: var(--radius-tile);
+}
+
+/* Highlighted note (> in the Markdown): the provisional-results text. */
+.about-note {
+  padding: 10px 12px;
+  border: 1px solid var(--green-100);
+  border-radius: var(--radius-row);
+  background: var(--green-25);
+  font-size: var(--caption-2-size);
+  line-height: var(--caption-2-line);
+}
+
+/* Tables reuse .ask-ai-table; long cells wrap here. */
+.about-table th,
+.about-table td {
+  white-space: normal;
+  vertical-align: top;
+  padding: 4px 8px;
+}

@@ -25,13 +25,14 @@ import { initSliders, toPercents } from './ui/sliders.js';
 import { initPresets } from './ui/presets.js';
 import { initPresetTooltip } from './ui/preset-tooltip.js';
 import { initInfoTooltip } from './ui/info-tooltip.js';
+import { initAbout } from './ui/about.js';
 import { renderRanking } from './ui/ranking.js';
 import { initDetail, renderDetail } from './ui/detail.js';
 import { initLayerPanel } from './ui/layer-panel.js';
 import { initAskAi } from './ui/ask-ai.js';
 import { showLoader, hideLoader, showLoaderError } from './ui/loader.js';
 import { initI18n, initLangSwitch, onLangChange, t, percent } from './ui/i18n.js';
-import { MAP_LAYERS, DATA_RES } from './config.js';
+import { MAP_LAYERS } from './config.js';
 import { state } from './state.js';
 
 let map = null;
@@ -130,10 +131,6 @@ function searchMicrozones(query) {
 async function init() {
   showLoader();
 
-  // The footer describes the grid, so it has one text per data
-  // resolution (footer.note.r9 / footer.note.r10).
-  document.getElementById('footer-note').dataset.i18n = `footer.note.${DATA_RES}`;
-
   // Load the EN / CS texts first, so everything below is drawn in
   // the right language from the start.
   await initI18n();
@@ -152,6 +149,7 @@ async function init() {
 
   initPresetTooltip();
   initInfoTooltip();
+  initAbout();
 
   const sliders = initSliders(state.weights, (weights) => {
     state.weights = weights;

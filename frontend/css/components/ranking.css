@@ -88,12 +88,3 @@
     var(--grey-100) calc(var(--value) * 1%)
   );
 }
-
-/* Footer note at the bottom of the sidebar. */
-.sidebar-note {
-  flex-shrink: 0;
-  padding: 0 4px 4px;
-  font-size: var(--caption-3-size);
-  line-height: var(--caption-3-line);
-  color: var(--grey-700);
-}
