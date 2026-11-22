@@ -9,7 +9,7 @@
 <p align="center">
   <a href="https://vickystickz.github.io/more-green-moravia/"><b>Live app</b></a> ·
   <a href="https://more-green-moravia-1.onrender.com/docs#/"><b>API docs</b></a> ·
-  <a href="PRESENTATION_URL"><b>Presentation</b></a> ·
+  <a href="https://canva.link/tnht7nbasr9xogi"><b>Presentation</b></a> ·
   <a href="https://www.figma.com/design/jNJfXOIdk42ymHcyNrZgzg/Hackathon-UI"><b>Figma design</b></a>
 </p>
 
