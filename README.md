@@ -157,4 +157,4 @@ After a new notebook run:
 | Validation | Residents' summer heat map (2,091 places, 2020) · ČÚZK orthophoto |
 | Map | OpenFreeMap · ČÚZK orthophoto · Mapy.com search |
 
-**Limits.** People and vulnerable groups are counted per microzone (about 200 m), so neighbouring 75 m hexagons share those values. Flood risk and traffic pollution are not included. The score shows where green would help most; it is not a design or a cost plan. Green roof costs are rough estimates from published price ranges.
+**Limits.** People and vulnerable groups are counted per microzone (about 200 m), so neighbouring 75 m hexagons share those values. A much finer resolution of the population can improve the results too. To identify the buildings to prioritize the most, we also need the building ownership, like whether private individuals, companies, or the government own it. The score shows where green would help most; it is not a design or a cost plan. Green roof costs are rough estimates from published price ranges.
