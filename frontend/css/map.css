@@ -26,7 +26,10 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  width: 279px;
+  /* Wide enough for the whole placeholder ("Search a neighbourhood
+     or street in Olomouc"), but never wider than the map. */
+  width: 340px;
+  max-width: calc(100% - 18px);
   height: 34px;
   padding: 6px 8px;
   border-radius: var(--radius-pill);
@@ -368,6 +371,17 @@
   gap: 8px;
 }
 
+/* The column is as wide as the "Ask AI" button, so its empty area
+   reaches over MapLibre's attribution (i) button. Let clicks pass
+   through the empty area; the buttons themselves stay clickable. */
+.map-tools {
+  pointer-events: none;
+}
+
+.map-tools > * {
+  pointer-events: auto;
+}
+
 .map-tools__buttons {
   display: flex;
   flex-direction: column;
@@ -430,6 +444,7 @@
    bottom right, moved left so they don't cover our buttons. */
 .maplibregl-ctrl-bottom-right {
   right: 44px;
+  z-index: 3; /* the opened attribution is drawn above the map buttons */
 }
 
 .maplibregl-ctrl-scale {
